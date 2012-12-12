@@ -54,45 +54,57 @@ my $time_this = sub {
     }
 };
 
+my $run_test_method = sub {
+    my ( $self, $test_instance, $test_method ) = @_;
+
+    # XXX Fragile? Will someone apply a role at runtime to a test class and
+    # break this? I should do something in BUILD
+    my $test_class = ref $test_instance;
+
+    $test_instance->test_setup;
+    my $num_tests;
+    my $builder = $self->builder;
+    $builder->subtest(
+        $test_method,
+        sub {
+            $self->$time_this(
+                "Runtime $test_class\::$test_method",
+                sub {
+                    my $old_test_count = $builder->current_test;
+                    $test_instance->$test_method;
+                    $num_tests = $builder->current_test - $old_test_count;
+                },
+            );
+        },
+    );
+    $test_instance->test_teardown;
+    return $num_tests;
+};
+
 sub runtests {
     my $self = shift;
 
-    my @classes = $self->get_test_classes;
-    my $builder = $self->builder;
+    my @test_classes = $self->get_test_classes;
+    my $builder      = $self->builder;
 
-    my $num_test_classes = @classes;
+    my $num_test_classes = @test_classes;
     my ( $num_test_methods, $num_tests ) = ( 0, 0 );
-    foreach my $class (@classes) {
+    foreach my $test_class (@test_classes) {
         $self->$time_this(
-            "Runtime for $class",
+            "Runtime for $test_class",
             sub {
-                Test::Most::explain("\nExecuting tests for $class\n\n");
-                my $tests = $class->new;
-                $class->test_startup;
+                Test::Most::explain("\nExecuting tests for $test_class\n\n");
+                my $test_instance = $test_class->new;
+                $test_instance->test_startup;
 
-                my @tests = $self->get_test_methods($class);
-                $num_test_methods += @tests;
+                my @test_methods = $self->get_test_methods($test_class);
+                $num_test_methods += @test_methods;
 
-                foreach my $test (@tests) {
-                    $class->test_setup;
-                    $builder->subtest(
-                        $test,
-                        sub {
-                            $self->$time_this(
-                                "Runtime $class\::$test",
-                                sub {
-                                    my $old_test_count =
-                                      $builder->current_test;
-                                    $tests->$test;
-                                    $num_tests += $builder->current_test
-                                      - $old_test_count;
-                                },
-                            );
-                        },
-                    );
-                    $class->test_teardown;
+                foreach my $test_method (@test_methods) {
+                    $num_tests += $self->$run_test_method( $test_instance,
+                        $test_method );
                 }
-                $class->test_shutdown;
+                $test_instance->test_shutdown;
             }
         );
     }
