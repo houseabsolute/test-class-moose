@@ -74,7 +74,16 @@ sub runtests {
                         "Runtime per test $class\::$test",
                         sub {
                             $class->test_setup;
-                            $builder->subtest( $test, sub { $tests->$test } );
+                            $builder->subtest(
+                                $test,
+                                sub {
+                                    my $old_test_count =
+                                      $builder->current_test;
+                                    $tests->$test;
+                                    $num_tests += $builder->current_test
+                                      - $old_test_count;
+                                }
+                            );
                             $class->test_teardown;
                         }
                     );
@@ -84,8 +93,9 @@ sub runtests {
         );
     }
     $builder->diag(<<"END");
-Test Classes: $num_test_classes
-Test Methods: $num_test_methods
+Test classes:    $num_test_classes
+Test methods:    $num_test_methods
+Total tests run: $num_tests
 END
 }
 
