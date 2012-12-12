@@ -1,4 +1,4 @@
-use 5.006;
+use 5.10.0;
 use strict;
 use warnings;
 use Module::Build;

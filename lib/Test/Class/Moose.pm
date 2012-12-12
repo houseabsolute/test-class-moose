@@ -7,8 +7,8 @@ use Test::Builder;
 use Benchmark qw(timediff timestr);
 use namespace::autoclean;
 
-has 'show_timing' => ( 
-    is => 'ro', 
+has 'show_timing' => (
+    is  => 'ro',
     isa => 'Bool',
 );
 has 'builder' => (
@@ -20,7 +20,7 @@ has 'builder' => (
 );
 
 sub import {
-    my ($class,%arg_for) = @_;
+    my ( $class, %arg_for ) = @_;
     my $caller = caller;
 
     eval <<"END";
@@ -45,24 +45,31 @@ my $time_this = sub {
     my $start = Benchmark->new;
     $sub->();
     if ( $self->show_timing ) {
-        my $time = timestr(timediff(Benchmark->new,$start));
+        my $time = timestr( timediff( Benchmark->new, $start ) );
         $self->builder->diag("$name: $time");
     }
 };
 
 sub runtests {
-    my $self  = shift;
+    my $self = shift;
 
     my @classes = $self->get_test_classes;
     my $builder = $self->builder;
 
+    my $num_test_classes = @classes;
+    my ( $num_test_methods, $num_tests ) = ( 0, 0 );
     foreach my $class (@classes) {
         $self->$time_this(
             "Runtime for $class",
             sub {
+                Test::Most::explain("\nExecuting tests for $class\n\n");
                 my $tests = $class->new;
                 $class->test_startup;
-                foreach my $test ( $self->get_test_methods($class) ) {
+
+                my @tests = $self->get_test_methods($class);
+                $num_test_methods += @tests;
+
+                foreach my $test (@tests) {
                     $self->$time_this(
                         "Runtime per test $class\::$test",
                         sub {
@@ -75,7 +82,11 @@ sub runtests {
                 $class->test_shutdown;
             }
         );
-    }       
+    }
+    $builder->diag(<<"END");
+Test Classes: $num_test_classes
+Test Methods: $num_test_methods
+END
 }
 
 sub get_test_classes {
@@ -84,8 +95,9 @@ sub get_test_classes {
     my @classes;
     while ( my ( $class, $metaclass ) = each %metaclasses ) {
         next unless $metaclass->can('superclasses');
-        $DB::single = $class eq 'main';
-        $DB::single = $class eq 'TestsFor::Basic::Subclass';
+        next if $class eq __PACKAGE__;
+        next if $class eq 'main';        # XXX track down this bug
+
         push @classes => $class
           if grep { $_ eq __PACKAGE__ } $metaclass->linearized_isa;
     }
@@ -98,7 +110,7 @@ sub get_test_methods {
     my ( $self, $test_class ) = @_;
 
     state $is_test_control_method =
-      { map {; "test_$_" => 1 } qw/startup setup teardown shutdown/ };
+      { map { ; "test_$_" => 1 } qw/startup setup teardown shutdown/ };
 
     # eventuall we'll want to control the test method order
     return
@@ -106,11 +118,17 @@ sub get_test_methods {
       $test_class->meta->get_method_list;
 }
 
-sub test_startup  {}
-sub test_setup    {}
-sub test_teardown {}
-sub test_shutdown {}
+sub test_startup  { }
+sub test_setup    { }
+sub test_teardown { }
+sub test_shutdown { }
 
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+__END__
+
+=head1 NAME
+
+Test::Class::Moose - Test::Class + Moose

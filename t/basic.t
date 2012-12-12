@@ -5,8 +5,6 @@ use lib 't/lib/';
 use TestsFor::Basic;
 use TestsFor::Basic::Subclass;
 
-subtest 'basic tests' => sub {
-    TestsFor::Basic->new( { show_timing => 1 } )->runtests;
-};
+Test::Class::Moose->new( { show_timing => 0 } )->runtests;
 
 done_testing;
