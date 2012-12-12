@@ -3,6 +3,10 @@ use Test::Most;
 use lib 'lib';
 use lib 't/lib/';
 use TestsFor::Basic;
-ok 1;
-TestsFor::Basic->runtests;
+use TestsFor::Basic::Subclass;
+
+subtest 'basic tests' => sub {
+    TestsFor::Basic->new( { show_timing => 1 } )->runtests;
+};
+
 done_testing;
