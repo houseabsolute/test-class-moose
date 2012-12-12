@@ -3,7 +3,6 @@ package Test::Class::Moose::Load;
 use strict;
 use warnings;
 
-use Test::Class::Moose;
 use File::Find;
 use File::Spec;
 
