@@ -6,6 +6,7 @@ use Carp;
 use Test::Builder;
 use Benchmark qw(timediff timestr);
 use namespace::autoclean;
+use Try::Tiny;
 
 has 'show_timing' => (
     is  => 'ro',
@@ -21,6 +22,10 @@ has 'builder' => (
 has 'statistics' => (
     is  => 'ro',
     isa => 'Bool',
+);
+has 'this_class' => (
+    is  => 'rw',
+    isa => 'Str',
 );
 
 sub import {
@@ -44,6 +49,13 @@ END
     }
 }
 
+sub BUILD {
+    my $self = shift;
+
+    # stash that name lest something change it later. Paranoid?
+    $self->this_class($self->meta->name);
+}
+
 my $time_this = sub {
     my ( $self, $name, $sub ) = @_;
     my $start = Benchmark->new;
@@ -54,16 +66,37 @@ my $time_this = sub {
     }
 };
 
+my $startup = sub {
+    my $self = shift;
+
+    my $success;
+    my $builder = $self->builder;
+    try {
+        my $num_tests = $builder->current_test;
+        $self->test_startup;
+        if ( $builder->current_test ne $num_tests ) {
+            croak("Testss may not be run in test control methods");
+        }
+        $success = 1;
+    }
+    catch {
+        my $error = $_;
+        my $class = $self->this_class;
+        $builder->diag("$class->test_startup() failed: $error");
+    };
+    return $success;
+};
+
 my $run_test_method = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
-    # XXX Fragile? Will someone apply a role at runtime to a test class and
-    # break this? I should do something in BUILD
-    my $test_class = ref $test_instance;
+    my $test_class = $test_instance->this_class;
 
-    $test_instance->test_setup;
+    $test_instance->$startup;
     my $num_tests;
+
     my $builder = $self->builder;
+    Test::Most::explain("$test_class->$test_method()"),
     $builder->subtest(
         $test_method,
         sub {
@@ -90,21 +123,26 @@ sub runtests {
     my $num_test_classes = @test_classes;
     my ( $num_test_methods, $num_tests ) = ( 0, 0 );
     foreach my $test_class (@test_classes) {
-        $self->$time_this(
-            "Runtime for $test_class",
+        Test::Most::explain("\nExecuting tests for $test_class\n\n"),
+        $builder->subtest(
+            $test_class,
             sub {
-                Test::Most::explain("\nExecuting tests for $test_class\n\n");
-                my $test_instance = $test_class->new;
-                $test_instance->test_startup;
+                $self->$time_this(
+                    "Runtime for $test_class",
+                    sub {
+                        my $test_instance = $test_class->new;
+                        $test_instance->test_startup;
 
-                my @test_methods = $self->get_test_methods($test_class);
-                $num_test_methods += @test_methods;
+                        my @test_methods = $test_instance->get_test_methods;
+                        $num_test_methods += @test_methods;
 
-                foreach my $test_method (@test_methods) {
-                    $num_tests += $self->$run_test_method( $test_instance,
-                        $test_method );
-                }
-                $test_instance->test_shutdown;
+                        foreach my $test_method (@test_methods) {
+                            $num_tests += $self->$run_test_method( $test_instance,
+                                $test_method );
+                        }
+                        $test_instance->test_shutdown;
+                    }
+                );
             }
         );
     }
@@ -113,6 +151,7 @@ Test classes:    $num_test_classes
 Test methods:    $num_test_methods
 Total tests run: $num_tests
 END
+    $builder->done_testing;
 }
 
 sub get_test_classes {
@@ -133,7 +172,7 @@ sub get_test_classes {
 }
 
 sub get_test_methods {
-    my ( $self, $test_class ) = @_;
+    my $self = shift;
 
     state $is_test_control_method =
       { map { ; "test_$_" => 1 } qw/startup setup teardown shutdown/ };
@@ -141,9 +180,10 @@ sub get_test_methods {
     # eventuall we'll want to control the test method order
     return
       sort grep { /^test_/ and not $is_test_control_method->{$_} }
-      $test_class->meta->get_method_list;
+      $self->meta->get_method_list;
 }
 
+# empty stub methods guarantee that subclasses can always call these
 sub test_startup  { }
 sub test_setup    { }
 sub test_teardown { }

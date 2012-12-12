@@ -8,5 +8,3 @@ Test::Class::Moose->new(
         statistics  => 1,
     }
 )->runtests;
-
-done_testing;

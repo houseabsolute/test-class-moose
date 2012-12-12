@@ -3,13 +3,13 @@ use Test::Class::Moose parent => 'TestsFor::Basic';
 
 sub test_me {
     my $test  = shift;
-    my $class = ref $test;
+    my $class = $test->this_class;
     ok 1, "I overrode my parent! ($class)";
 }
 
 before 'test_this_baby' => sub {
     my $test  = shift;
-    my $class = ref $test;
+    my $class = $test->this_class;
     pass "This should run before my parent method ($class)";
 };
 
@@ -19,7 +19,9 @@ sub this_should_not_run {
 }
 
 sub test_this_should_be_run {
-    pass "Another test method";
+    for ( 1 .. 5 ) {
+        pass "This is test number $_ in this method";
+    }
 }
 
 1;
