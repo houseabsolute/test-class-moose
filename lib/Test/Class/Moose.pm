@@ -29,6 +29,8 @@ use Test::Most;
 use Moose;
 END
     croak($@) if $@;
+    strict->import;
+    warnings->import;
     if ( my $parent = delete $arg_for{parent} ) {
         my @parents = 'ARRAY' eq ref $parent ? @$parent : $parent;
         $caller->meta->superclasses(@parents);
