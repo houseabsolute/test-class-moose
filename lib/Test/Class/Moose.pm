@@ -18,6 +18,10 @@ has 'builder' => (
         Test::Builder->new;
     },
 );
+has 'statistics' => (
+    is  => 'ro',
+    isa => 'Bool',
+);
 
 sub import {
     my ( $class, %arg_for ) = @_;
@@ -70,29 +74,29 @@ sub runtests {
                 $num_test_methods += @tests;
 
                 foreach my $test (@tests) {
-                    $self->$time_this(
-                        "Runtime per test $class\::$test",
+                    $class->test_setup;
+                    $builder->subtest(
+                        $test,
                         sub {
-                            $class->test_setup;
-                            $builder->subtest(
-                                $test,
+                            $self->$time_this(
+                                "Runtime $class\::$test",
                                 sub {
                                     my $old_test_count =
                                       $builder->current_test;
                                     $tests->$test;
                                     $num_tests += $builder->current_test
                                       - $old_test_count;
-                                }
+                                },
                             );
-                            $class->test_teardown;
-                        }
+                        },
                     );
+                    $class->test_teardown;
                 }
                 $class->test_shutdown;
             }
         );
     }
-    $builder->diag(<<"END");
+    $builder->diag(<<"END") if $self->statistics;
 Test classes:    $num_test_classes
 Test methods:    $num_test_methods
 Total tests run: $num_tests

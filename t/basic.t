@@ -1,10 +1,12 @@
 #!/usr/bin/env perl
 use Test::Most;
 use lib 'lib';
-use lib 't/lib/';
-use TestsFor::Basic;
-use TestsFor::Basic::Subclass;
+use Test::Class::Moose::Load qw(t/lib);
 
-Test::Class::Moose->new( { show_timing => 0 } )->runtests;
+Test::Class::Moose->new(
+    {   show_timing => 0,
+        statistics  => 1,
+    }
+)->runtests;
 
 done_testing;
