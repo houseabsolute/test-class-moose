@@ -66,33 +66,12 @@ my $time_this = sub {
     }
 };
 
-my $startup = sub {
-    my $self = shift;
-
-    my $success;
-    my $builder = $self->builder;
-    try {
-        my $num_tests = $builder->current_test;
-        $self->test_startup;
-        if ( $builder->current_test ne $num_tests ) {
-            croak("Testss may not be run in test control methods");
-        }
-        $success = 1;
-    }
-    catch {
-        my $error = $_;
-        my $class = $self->this_class;
-        $builder->diag("$class->test_startup() failed: $error");
-    };
-    return $success;
-};
-
 my $run_test_method = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->this_class;
 
-    $test_instance->$startup;
+    $test_instance->test_setup;
     my $num_tests;
 
     my $builder = $self->builder;
@@ -121,6 +100,7 @@ sub runtests {
     my $builder      = $self->builder;
 
     my $num_test_classes = @test_classes;
+    $builder->plan( tests => $num_test_classes );
     my ( $num_test_methods, $num_tests ) = ( 0, 0 );
     foreach my $test_class (@test_classes) {
         Test::Most::explain("\nExecuting tests for $test_class\n\n"),
@@ -135,6 +115,7 @@ sub runtests {
 
                         my @test_methods = $test_instance->get_test_methods;
                         $num_test_methods += @test_methods;
+                        $builder->plan( tests => scalar @test_methods );
 
                         foreach my $test_method (@test_methods) {
                             $num_tests += $self->$run_test_method( $test_instance,
@@ -198,3 +179,28 @@ __END__
 =head1 NAME
 
 Test::Class::Moose - Test::Class + Moose
+
+=head1 SYNOPSIS
+
+ package TestsFor::Some::Class;
+ use Test::Class::Moose;
+
+ sub test_me {
+     my $test  = shift;
+     my $class = $test->this_class;
+     ok 1, "test_me() ran ($class)";
+     ok 2, "this is another test ($class)";
+ }
+
+ sub test_this_baby {
+     my $test  = shift;
+     my $class = $test->this_class;
+     is 2, 2, "whee! ($class)";
+ }
+
+ 1;
+
+=head1 DESCRIPTION
+
+This is a tiny proof of concept for writing Test::Class-style tests with
+Moose.
