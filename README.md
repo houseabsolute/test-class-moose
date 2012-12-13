@@ -222,3 +222,45 @@ We use nested tests (subtests) at each level:
     All tests successful.
     Files=1, Tests=2,  2 wallclock secs ( 0.03 usr  0.00 sys +  0.27 cusr  0.01 csys =  0.31 CPU)
     Result: PASS
+
+# TODO
+
+- Add `Test::Class::Moose::Reporting`
+
+Gather up the reporting in one module rather than doing it on an ad-hoc basis.
+
+- Test method filtering
+
+    Test::Class::Moose->new({
+        include => qr/customer/,
+        exclude => qr/database/,
+    })->runtests;
+- Trap exceptions (duh!)
+
+Currently exceptions kill the test suite.
+
+- Load classes
+
+    Test::Class::Moose->new({
+       load => sub {
+           my $test  = shift;
+           my $class = $test->this_class;
+           $class    =~ s/^TestsFor:://;
+           return $class;
+       },
+    })->runtests;
+    
+
+If present, takes a sub that returns a classname we'll attempt to
+automatically load. Completely optional, of course. And then in your test:
+
+    sub test_something {
+        my $test   = shift;
+        my $class  = $test->class_to_test;
+        my $object = $class->new;
+        ok ...
+    }
+
+Because it's an attribute, you can merely declare it in a subclass, if you
+prefer, or override it in a subclass (in other words, this is OO code and you,
+the developer, will have full control over it).
