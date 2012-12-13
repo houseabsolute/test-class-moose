@@ -8,11 +8,10 @@ my $builder = Module::Build->new(
     license           => 'perl',
     dist_author       => q{Curtis "Ovid" Poe <ovid@cpan.org>},
     dist_version_from => 'lib/Test/Class/Moose.pm',
-    build_requires    => {
-        'Test::Most' => '0.25',
-    },
-    requires => {
-        'Moose'                   => 0,
+    build_requires    => {},
+    requires          => {
+        'Moose'      => 0,
+        'Test::Most' => '0.31',
     },
     add_to_cleanup     => ['Test-Class-Moose-*'],
     create_makefile_pl => 'traditional',
