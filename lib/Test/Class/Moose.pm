@@ -66,12 +66,47 @@ my $time_this = sub {
     }
 };
 
+my $test_control_methods = sub {
+    return {
+        map { $_ => 1 } qw/
+          test_startup
+          test_setup
+          test_teardown
+          test_shutdown
+          /
+    };
+};
+
+my $run_test_control_method = sub {
+    my ( $self, $phase ) = @_;
+
+    $test_control_methods->()->{$phase}
+      or craok("Unknown test control method ($phase)");
+
+    my $success;
+    my $builder = $self->builder;
+    try {
+        my $num_tests = $builder->current_test;
+        $self->$phase;
+        if ( $builder->current_test ne $num_tests ) {
+            croak("Tests may not be run in test control methods ($phase)");
+        }
+        $success = 1;
+    }
+    catch {
+        my $error = $_;
+        my $class = $self->this_class;
+        $builder->diag("$class->$phase() failed: $error");
+    };
+    return $success;
+};
+
 my $run_test_method = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->this_class;
 
-    $test_instance->test_setup;
+    $test_instance->$run_test_control_method('test_setup');
     my $num_tests;
 
     my $builder = $self->builder;
@@ -88,7 +123,7 @@ my $run_test_method = sub {
             );
         },
     );
-    $test_instance->test_teardown;
+    $test_instance->$run_test_control_method('test_teardown');
     return $num_tests;
 };
 
@@ -110,7 +145,7 @@ sub runtests {
                     "Runtime for $test_class",
                     sub {
                         my $test_instance = $test_class->new;
-                        $test_instance->test_startup;
+                        $test_instance->$run_test_control_method('test_startup');
 
                         my @test_methods = $test_instance->get_test_methods;
                         $num_test_methods += @test_methods;
@@ -122,7 +157,7 @@ sub runtests {
                                 $test_method
                             );
                         }
-                        $test_instance->test_shutdown;
+                        $test_instance->$run_test_control_method('test_shutdown');
                     }
                 );
             }
@@ -156,12 +191,9 @@ sub get_test_classes {
 sub get_test_methods {
     my $self = shift;
 
-    state $is_test_control_method
-      = { map { ; "test_$_" => 1 } qw/startup setup teardown shutdown/ };
-
-    # eventuall we'll want to control the test method order
+    # eventually we'll want to control the test method order
     return
-      sort grep { /^test_/ and not $is_test_control_method->{$_} }
+      sort grep { /^test_/ and not $test_control_methods->()->{$_} }
       $self->meta->get_method_list;
 }
 
