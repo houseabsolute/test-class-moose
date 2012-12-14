@@ -6,6 +6,7 @@ use Carp;
 use Test::Builder;
 use Benchmark qw(timediff timestr);
 use namespace::autoclean;
+use Test::Most;
 use Try::Tiny;
 
 has 'show_timing' => (
@@ -145,7 +146,13 @@ sub runtests {
                     "Runtime for $test_class",
                     sub {
                         my $test_instance = $test_class->new;
-                        $test_instance->$run_test_control_method('test_startup');
+                        if (!$test_instance->$run_test_control_method(
+                                'test_startup')
+                          )
+                        {
+                            fail "test_startup failed";
+                            return;
+                        }
 
                         my @test_methods = $test_instance->get_test_methods;
                         $num_test_methods += @test_methods;
@@ -157,7 +164,8 @@ sub runtests {
                                 $test_method
                             );
                         }
-                        $test_instance->$run_test_control_method('test_shutdown');
+                        $test_instance->$run_test_control_method('test_shutdown')
+                            or fail("test_shutdown() failed");
                     }
                 );
             }
@@ -460,6 +468,10 @@ Gather up the reporting in one module rather than doing it on an ad-hoc basis.
 =item * Trap exceptions (duh!)
 
 Currently exceptions kill the test suite.
+
+=item * Skip classes if a test control method fails
+
+Duh.
 
 =item * Load classes
 

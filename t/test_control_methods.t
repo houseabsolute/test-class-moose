@@ -1,0 +1,111 @@
+#!/usr/bin/env perl
+use Test::Most;
+use lib 'lib';
+use Test::Class::Moose::Load 't/lib';
+
+# I find it annoying that the various testing modules for testing have failed
+# me completely here.
+
+my $tests = Test::Class::Moose->new(
+    {   show_timing => 0,
+        statistics  => 1,
+    }
+);
+my $builder = $tests->builder;
+
+#
+# exceptions in test control methods should cause the test classes to fail
+#
+TestsFor::Basic::Subclass->meta->add_method(
+    'test_startup' => sub { die 'forced die' },
+);
+$builder->todo_start('testing the startup() method');
+my @tests;
+subtest 'test_startup() dies' => sub {
+    $tests->runtests;
+    @tests = $tests->builder->details;
+};
+$builder->todo_end;
+
+my @expected = (
+    {   'actual_ok' => 0,
+        'name'      => 'TestsFor::Basic::Subclass',
+        'ok'        => 0,
+        'reason'    => '',
+        'type'      => ''
+    },
+    {   'actual_ok' => 1,
+        'name'      => 'TestsFor::Basic',
+        'ok'        => 1,
+        'reason'    => '',
+        'type'      => ''
+    }
+);
+eq_or_diff $tests[0], $expected[0],
+  'Our first test class should fail with a failing startup()';
+eq_or_diff $tests[1], $expected[1],
+  '... but its parent class should succeed because it does not have a failing startup';
+
+#
+# test control methods that live and have no tests should not cause issues
+#
+@expected = (
+    {   'actual_ok' => 1,
+        'name'      => 'TestsFor::Basic::Subclass',
+        'ok'        => 1,
+        'reason'    => '',
+        'type'      => ''
+    },
+    {   'actual_ok' => 1,
+        'name'      => 'TestsFor::Basic',
+        'ok'        => 1,
+        'reason'    => '',
+        'type'      => ''
+    }
+);
+TestsFor::Basic::Subclass->meta->remove_method('test_startup');
+TestsFor::Basic::Subclass->meta->add_method(
+    'test_startup' => sub { my $test = shift },
+);
+subtest 'test_startup() has tests in it' => sub {
+    $tests->runtests;
+    @tests = $tests->builder->details;
+};
+
+eq_or_diff \@tests, \@expected,
+  'Test control methods that do not misbehave should not fail';
+
+#
+# tests in test control methods should cause the test classes to fail
+#
+@expected = (
+    {   'actual_ok' => 0,
+        'name'      => 'TestsFor::Basic::Subclass',
+        'ok'        => 0,
+        'reason'    => '',
+        'type'      => ''
+    },
+    {   'actual_ok' => 1,
+        'name'      => 'TestsFor::Basic',
+        'ok'        => 1,
+        'reason'    => '',
+        'type'      => ''
+    }
+);
+TestsFor::Basic::Subclass->meta->remove_method('test_startup');
+TestsFor::Basic::Subclass->meta->add_method(
+    'test_startup' => sub { pass() },
+);
+$builder->todo_start('fail?');
+subtest 'test_startup() has tests in it' => sub {
+    $tests->runtests;
+    @tests = $tests->builder->details;
+};
+$builder->todo_end;
+
+eq_or_diff $tests[0], $expected[0],
+  'Our first test class should fail if tests are run in the test control methods';
+eq_or_diff $tests[1], $expected[1],
+  '... but its parent class should succeed because it does not have tests in the startup';
+
+done_testing;

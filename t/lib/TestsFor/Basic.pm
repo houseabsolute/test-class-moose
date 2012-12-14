@@ -5,7 +5,6 @@ sub test_me {
     my $test  = shift;
     my $class = ref $test;
     ok 1, "test_me() ran ($class)";
-    sleep 2;
     ok 2, "this is another test ($class)";
 }
 
