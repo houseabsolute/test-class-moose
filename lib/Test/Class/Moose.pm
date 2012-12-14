@@ -461,6 +461,10 @@ Gather up the reporting in one module rather than doing it on an ad-hoc basis.
 
 Currently exceptions kill the test suite.
 
+=item * Skip classes if a test control method fails
+
+Duh.
+
 =item * Load classes
 
  Test::Class::Moose->new({
