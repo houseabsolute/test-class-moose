@@ -28,11 +28,11 @@ Test::Class::Moose - Test::Class + Moose
 
 # DESCRIPTION
 
-This is __ALPHA__ code. It is not production ready. An exception will take down
-your test suite.
+This is __ALPHA__ code. It is not production ready, but the basics seem to work
+well.
 
 This is a tiny proof of concept for writing Test::Class-style tests with
-Moose. Better docs will come later. You should already know how ot use Moose
+Moose. Better docs will come later. You should already know how to use Moose
 and Test::Class.
 
 # BASICS
@@ -170,8 +170,9 @@ applying a role at runtime) and lose the original class name.
 
 ## `get_test_classes`
 
-You may override this in a subclass. Currently returns all loaded classes that
-inherit directly or indirectly through `Test::Class::Moose`
+You may override this in a subclass. Currently returns a sorted list of all
+loaded classes that inherit directly or indirectly through
+`Test::Class::Moose`
 
 ## `get_test_methods`
 
@@ -264,3 +265,54 @@ automatically load. Completely optional, of course. And then in your test:
 Because it's an attribute, you can merely declare it in a subclass, if you
 prefer, or override it in a subclass (in other words, this is OO code and you,
 the developer, will have full control over it).
+
+- Pass class/methd names to test control methods
+- Make it easy to skip an entire class
+
+# AUTHOR
+
+Curtis "Ovid" Poe, `<ovid at cpan.org>`
+
+# BUGS
+
+Please report any bugs or feature requests to `bug-test-class-moose at rt.cpan.org`,
+or through the web interface at
+[http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose](http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose).  I will be
+notified, and then you'll automatically be notified of progress on your bug as
+I make changes.
+
+# SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Test::Class::Moose
+
+You can also look for information at:
+
+- RT: CPAN's request tracker (report bugs here)
+
+[http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose](http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose)
+
+- AnnoCPAN: Annotated CPAN documentation
+
+[http://annocpan.org/dist/Test-Class-Moose](http://annocpan.org/dist/Test-Class-Moose)
+
+- CPAN Ratings
+
+[http://cpanratings.perl.org/d/Test-Class-Moose](http://cpanratings.perl.org/d/Test-Class-Moose)
+
+- Search CPAN
+
+[http://search.cpan.org/dist/Test-Class-Moose/](http://search.cpan.org/dist/Test-Class-Moose/)
+
+# ACKNOWLEDGEMENTS
+
+# LICENSE AND COPYRIGHT
+
+Copyright 2012 Curtis "Ovid" Poe.
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of either: the GNU General Public License as published by the Free
+Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
