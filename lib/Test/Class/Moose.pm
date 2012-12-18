@@ -9,6 +9,8 @@ use namespace::autoclean;
 use Test::Most;
 use Try::Tiny;
 
+our $VERSION = 0.01;
+
 has 'show_timing' => (
     is  => 'ro',
     isa => 'Bool',
@@ -225,6 +227,10 @@ __END__
 =head1 NAME
 
 Test::Class::Moose - Test::Class + Moose
+
+=head1 VERSION
+
+0.01
 
 =head1 SYNOPSIS
 

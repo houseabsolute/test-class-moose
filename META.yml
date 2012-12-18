@@ -15,7 +15,7 @@ name: Test-Class-Moose
 provides:
   Test::Class::Moose:
     file: lib/Test/Class/Moose.pm
-    version: 0
+    version: 0.01
   Test::Class::Moose::Load:
     file: lib/Test/Class/Moose/Load.pm
     version: 0.35
@@ -25,4 +25,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://github.com/Ovid/test-class-moose
-version: 0
+version: 0.01
