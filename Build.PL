@@ -13,6 +13,10 @@ my $builder = Module::Build->new(
         'Moose'      => 0,
         'Test::Most' => '0.31',
     },
+    meta_merge => {
+        resources =>
+          { repository => 'https://github.com/Ovid/test-class-moose', },
+    },
     add_to_cleanup     => ['Test-Class-Moose-*'],
     create_makefile_pl => 'traditional',
 );
