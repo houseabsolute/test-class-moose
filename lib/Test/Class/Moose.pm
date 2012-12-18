@@ -41,7 +41,7 @@ END
     croak($@) if $@;
     strict->import;
     warnings->import;
-    if ( my $parent = delete $arg_for{parent} ) {
+    if ( my $parent = ( delete $arg_for{parent} || delete $arg_for{extends} ) ) {
         my @parents = 'ARRAY' eq ref $parent ? @$parent : $parent;
         $caller->meta->superclasses(@parents);
     }
@@ -290,10 +290,10 @@ Each test method relies on an implicit C<done_testing> call.
 
 =head2 Inheriting from another Test::Class::Moose class
 
-List it as the C<parent> in the import list.
+List it as the C<extends> (or C<parent>) in the import list.
 
  package TestsFor::Some::Class::Subclass;
- use Test::Class::Moose parent => 'TestsFor::Some::Class';
+ use Test::Class::Moose extends => 'TestsFor::Some::Class';
 
  sub test_me {
      my $test  = shift;

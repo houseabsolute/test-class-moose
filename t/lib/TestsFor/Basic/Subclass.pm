@@ -1,5 +1,5 @@
 package TestsFor::Basic::Subclass;
-use Test::Class::Moose parent => 'TestsFor::Basic';
+use Test::Class::Moose extends => 'TestsFor::Basic';
 
 sub test_me {
     my $test  = shift;
