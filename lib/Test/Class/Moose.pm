@@ -82,7 +82,7 @@ my $run_test_control_method = sub {
     my ( $self, $phase ) = @_;
 
     $test_control_methods->()->{$phase}
-      or craok("Unknown test control method ($phase)");
+      or croak("Unknown test control method ($phase)");
 
     my $success;
     my $builder = $self->builder;
@@ -118,7 +118,12 @@ my $run_test_method = sub {
                 "Runtime $test_class\::$test_method",
                 sub {
                     my $old_test_count = $builder->current_test;
-                    $test_instance->$test_method;
+                    try {
+                        $test_instance->$test_method;
+                    }
+                    catch {
+                        fail "$test_method failed: $_";
+                    };
                     $num_tests = $builder->current_test - $old_test_count;
                 },
             );
@@ -193,7 +198,7 @@ sub get_test_classes {
     }
 
     # eventually we'll want to control the test class order
-    return @classes;
+    return sort @classes;
 }
 
 sub get_test_methods {
@@ -464,14 +469,6 @@ Gather up the reporting in one module rather than doing it on an ad-hoc basis.
      include => qr/customer/,
      exclude => qr/database/,
  })->runtests;
-
-=item * Trap exceptions (duh!)
-
-Currently exceptions kill the test suite.
-
-=item * Skip classes if a test control method fails
-
-Duh.
 
 =item * Load classes
 

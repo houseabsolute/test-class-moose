@@ -28,18 +28,18 @@ subtest 'test_startup() dies' => sub {
 $builder->todo_end;
 
 my @expected = (
+    {   'actual_ok' => 1,
+        'name'      => 'TestsFor::Basic',
+        'ok'        => 1,
+        'reason'    => '',
+        'type'      => ''
+    },
     {   'actual_ok' => 0,
         'name'      => 'TestsFor::Basic::Subclass',
         'ok'        => 0,
         'reason'    => '',
         'type'      => ''
     },
-    {   'actual_ok' => 1,
-        'name'      => 'TestsFor::Basic',
-        'ok'        => 1,
-        'reason'    => '',
-        'type'      => ''
-    }
 );
 eq_or_diff $tests[0], $expected[0],
   'Our first test class should fail with a failing startup()';
@@ -51,17 +51,17 @@ eq_or_diff $tests[1], $expected[1],
 #
 @expected = (
     {   'actual_ok' => 1,
-        'name'      => 'TestsFor::Basic::Subclass',
+        'name'      => 'TestsFor::Basic',
         'ok'        => 1,
         'reason'    => '',
         'type'      => ''
     },
     {   'actual_ok' => 1,
-        'name'      => 'TestsFor::Basic',
+        'name'      => 'TestsFor::Basic::Subclass',
         'ok'        => 1,
         'reason'    => '',
         'type'      => ''
-    }
+    },
 );
 TestsFor::Basic::Subclass->meta->remove_method('test_startup');
 TestsFor::Basic::Subclass->meta->add_method(
@@ -79,18 +79,18 @@ eq_or_diff \@tests, \@expected,
 # tests in test control methods should cause the test classes to fail
 #
 @expected = (
+    {   'actual_ok' => 1,
+        'name'      => 'TestsFor::Basic',
+        'ok'        => 1,
+        'reason'    => '',
+        'type'      => ''
+    },
     {   'actual_ok' => 0,
         'name'      => 'TestsFor::Basic::Subclass',
         'ok'        => 0,
         'reason'    => '',
         'type'      => ''
     },
-    {   'actual_ok' => 1,
-        'name'      => 'TestsFor::Basic',
-        'ok'        => 1,
-        'reason'    => '',
-        'type'      => ''
-    }
 );
 TestsFor::Basic::Subclass->meta->remove_method('test_startup');
 TestsFor::Basic::Subclass->meta->add_method(
