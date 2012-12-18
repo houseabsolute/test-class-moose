@@ -2,6 +2,10 @@
 
 Test::Class::Moose - Test::Class + Moose
 
+# VERSION
+
+0.01
+
 # SYNOPSIS
 
     package TestsFor::Some::Class;
@@ -66,10 +70,10 @@ Each test method relies on an implicit `done_testing` call.
 
 ## Inheriting from another Test::Class::Moose class
 
-List it as the `parent` in the import list.
+List it as the `extends` (or `parent`) in the import list.
 
     package TestsFor::Some::Class::Subclass;
-    use Test::Class::Moose parent => 'TestsFor::Some::Class';
+    use Test::Class::Moose extends => 'TestsFor::Some::Class';
 
     sub test_me {
         my $test  = shift;
@@ -235,14 +239,6 @@ Gather up the reporting in one module rather than doing it on an ad-hoc basis.
         include => qr/customer/,
         exclude => qr/database/,
     })->runtests;
-- Trap exceptions (duh!)
-
-Currently exceptions kill the test suite.
-
-- Skip classes if a test control method fails
-
-Duh.
-
 - Load classes
 
     Test::Class::Moose->new({
