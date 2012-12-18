@@ -26,11 +26,24 @@
          }
       }
    },
+   "provides" : {
+      "Test::Class::Moose" : {
+         "file" : "lib/Test/Class/Moose.pm",
+         "version" : 0
+      },
+      "Test::Class::Moose::Load" : {
+         "file" : "lib/Test/Class/Moose/Load.pm",
+         "version" : "0.35"
+      }
+   },
    "release_status" : "stable",
    "resources" : {
       "license" : [
          "http://dev.perl.org/licenses/"
-      ]
+      ],
+      "repository" : {
+         "url" : "https://github.com/Ovid/test-class-moose"
+      }
    },
    "version" : "0"
 }

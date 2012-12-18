@@ -12,9 +12,17 @@ meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: Test-Class-Moose
+provides:
+  Test::Class::Moose:
+    file: lib/Test/Class/Moose.pm
+    version: 0
+  Test::Class::Moose::Load:
+    file: lib/Test/Class/Moose/Load.pm
+    version: 0.35
 requires:
   Moose: 0
   Test::Most: 0.31
 resources:
   license: http://dev.perl.org/licenses/
+  repository: https://github.com/Ovid/test-class-moose
 version: 0
