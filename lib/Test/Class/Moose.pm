@@ -10,7 +10,7 @@ use Test::Most;
 use Try::Tiny;
 use List::Util qw(shuffle);
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 has 'show_timing' => (
     is  => 'ro',
@@ -32,8 +32,8 @@ has 'this_class' => (
     isa => 'Str',
 );
 has 'randomize' => (
-    is  => 'ro',
-    isa => 'Bool',
+    is      => 'ro',
+    isa     => 'Bool',
     default => 0,
 );
 
@@ -241,7 +241,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-0.01
+0.02
 
 =head1 SYNOPSIS
 
