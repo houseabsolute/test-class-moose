@@ -9,32 +9,18 @@ use namespace::autoclean;
 use Test::Most;
 use Try::Tiny;
 use List::Util qw(shuffle);
+use Test::Class::Moose::Config;
 
 our $VERSION = 0.02;
 
-has 'show_timing' => (
+has 'configuration' => (
     is  => 'ro',
-    isa => 'Bool',
+    isa => 'Test::Class::Moose::Config',
 );
-has 'builder' => (
-    is      => 'ro',
-    isa     => 'Test::Builder',
-    default => sub {
-        Test::Builder->new;
-    },
-);
-has 'statistics' => (
-    is  => 'ro',
-    isa => 'Bool',
-);
+
 has 'this_class' => (
     is  => 'rw',
     isa => 'Str',
-);
-has 'randomize' => (
-    is      => 'ro',
-    isa     => 'Bool',
-    default => 0,
 );
 
 sub import {
@@ -58,6 +44,13 @@ END
     }
 }
 
+around 'BUILDARGS' => sub {
+    my $orig  = shift;
+    my $class = shift;
+    return $class->$orig(
+        { configuration => Test::Class::Moose::Config->new(@_) } );
+};
+
 sub BUILD {
     my $self = shift;
 
@@ -69,9 +62,9 @@ my $time_this = sub {
     my ( $self, $name, $sub ) = @_;
     my $start = Benchmark->new;
     $sub->();
-    if ( $self->show_timing ) {
+    if ( $self->configuration->show_timing ) {
         my $time = timestr( timediff( Benchmark->new, $start ) );
-        $self->builder->diag("$name: $time");
+        $self->configuration->builder->diag("$name: $time");
     }
 };
 
@@ -93,7 +86,7 @@ my $run_test_control_method = sub {
       or croak("Unknown test control method ($phase)");
 
     my $success;
-    my $builder = $self->builder;
+    my $builder = $self->configuration->builder;
     try {
         my $num_tests = $builder->current_test;
         $self->$phase;
@@ -118,7 +111,7 @@ my $run_test_method = sub {
     $test_instance->$run_test_control_method('test_setup');
     my $num_tests;
 
-    my $builder = $self->builder;
+    my $builder = $self->configuration->builder;
     Test::Most::explain("$test_class->$test_method()"), $builder->subtest(
         $test_method,
         sub {
@@ -145,7 +138,7 @@ sub runtests {
     my $self = shift;
 
     my @test_classes = $self->get_test_classes;
-    my $builder      = $self->builder;
+    my $builder      = $self->configuration->builder;
 
     my $num_test_classes = @test_classes;
     $builder->plan( tests => $num_test_classes );
@@ -167,8 +160,7 @@ sub runtests {
                             return;
                         }
 
-                        my @test_methods = $test_instance->get_test_methods(
-                                              $self->randomize);
+                        my @test_methods = $test_instance->get_test_methods;
                         $num_test_methods += @test_methods;
                         $builder->plan( tests => scalar @test_methods );
 
@@ -185,7 +177,7 @@ sub runtests {
             }
           );
     }
-    $builder->diag(<<"END") if $self->statistics;
+    $builder->diag(<<"END") if $self->configuration->statistics;
 Test classes:    $num_test_classes
 Test methods:    $num_test_methods
 Total tests run: $num_tests
@@ -211,15 +203,14 @@ sub get_test_classes {
 }
 
 sub get_test_methods {
-    my $self      = shift;
-    my $randomize = shift;
+    my $self = shift;
 
     my @method_list =
       grep { /^test_/ and not $test_control_methods->()->{$_} }
       $self->meta->get_method_list;
     # eventually we'll want to control the test method order
-    return ($randomize)
-     ? shuffle @method_list
+    return ($self->configuration->randomize)
+     ? shuffle(@method_list)
      : sort @method_list;
 }
 
@@ -381,6 +372,34 @@ We have a constructor now:
  use Test::Class::Moose::Load 't/lib';
  Test::Class::Moose->new->runtests
 
+Or:
+
+ my $test_suite = Test::Class::Moose->new({
+     show_timing => 1,
+     randomize   => 0,
+     statistics  => 1,
+ });
+ # do something
+ $test_suite->runtests;
+
+Note that in reality, the above is equivalent to:
+
+ my $test_suite = Test::Class::Moose->new({
+     configuration => Test::Class::Moose::Config->new({
+         show_timing => 1,
+         randomize   => 0,
+         statistics  => 1,
+     }),
+ });
+ # do something
+ $test_suite->runtests;
+
+By pushing the attributes to L<Test::Class::Moose::Config>, we avoid namespace
+pollution. We do I<not> delegate the attributes directly as a result. If you
+need them at runtime, you'll need to access the C<configuration> attribute:
+
+ my $builder = $test_suite->configuration->builder;
+
 Attributes to it:
 
 =over 4
@@ -394,15 +413,25 @@ test class/test method to run.
 
 Boolean. Will display number of classes, test methods and tests run.
 
+=item * C<randomize>
+
+Boolean. Will run test methods in a random order.
+
+=item * C<builder>
+
+Defaults to C<< Test::Builder->new >>. You can supply your own builder if you
+want, but it must conform to the C<Test::Builder> interface. We make no
+guarantees about which part of the interface it needs.
+
 =back
 
 =head1 ATTRIBUTES
 
-=head2 C<builder>
+=head2 C<configuration>
 
- my $builder = $test->builder;
+ my $configuration = $test->configuration;
 
-Returns the Test::Builder object.
+Returns the C<Test::Class::Moose::Config> object.
 
 =head2 C<this_class>
 

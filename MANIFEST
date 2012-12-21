@@ -1,6 +1,7 @@
 Build.PL
 Changes
 lib/Test/Class/Moose.pm
+lib/Test/Class/Moose/Config.pm
 lib/Test/Class/Moose/Load.pm
 Makefile.PL
 MANIFEST			This list of files

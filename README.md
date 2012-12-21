@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-0.01
+0.02
 
 # SYNOPSIS
 
@@ -23,8 +23,6 @@ Test::Class::Moose - Test::Class + Moose
         my $class = $test->this_class;
         is 2, 2, "whee! ($class)";
     }
-
-    Test::Class::Moose->new->runtests;
 
     1;
 
@@ -142,6 +140,34 @@ We have a constructor now:
     use Test::Class::Moose::Load 't/lib';
     Test::Class::Moose->new->runtests
 
+Or:
+
+    my $test_suite = Test::Class::Moose->new({
+        show_timing => 1,
+        randomize   => 0,
+        statistics  => 1,
+    });
+    # do something
+    $test_suite->runtests;
+
+Note that in reality, the above is equivalent to:
+
+    my $test_suite = Test::Class::Moose->new({
+        configuration => Test::Class::Moose::Config->new({
+            show_timing => 1,
+            randomize   => 0,
+            statistics  => 1,
+        }),
+    });
+    # do something
+    $test_suite->runtests;
+
+By pushing the attributes to [Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config), we avoid namespace
+pollution. We do _not_ delegate the attributes directly as a result. If you
+need them at runtime, you'll need to access the `configuration` attribute:
+
+    my $builder = $test_suite->configuration->builder;
+
 Attributes to it:
 
 - `show_timing`
@@ -155,15 +181,21 @@ Boolean. Will display number of classes, test methods and tests run.
 
 - `randomize`
 
-Boolean. Will run tests methods in a random order. Ensures test methods are isolated
+Boolean. Will run test methods in a random order.
+
+- `builder`
+
+Defaults to `Test::Builder->new`. You can supply your own builder if you
+want, but it must conform to the `Test::Builder` interface. We make no
+guarantees about which part of the interface it needs.
 
 # ATTRIBUTES
 
-## `builder`
+## `configuration`
 
-    my $builder = $test->builder;
+    my $configuration = $test->configuration;
 
-Returns the Test::Builder object.
+Returns the `Test::Class::Moose::Config` object.
 
 ## `this_class`
 

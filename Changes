@@ -1,7 +1,8 @@
 Revision history for Test-Class-Moose
 
 0.02
-        Added "randomize" attribute per Udo ,ji.
+        - Most attributes pushed into Test::Class::Moose::Config
+        - Added "randomize" attribute per Udo ,ji.
 
 0.01    December 18, 2012
-        Test::Class + Moose
+        - Test::Class + Moose
