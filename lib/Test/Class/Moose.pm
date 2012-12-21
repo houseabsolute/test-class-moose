@@ -425,33 +425,45 @@ guarantees about which part of the interface it needs.
 
 =back
 
-=head1 ATTRIBUTES
+=head1 THINGS YOU CAN OVERRIDE
 
-=head2 C<configuration>
+=head2 Attributes
+
+=head3 C<configuration>
 
  my $configuration = $test->configuration;
 
 Returns the C<Test::Class::Moose::Config> object.
 
-=head2 C<this_class>
+=head3 C<this_class>
 
  my $class = $test->this_class;
 
 Returns the name for this class. Useful if you rebless an object (such as
 applying a role at runtime) and lose the original class name.
 
-=head1 METHODS
+=head2 METHODS
 
-=head2 C<get_test_classes>
+=head3 C<get_test_classes>
 
 You may override this in a subclass. Currently returns a sorted list of all
 loaded classes that inherit directly or indirectly through
 C<Test::Class::Moose>
 
-=head2 C<get_test_methods>
+=head3 C<get_test_methods>
 
 You may override this in a subclass. Currently returns all methods in a test
 class that start with C<test_> (except for the test control methods).
+
+=head3 C<runtests>
+
+If you really, really want to change how this module works, you can override
+the C<runtests> method. We don't recommend it.
+
+=head3 C<import>
+
+Sadly, we have an C<import> method. This is used to automatically provide you
+with all of the C<Test::Most> behavior.
 
 =head1 SAMPLE TAP OUTPUT
 

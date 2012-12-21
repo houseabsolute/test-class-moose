@@ -189,33 +189,45 @@ Defaults to `Test::Builder->new`. You can supply your own builder if you
 want, but it must conform to the `Test::Builder` interface. We make no
 guarantees about which part of the interface it needs.
 
-# ATTRIBUTES
+# THINGS YOU CAN OVERRIDE
 
-## `configuration`
+## Attributes
+
+### `configuration`
 
     my $configuration = $test->configuration;
 
 Returns the `Test::Class::Moose::Config` object.
 
-## `this_class`
+### `this_class`
 
     my $class = $test->this_class;
 
 Returns the name for this class. Useful if you rebless an object (such as
 applying a role at runtime) and lose the original class name.
 
-# METHODS
+## METHODS
 
-## `get_test_classes`
+### `get_test_classes`
 
 You may override this in a subclass. Currently returns a sorted list of all
 loaded classes that inherit directly or indirectly through
 `Test::Class::Moose`
 
-## `get_test_methods`
+### `get_test_methods`
 
 You may override this in a subclass. Currently returns all methods in a test
 class that start with `test_` (except for the test control methods).
+
+### `runtests`
+
+If you really, really want to change how this module works, you can override
+the `runtests` method. We don't recommend it.
+
+### `import`
+
+Sadly, we have an `import` method. This is used to automatically provide you
+with all of the `Test::Most` behavior.
 
 # SAMPLE TAP OUTPUT
 
