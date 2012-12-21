@@ -24,6 +24,8 @@ Test::Class::Moose - Test::Class + Moose
         is 2, 2, "whee! ($class)";
     }
 
+    Test::Class::Moose->new->runtests;
+
     1;
 
 # DESCRIPTION
@@ -150,6 +152,10 @@ test class/test method to run.
 - `statistics`
 
 Boolean. Will display number of classes, test methods and tests run.
+
+- `randomize`
+
+Boolean. Will run tests methods in a random order. Ensures test methods are isolated
 
 # ATTRIBUTES
 

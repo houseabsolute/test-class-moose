@@ -8,6 +8,7 @@ use Benchmark qw(timediff timestr);
 use namespace::autoclean;
 use Test::Most;
 use Try::Tiny;
+use List::Util qw(shuffle);
 
 our $VERSION = 0.01;
 
@@ -29,6 +30,11 @@ has 'statistics' => (
 has 'this_class' => (
     is  => 'rw',
     isa => 'Str',
+);
+has 'randomize' => (
+    is  => 'ro',
+    isa => 'Bool',
+    default => 0,
 );
 
 sub import {
@@ -161,7 +167,8 @@ sub runtests {
                             return;
                         }
 
-                        my @test_methods = $test_instance->get_test_methods;
+                        my @test_methods = $test_instance->get_test_methods(
+                                              $self->randomize);
                         $num_test_methods += @test_methods;
                         $builder->plan( tests => scalar @test_methods );
 
@@ -204,12 +211,16 @@ sub get_test_classes {
 }
 
 sub get_test_methods {
-    my $self = shift;
+    my $self      = shift;
+    my $randomize = shift;
 
-    # eventually we'll want to control the test method order
-    return
-      sort grep { /^test_/ and not $test_control_methods->()->{$_} }
+    my @method_list =
+      grep { /^test_/ and not $test_control_methods->()->{$_} }
       $self->meta->get_method_list;
+    # eventually we'll want to control the test method order
+    return ($randomize)
+     ? shuffle @method_list
+     : sort @method_list;
 }
 
 # empty stub methods guarantee that subclasses can always call these
