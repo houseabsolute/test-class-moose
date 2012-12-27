@@ -2,20 +2,28 @@ package Test::Class::Moose;
 
 use 5.10.0;
 use Moose;
-use Carp;
-use Test::Builder;
 use Benchmark qw(timediff timestr);
+use Carp;
+use List::Util qw(shuffle);
 use namespace::autoclean;
+use Test::Builder;
 use Test::Most;
 use Try::Tiny;
-use List::Util qw(shuffle);
 use Test::Class::Moose::Config;
+use Test::Class::Moose::Statistics;
+use Test::Class::Moose::Statistics::Class;
+use Test::Class::Moose::Statistics::Method;
 
 our $VERSION = 0.02;
 
 has 'configuration' => (
     is  => 'ro',
     isa => 'Test::Class::Moose::Config',
+);
+
+has 'statistics' => (
+    is => 'ro',
+    isa => 'Test::Class::Moose::Statistics',
 );
 
 has 'this_class' => (
@@ -48,7 +56,10 @@ around 'BUILDARGS' => sub {
     my $orig  = shift;
     my $class = shift;
     return $class->$orig(
-        { configuration => Test::Class::Moose::Config->new(@_) } );
+        {   configuration => Test::Class::Moose::Config->new(@_),
+            statistics    => Test::Class::Moose::Statistics->new,
+        }
+    );
 };
 
 sub BUILD {
@@ -57,16 +68,6 @@ sub BUILD {
     # stash that name lest something change it later. Paranoid?
     $self->this_class( $self->meta->name );
 }
-
-my $time_this = sub {
-    my ( $self, $name, $sub ) = @_;
-    my $start = Benchmark->new;
-    $sub->();
-    if ( $self->configuration->show_timing ) {
-        my $time = timestr( timediff( Benchmark->new, $start ) );
-        $self->configuration->builder->diag("$name: $time");
-    }
-};
 
 my $test_control_methods = sub {
     return {
@@ -80,7 +81,7 @@ my $test_control_methods = sub {
 };
 
 my $run_test_control_method = sub {
-    my ( $self, $phase ) = @_;
+    my ( $self, $phase, $maybe_test_method ) = @_;
 
     $test_control_methods->()->{$phase}
       or croak("Unknown test control method ($phase)");
@@ -89,7 +90,7 @@ my $run_test_control_method = sub {
     my $builder = $self->configuration->builder;
     try {
         my $num_tests = $builder->current_test;
-        $self->$phase;
+        $self->$phase($maybe_test_method);
         if ( $builder->current_test ne $num_tests ) {
             croak("Tests may not be run in test control methods ($phase)");
         }
@@ -107,31 +108,44 @@ my $run_test_method = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->this_class;
+    my $statistics_method =
+      Test::Class::Moose::Statistics::Method->new( { name => $test_method } );
 
-    $test_instance->$run_test_control_method('test_setup');
+    $test_instance->$run_test_control_method( 'test_setup',
+        $statistics_method );
     my $num_tests;
 
     my $builder = $self->configuration->builder;
     Test::Most::explain("$test_class->$test_method()"), $builder->subtest(
         $test_method,
         sub {
-            $self->$time_this(
-                "Runtime $test_class\::$test_method",
-                sub {
-                    my $old_test_count = $builder->current_test;
-                    try {
-                        $test_instance->$test_method;
-                    }
-                    catch {
-                        fail "$test_method failed: $_";
-                    };
-                    $num_tests = $builder->current_test - $old_test_count;
-                },
-            );
+            my $start = Benchmark->new;
+            $statistics_method->start_benchmark($start);
+        
+            my $old_test_count = $builder->current_test;
+            try {
+                $test_instance->$test_method;
+            }
+            catch {
+                fail "$test_method failed: $_";
+            };
+            $num_tests = $builder->current_test - $old_test_count;
+
+            my $end = Benchmark->new;
+            $statistics_method->end_benchmark($end);
+            if ( $self->configuration->show_timing ) {
+                my $time = timestr( timediff( $end, $start ) );
+                $self->configuration->builder->diag($statistics_method->name.": $time");
+            }
         },
     );
-    $test_instance->$run_test_control_method('test_teardown');
-    return $num_tests;
+    $test_instance->$run_test_control_method(
+        'test_teardown',
+        $statistics_method
+    );
+    $self->statistics->current_class->add_test_method($statistics_method);
+    $statistics_method->num_tests($num_tests);
+    return $statistics_method;
 };
 
 sub runtests {
@@ -139,48 +153,67 @@ sub runtests {
 
     my @test_classes = $self->get_test_classes;
     my $builder      = $self->configuration->builder;
+    my $statistics   = $self->statistics;
 
-    my $num_test_classes = @test_classes;
-    $builder->plan( tests => $num_test_classes );
-    my ( $num_test_methods, $num_tests ) = ( 0, 0 );
+    $builder->plan( tests => scalar @test_classes );
     foreach my $test_class (@test_classes) {
         Test::Most::explain("\nExecuting tests for $test_class\n\n"),
           $builder->subtest(
             $test_class,
             sub {
-                $self->$time_this(
-                    "Runtime for $test_class",
-                    sub {
-                        my $test_instance = $test_class->new( $self->configuration->args );
-                        if (!$test_instance->$run_test_control_method(
-                                'test_startup')
-                          )
-                        {
-                            fail "test_startup failed";
-                            return;
-                        }
-
-                        my @test_methods = $test_instance->get_test_methods;
-                        $num_test_methods += @test_methods;
-                        $builder->plan( tests => scalar @test_methods );
-
-                        foreach my $test_method (@test_methods) {
-                            $num_tests += $self->$run_test_method(
-                                $test_instance,
-                                $test_method
-                            );
-                        }
-                        $test_instance->$run_test_control_method('test_shutdown')
-                            or fail("test_shutdown() failed");
+                my $test_instance = $test_class->new( $self->configuration->args );
+                my $statistics_class =
+                  Test::Class::Moose::Statistics::Class->new(
+                    {   name => $test_class,
                     }
-                );
+                  );
+                $statistics->add_test_class($statistics_class);
+                my @test_methods = $test_instance->get_test_methods;
+                unless (@test_methods) {
+                    my $message = "Skipping '$test_class': no test methods found";
+                    $statistics_class->skipped($message);
+                    skip $message;
+                    return;
+                }
+                my $start = Benchmark->new;
+                $statistics_class->start_benchmark($start);
+
+                $statistics->inc_test_methods(scalar @test_methods);
+
+                if (!$test_instance->$run_test_control_method(
+                        'test_startup', $statistics_class
+                    )
+                  )
+                {
+                    fail "test_startup failed";
+                    return;
+                }
+
+                $builder->plan( tests => scalar @test_methods );
+
+                foreach my $test_method (@test_methods) {
+                    my $statistics_method = $self->$run_test_method(
+                        $test_instance,
+                        $test_method
+                    );
+                    $statistics->inc_tests($statistics_method->num_tests);
+                }
+                $test_instance->$run_test_control_method('test_shutdown', $statistics_class)
+                    or fail("test_shutdown() failed");
+
+                my $end = Benchmark->new;
+                $statistics_class->end_benchmark($end);
+                if ( $self->configuration->show_timing ) {
+                    my $time = timestr( timediff( $end, $start ) );
+                    $self->configuration->builder->diag("$test_class: $time");
+                }
             }
           );
     }
     $builder->diag(<<"END") if $self->configuration->statistics;
-Test classes:    $num_test_classes
-Test methods:    $num_test_methods
-Total tests run: $num_tests
+Test classes:    @{[ $statistics->num_test_classes ]}
+Test methods:    @{[ $statistics->num_test_methods ]}
+Total tests run: @{[ $statistics->num_tests ]}
 END
     $builder->done_testing;
 }
@@ -349,19 +382,47 @@ These are:
 
 =item * C<test_startup>
 
-Runs at the start of each test class
+ sub test_startup {
+    my ( $test ) = @_;
+    $test->next::method;
+    # more startup
+ }
+
+
+Runs at the start of each test class. If you need to know the name of the
+class you're running this in (though usually you shouldn't), the use
+C<< $test->this_class >>.
 
 =item * C<test_setup>
 
-Runs at the start of each test method
+ sub test_setup {
+    my ( $test, $test_method ) = @_;
+    $test->next::method;
+    # more setup
+ }
+
+Runs at the start of each test method. Passed the name of the test method.
 
 =item * C<test_teardown>
 
-Runs at the end of each test method
+ sub test_teardown {
+    my ( $test, $test_method ) = @_;
+    # more teardown
+    $test->next::method;
+ }
+
+Runs at the end of each test method. Passed the name of the test method which
+was just run.
 
 =item * C<test_shutdown>
 
-Runs at the end of each test class
+ sub test_shutdown {
+     my ($test) = @_;
+     # more teardown
+     $test->next::method;
+ }
+
+Runs at the end of each test class. 
 
 =back
 
@@ -468,6 +529,13 @@ included. B<However>, they must still start with C<test_>. See C<include>.
  my $configuration = $test->configuration;
 
 Returns the C<Test::Class::Moose::Config> object.
+
+=head3 C<statistics>
+
+ my $statistics = $test->statistics;
+
+Returns the C<Test::Class::Moose::Statistics> object. Useful if you want to do
+your own statistics reporting and not rely on the default output provided.
 
 =head3 C<this_class>
 
@@ -585,7 +653,7 @@ Because it's an attribute, you can merely declare it in a subclass, if you
 prefer, or override it in a subclass (in other words, this is OO code and you,
 the developer, will have full control over it).
 
-=item * Pass class/methd names to test control methods
+=item * Pass class/method names to test control methods
 
 =item * Make it easy to skip an entire class
 

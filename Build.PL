@@ -10,8 +10,11 @@ my $builder = Module::Build->new(
     dist_version_from => 'lib/Test/Class/Moose.pm',
     build_requires    => {},
     requires          => {
-        'Moose'      => 0,
-        'Test::Most' => '0.31',
+        #'DateTime'             => '0.72',
+        'Moose'                => '2.0402',
+        'namespace::autoclean' => '0.13',
+        'Test::Most'           => '0.31',
+        'Try::Tiny'            => '0.11',
     },
     meta_merge => {
         resources =>

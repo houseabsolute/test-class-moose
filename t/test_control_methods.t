@@ -67,6 +67,7 @@ TestsFor::Basic::Subclass->meta->remove_method('test_startup');
 TestsFor::Basic::Subclass->meta->add_method(
     'test_startup' => sub { my $test = shift },
 );
+$tests = Test::Class::Moose->new;
 subtest 'test_startup() has tests in it' => sub {
     $tests->runtests;
     @tests = $tests->configuration->builder->details;
@@ -94,10 +95,16 @@ eq_or_diff \@tests, \@expected,
 );
 TestsFor::Basic::Subclass->meta->remove_method('test_startup');
 TestsFor::Basic::Subclass->meta->add_method(
-    'test_startup' => sub { pass() },
-);
+    'test_setup' => sub {
+        my ( $test, $method ) = @_;
+        my $name = $method->name;
+        explain "About to run $name";
+        pass();
+    },
+); 
 $builder->todo_start('fail?');
-subtest 'test_startup() has tests in it' => sub {
+$tests = Test::Class::Moose->new;
+subtest 'test_setup() has tests in it' => sub {
     $tests->runtests;
     @tests = $tests->configuration->builder->details;
 };

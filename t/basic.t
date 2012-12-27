@@ -3,11 +3,7 @@ use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load qw(t/lib);
 
-my $test_suite = Test::Class::Moose->new(
-    {   show_timing => 0,
-        statistics  => 1,
-    }
-);
+my $test_suite = Test::Class::Moose->new( show_timing => 1 );
 
 my %methods_for = (
     'TestsFor::Basic'           => [qw/test_me test_this_baby/],
@@ -38,6 +34,7 @@ TestsFor::Basic::Subclass->meta->add_method(
 my $builder = $test_suite->configuration->builder;
 $builder->todo_start('testing a dying test');
 my @tests;
+$test_suite = Test::Class::Moose->new;
 subtest 'test_this_will_die() dies' => sub {
     $test_suite->runtests;
     @tests = $test_suite->configuration->builder->details;

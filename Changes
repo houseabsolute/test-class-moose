@@ -1,8 +1,11 @@
 Revision history for Test-Class-Moose
 
 0.02
+        - Start moving statistics gathering into its own class
+        - Add include/exclude test method filtering
+        - Skip a test class if we don't find any test methods
         - Most attributes pushed into Test::Class::Moose::Config
-        - Added "randomize" attribute per Udo ,ji.
+        - Added "randomize" attribute per Udo Oji.
 
 0.01    December 18, 2012
         - Test::Class + Moose
