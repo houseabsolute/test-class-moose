@@ -32,15 +32,15 @@ subtest 'runtests' => sub {
     @tests = $test_suite->configuration->builder->details;
 };
 
-ok my $statistics = $test_suite->statistics,
-  'We should be able to fetch statistics information from the test suite';
-isa_ok $statistics, 'Test::Class::Moose::Reporting',
+ok my $reporting = $test_suite->reporting,
+  'We should be able to fetch reporting information from the test suite';
+isa_ok $reporting, 'Test::Class::Moose::Reporting',
   '... and the object it returns';
-is $statistics->num_test_classes, 2,
+is $reporting->num_test_classes, 2,
   '... and it should return the correct number of test classes';
-is $statistics->num_test_methods, 2,
+is $reporting->num_test_methods, 2,
   '... and the correct number of test methods';
-is $statistics->num_tests, 3, '... and the correct number of tests';
+is $reporting->num_tests, 3, '... and the correct number of tests';
 
 $test_suite = Test::Class::Moose->new(
     {   show_timing => 0,
@@ -70,14 +70,14 @@ subtest 'runtests' => sub {
     @tests = $test_suite->configuration->builder->details;
 };
 
-ok $statistics = $test_suite->statistics,
-  'We should be able to fetch statistics information from the test suite';
-isa_ok $statistics, 'Test::Class::Moose::Reporting',
+ok $reporting = $test_suite->reporting,
+  'We should be able to fetch reporting information from the test suite';
+isa_ok $reporting, 'Test::Class::Moose::Reporting',
   '... and the object it returns';
-is $statistics->num_test_classes, 2,
+is $reporting->num_test_classes, 2,
   '... and it should return the correct number of test classes';
-is $statistics->num_test_methods, 3,
+is $reporting->num_test_methods, 3,
   '... and the correct number of test methods';
-is $statistics->num_tests, 8, '... and the correct number of tests';
+is $reporting->num_tests, 8, '... and the correct number of tests';
 
 done_testing;

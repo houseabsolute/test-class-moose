@@ -3,7 +3,7 @@ use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load qw(t/lib);
 
-my $test_suite = Test::Class::Moose->new( show_timing => 1 );
+my $test_suite = Test::Class::Moose->new( show_timing => 0 );
 
 my %methods_for = (
     'TestsFor::Basic'           => [qw/test_me test_this_baby/],

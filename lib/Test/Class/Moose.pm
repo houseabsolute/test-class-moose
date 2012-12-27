@@ -21,8 +21,8 @@ has 'configuration' => (
     isa => 'Test::Class::Moose::Config',
 );
 
-has 'statistics' => (
-    is => 'ro',
+has 'reporting' => (
+    is  => 'ro',
     isa => 'Test::Class::Moose::Reporting',
 );
 
@@ -43,7 +43,8 @@ END
     croak($@) if $@;
     strict->import;
     warnings->import;
-    if ( my $parent = ( delete $arg_for{parent} || delete $arg_for{extends} ) ) {
+    if ( my $parent = ( delete $arg_for{parent} || delete $arg_for{extends} ) )
+    {
         my @parents = 'ARRAY' eq ref $parent ? @$parent : $parent;
         $caller->meta->superclasses(@parents);
     }
@@ -57,7 +58,7 @@ around 'BUILDARGS' => sub {
     my $class = shift;
     return $class->$orig(
         {   configuration => Test::Class::Moose::Config->new(@_),
-            statistics    => Test::Class::Moose::Reporting->new,
+            reporting     => Test::Class::Moose::Reporting->new,
         }
     );
 };
@@ -71,7 +72,8 @@ sub BUILD {
 
 my $test_control_methods = sub {
     return {
-        map { $_ => 1 } qw/
+        map { $_ => 1 }
+          qw/
           test_startup
           test_setup
           test_teardown
@@ -108,11 +110,13 @@ my $run_test_method = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->this_class;
-    my $statistics_method =
+    my $reporting_method =
       Test::Class::Moose::Reporting::Method->new( { name => $test_method } );
 
-    $test_instance->$run_test_control_method( 'test_setup',
-        $statistics_method );
+    $test_instance->$run_test_control_method(
+        'test_setup',
+        $reporting_method
+    );
     my $num_tests;
 
     my $builder = $self->configuration->builder;
@@ -120,8 +124,8 @@ my $run_test_method = sub {
         $test_method,
         sub {
             my $start = Benchmark->new;
-            $statistics_method->start_benchmark($start);
-        
+            $reporting_method->start_benchmark($start);
+
             my $old_test_count = $builder->current_test;
             try {
                 $test_instance->$test_method;
@@ -132,20 +136,21 @@ my $run_test_method = sub {
             $num_tests = $builder->current_test - $old_test_count;
 
             my $end = Benchmark->new;
-            $statistics_method->end_benchmark($end);
+            $reporting_method->end_benchmark($end);
             if ( $self->configuration->show_timing ) {
                 my $time = timestr( timediff( $end, $start ) );
-                $self->configuration->builder->diag($statistics_method->name.": $time");
+                $self->configuration->builder->diag(
+                    $reporting_method->name . ": $time" );
             }
         },
     );
     $test_instance->$run_test_control_method(
         'test_teardown',
-        $statistics_method
+        $reporting_method
     );
-    $self->statistics->current_class->add_test_method($statistics_method);
-    $statistics_method->num_tests($num_tests);
-    return $statistics_method;
+    $self->reporting->current_class->add_test_method($reporting_method);
+    $reporting_method->num_tests($num_tests);
+    return $reporting_method;
 };
 
 sub runtests {
@@ -153,7 +158,7 @@ sub runtests {
 
     my @test_classes = $self->get_test_classes;
     my $builder      = $self->configuration->builder;
-    my $statistics   = $self->statistics;
+    my $reporting    = $self->reporting;
 
     $builder->plan( tests => scalar @test_classes );
     foreach my $test_class (@test_classes) {
@@ -161,27 +166,29 @@ sub runtests {
           $builder->subtest(
             $test_class,
             sub {
-                my $test_instance = $test_class->new( $self->configuration->args );
-                my $statistics_class =
+                my $test_instance =
+                  $test_class->new( $self->configuration->args );
+                my $reporting_class =
                   Test::Class::Moose::Reporting::Class->new(
                     {   name => $test_class,
                     }
                   );
-                $statistics->add_test_class($statistics_class);
+                $reporting->add_test_class($reporting_class);
                 my @test_methods = $test_instance->get_test_methods;
                 unless (@test_methods) {
-                    my $message = "Skipping '$test_class': no test methods found";
-                    $statistics_class->skipped($message);
+                    my $message =
+                      "Skipping '$test_class': no test methods found";
+                    $reporting_class->skipped($message);
                     skip $message;
                     return;
                 }
                 my $start = Benchmark->new;
-                $statistics_class->start_benchmark($start);
+                $reporting_class->start_benchmark($start);
 
-                $statistics->inc_test_methods(scalar @test_methods);
+                $reporting->inc_test_methods( scalar @test_methods );
 
                 if (!$test_instance->$run_test_control_method(
-                        'test_startup', $statistics_class
+                        'test_startup', $reporting_class
                     )
                   )
                 {
@@ -192,17 +199,18 @@ sub runtests {
                 $builder->plan( tests => scalar @test_methods );
 
                 foreach my $test_method (@test_methods) {
-                    my $statistics_method = $self->$run_test_method(
+                    my $reporting_method = $self->$run_test_method(
                         $test_instance,
                         $test_method
                     );
-                    $statistics->inc_tests($statistics_method->num_tests);
+                    $reporting->inc_tests( $reporting_method->num_tests );
                 }
-                $test_instance->$run_test_control_method('test_shutdown', $statistics_class)
-                    or fail("test_shutdown() failed");
+                $test_instance->$run_test_control_method( 'test_shutdown',
+                    $reporting_class )
+                  or fail("test_shutdown() failed");
 
                 my $end = Benchmark->new;
-                $statistics_class->end_benchmark($end);
+                $reporting_class->end_benchmark($end);
                 if ( $self->configuration->show_timing ) {
                     my $time = timestr( timediff( $end, $start ) );
                     $self->configuration->builder->diag("$test_class: $time");
@@ -211,9 +219,9 @@ sub runtests {
           );
     }
     $builder->diag(<<"END") if $self->configuration->statistics;
-Test classes:    @{[ $statistics->num_test_classes ]}
-Test methods:    @{[ $statistics->num_test_methods ]}
-Total tests run: @{[ $statistics->num_tests ]}
+Test classes:    @{[ $reporting->num_test_classes ]}
+Test methods:    @{[ $reporting->num_test_methods ]}
+Total tests run: @{[ $reporting->num_tests ]}
 END
     $builder->done_testing;
 }
@@ -241,6 +249,7 @@ sub get_test_methods {
     my @method_list =
       grep { /^test_/ and not $test_control_methods->()->{$_} }
       $self->meta->get_method_list;
+
     # eventually we'll want to control the test method order
 
     if ( my $include = $self->configuration->include ) {
@@ -250,9 +259,9 @@ sub get_test_methods {
         @method_list = grep { !/$exclude/ } @method_list;
     }
 
-    return ($self->configuration->randomize)
-     ? shuffle(@method_list)
-     : sort @method_list;
+    return ( $self->configuration->randomize )
+      ? shuffle(@method_list)
+      : sort @method_list;
 }
 
 # empty stub methods guarantee that subclasses can always call these
@@ -530,12 +539,13 @@ included. B<However>, they must still start with C<test_>. See C<include>.
 
 Returns the C<Test::Class::Moose::Config> object.
 
-=head3 C<statistics>
+=head3 C<reporting>
 
- my $statistics = $test->statistics;
+ my $reporting = $test->reporting;
 
 Returns the C<Test::Class::Moose::Reporting> object. Useful if you want to do
-your own statistics reporting and not rely on the default output provided.
+your own reporting and not rely on the default output provided with the
+C<statistics> boolean option.
 
 =head3 C<this_class>
 
