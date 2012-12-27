@@ -111,19 +111,48 @@ These are:
 
 - `test_startup`
 
-Runs at the start of each test class
+    sub test_startup {
+       my ( $test ) = @_;
+       $test->next::method;
+       # more startup
+    }
+
+
+
+Runs at the start of each test class. If you need to know the name of the
+class you're running this in (though usually you shouldn't), the use
+`$test->this_class`.
 
 - `test_setup`
 
-Runs at the start of each test method
+    sub test_setup {
+       my ( $test, $test_method ) = @_;
+       $test->next::method;
+       # more setup
+    }
+
+Runs at the start of each test method. Passed the name of the test method.
 
 - `test_teardown`
 
-Runs at the end of each test method
+    sub test_teardown {
+       my ( $test, $test_method ) = @_;
+       # more teardown
+       $test->next::method;
+    }
+
+Runs at the end of each test method. Passed the name of the test method which
+was just run.
 
 - `test_shutdown`
 
-Runs at the end of each test class
+    sub test_shutdown {
+        my ($test) = @_;
+        # more teardown
+        $test->next::method;
+    }
+
+Runs at the end of each test class. 
 
 To override a test control method, just remember that this is OO:
 
@@ -150,7 +179,7 @@ Or:
     # do something
     $test_suite->runtests;
 
-Note that in reality, the above is equivalent to:
+Note that in reality, the above is sort of equivalent to:
 
     my $test_suite = Test::Class::Moose->new({
         configuration => Test::Class::Moose::Config->new({
@@ -161,6 +190,8 @@ Note that in reality, the above is equivalent to:
     });
     # do something
     $test_suite->runtests;
+
+But you can't call it like that.
 
 By pushing the attributes to [Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config), we avoid namespace
 pollution. We do _not_ delegate the attributes directly as a result. If you
@@ -189,6 +220,30 @@ Defaults to `Test::Builder->new`. You can supply your own builder if you
 want, but it must conform to the `Test::Builder` interface. We make no
 guarantees about which part of the interface it needs.
 
+- `include`
+
+Regex. If present, only test methods whose name matches `include` will be
+included. __However__, they must still start with `test_`.
+
+For example:
+
+    my $test_suite = Test::Class::Moose->new({
+        include => qr/customer/,
+    });
+
+The above constructor will let you match test methods named `test_customer`
+and `test_customer_account`, but will not suddenly match a method named
+`default_customer`.
+
+By enforcing the leading `test_` behavior, we don't surprise developers who
+are trying to figure out why `default_customer` is being run as a test. This
+means an `include` such as `/^customer.*/` will never run any tests.
+
+- `exclude`
+
+Regex. If present, only test methods whose names don't match `exclude` will be
+included. __However__, they must still start with `test_`. See `include`.
+
 # THINGS YOU CAN OVERRIDE
 
 ## Attributes
@@ -198,6 +253,14 @@ guarantees about which part of the interface it needs.
     my $configuration = $test->configuration;
 
 Returns the `Test::Class::Moose::Config` object.
+
+### `reporting`
+
+    my $reporting = $test->reporting;
+
+Returns the `Test::Class::Moose::Reporting` object. Useful if you want to do
+your own reporting and not rely on the default output provided with the
+`statistics` boolean option.
 
 ### `this_class`
 
@@ -218,6 +281,10 @@ loaded classes that inherit directly or indirectly through
 
 You may override this in a subclass. Currently returns all methods in a test
 class that start with `test_` (except for the test control methods).
+
+Please note that the behavior for `include` and `exclude` is also contained
+in this method. If you override it, you will need to account for those
+yourself.
 
 ### `runtests`
 
@@ -280,16 +347,6 @@ We use nested tests (subtests) at each level:
 
 # TODO
 
-- Add `Test::Class::Moose::Reporting`
-
-Gather up the reporting in one module rather than doing it on an ad-hoc basis.
-
-- Test method filtering
-
-    Test::Class::Moose->new({
-        include => qr/customer/,
-        exclude => qr/database/,
-    })->runtests;
 - Load classes
 
     Test::Class::Moose->new({
@@ -316,7 +373,7 @@ Because it's an attribute, you can merely declare it in a subclass, if you
 prefer, or override it in a subclass (in other words, this is OO code and you,
 the developer, will have full control over it).
 
-- Pass class/methd names to test control methods
+- Pass class/method names to test control methods
 - Make it easy to skip an entire class
 
 # AUTHOR

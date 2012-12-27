@@ -382,8 +382,13 @@ List it as the C<extends> (or C<parent>) in the import list.
 
 Do not run tests in test control methods. They are not needed and in the
 future, will cause test failures. If a test control method fails, the
-class/method should fail. Currently we do not trap exceptions, so your entire
-test suite will break. Yes, this is a bug and will be fixed later.
+class/method will fail and testing for that class should stop.
+
+B<Every> test control method will be passed two arguments. The first is the
+C<$test> invocant. The second is an object implementing
+C<Test::Class::Moose::Reporting::Role::Reporting>. Find that the C<notes>
+hashref is a handy way of recording information you later wish to use if you
+call C<< $test_suite->reporting >>.
 
 These are:
 
@@ -392,46 +397,53 @@ These are:
 =item * C<test_startup>
 
  sub test_startup {
-    my ( $test ) = @_;
+    my ( $test, $reporting ) = @_;
     $test->next::method;
     # more startup
  }
 
-
 Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), the use
-C<< $test->this_class >>.
+C<< $test->this_class >>, or the C<name> method on the C<$reporting> object.
+
+The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
 
 =item * C<test_setup>
 
  sub test_setup {
-    my ( $test, $test_method ) = @_;
+    my ( $test, $reporting ) = @_;
     $test->next::method;
     # more setup
  }
 
-Runs at the start of each test method. Passed the name of the test method.
+Runs at the start of each test method. If you must know the name of the test
+you're about to run, you can call C<< $reporting->name >.
+
+The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
 
 =item * C<test_teardown>
 
  sub test_teardown {
-    my ( $test, $test_method ) = @_;
+    my ( $test, $reporting ) = @_;
     # more teardown
     $test->next::method;
  }
 
-Runs at the end of each test method. Passed the name of the test method which
-was just run.
+Runs at the end of each test method. 
+
+The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
 
 =item * C<test_shutdown>
 
  sub test_shutdown {
-     my ($test) = @_;
+     my ( $test, $reporting ) = @_;
      # more teardown
      $test->next::method;
  }
 
 Runs at the end of each test class. 
+
+The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
 
 =back
 
@@ -629,6 +641,47 @@ We use nested tests (subtests) at each level:
     All tests successful.
     Files=1, Tests=2,  2 wallclock secs ( 0.03 usr  0.00 sys +  0.27 cusr  0.01 csys =  0.31 CPU)
     Result: PASS
+
+=head1 REPORTING
+
+Reporting features are subject to change. Currently the timing relies on
+L<Benchmark> and your author's not quite happy about that.
+
+Sometimes you want more information about your test classes, it's time to do
+some reporting. Maybe you even want some tests for your reporting. If you do
+that, run the test suite in a subtest.
+
+    #!/usr/bin/env perl
+    use lib 'lib';
+    use Test::Most;
+    use Test::Class::Moose::Load qw(t/lib);
+    my $test_suite = Test::Class::Moose->new;
+
+    subtest 'run the test suite' => sub {
+        $test_suite->runtests;
+    };
+    my $reporting = $test_suite->reporting;
+
+    foreach my $class ( $reporting->all_test_classes ) {
+        my $class_name = $class->name;
+        ok !$class->is_skipped, "$class_name was not skipped";
+
+        subtest "$class_name methods" => sub {
+            foreach my $method ( $class->all_test_methods ) {
+                my $method_name = $method->name;
+                ok !$method->is_skipped, "$method_name was not skipped";
+                cmp_ok $method->num_tests, '>', 0,
+                  '... and some tests should have been run';
+                diag "Run time for $method_name: ".$method->duration;
+            }
+        };
+        diag "Run time for $class_name: ".$class->duration;
+    }
+    diag "Number of test classes: " . $reporting->num_test_classes;
+    diag "Number of test methods: " . $reporting->num_test_methods;
+    diag "Number of tests:        " . $reporting->num_tests;
+
+    done_testing;
 
 =head1 TODO
 
