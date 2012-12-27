@@ -417,7 +417,7 @@ The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
  }
 
 Runs at the start of each test method. If you must know the name of the test
-you're about to run, you can call C<< $reporting->name >.
+you're about to run, you can call C<< $reporting->name >>.
 
 The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
 

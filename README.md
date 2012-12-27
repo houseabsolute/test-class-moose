@@ -108,9 +108,8 @@ class/method will fail and testing for that class should stop.
 
 __Every__ test control method will be passed two arguments. The first is the
 `$test` invocant. The second is an object implementing
-`Test::Class::Moose::Reporting::Role::Reporting`. Find that the `notes`
-hashref is a handy way of recording information you later wish to use if you
-call `$test_suite->reporting`.
+`Test::Class::Moose::Role::Reporting`. Find that the `notes` hashref is a
+handy way of recording information you later wish to use if you call `$test_suite->reporting`.
 
 These are:
 
@@ -137,8 +136,7 @@ The `$reporting` object is a `Test::Class::Moose::Reporting::Class` object.
     }
 
 Runs at the start of each test method. If you must know the name of the test
-you're about to run, you can call `$reporting->name >.
-`
+you're about to run, you can call `$reporting->name`.
 
 The `$reporting` object is a `Test::Class::Moose::Reporting::Method` object.
 
