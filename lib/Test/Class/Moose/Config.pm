@@ -45,8 +45,6 @@ has 'exclude' => (
     isa => 'Regexp',
 );
 
-__PACKAGE__->meta->make_immutable;
-
 sub args {
     my $self = shift;
 
@@ -56,10 +54,9 @@ sub args {
     };
 }
 
-1;
-
 __PACKAGE__->meta->make_immutable;
 
+1;
 __END__
 
 =head1 NAME
