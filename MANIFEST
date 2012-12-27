@@ -6,7 +6,7 @@ lib/Test/Class/Moose/Load.pm
 lib/Test/Class/Moose/Reporting.pm
 lib/Test/Class/Moose/Reporting/Class.pm
 lib/Test/Class/Moose/Reporting/Method.pm
-lib/Test/Class/Moose/Reporting/Role/Reporting.pm
+lib/Test/Class/Moose/Role/Reporting.pm
 Makefile.PL
 MANIFEST			This list of files
 META.json

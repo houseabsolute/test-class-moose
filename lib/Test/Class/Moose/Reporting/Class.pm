@@ -7,7 +7,7 @@ use namespace::autoclean;
 our $VERSION = 0.02;
 
 with qw(
-  Test::Class::Moose::Reporting::Role::Reporting
+  Test::Class::Moose::Role::Reporting
 );
 
 has test_methods => (
@@ -43,7 +43,7 @@ Should be considered experimental and B<read only>.
 
 =head1 IMPLEMENTS
 
-C<Test::Class::Moose::Reporting::Role::Reporting>.
+C<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
 

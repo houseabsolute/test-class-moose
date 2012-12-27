@@ -1,4 +1,4 @@
-package Test::Class::Moose::Reporting::Role::Reporting;
+package Test::Class::Moose::Role::Reporting;
 
 use Moose::Role;
 use Benchmark qw(timediff timestr :hireswallclock);
@@ -52,7 +52,7 @@ __END__
 
 =head1 NAME
 
-Test::Class::Moose::Reporting::Role::Reporting - Reporting gathering role
+Test::Class::Moose::Role::Reporting - Reporting gathering role
 
 =head1 DESCRIPTION
 

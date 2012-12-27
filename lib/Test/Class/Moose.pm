@@ -386,9 +386,9 @@ class/method will fail and testing for that class should stop.
 
 B<Every> test control method will be passed two arguments. The first is the
 C<$test> invocant. The second is an object implementing
-C<Test::Class::Moose::Reporting::Role::Reporting>. Find that the C<notes>
-hashref is a handy way of recording information you later wish to use if you
-call C<< $test_suite->reporting >>.
+C<Test::Class::Moose::Role::Reporting>. Find that the C<notes> hashref is a
+handy way of recording information you later wish to use if you call C<<
+$test_suite->reporting >>.
 
 These are:
 
