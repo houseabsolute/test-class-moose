@@ -1,4 +1,4 @@
-package Test::Class::Moose::Statistics::Class;
+package Test::Class::Moose::Reporting::Class;
 
 use Moose;
 use Carp;
@@ -7,13 +7,13 @@ use namespace::autoclean;
 our $VERSION = 0.02;
 
 with qw(
-  Test::Class::Moose::Statistics::Role::Statistics
+  Test::Class::Moose::Reporting::Role::Reporting
 );
 
 has test_methods => (
     is      => 'rw',
     traits  => ['Array'],
-    isa     => 'ArrayRef[Test::Class::Moose::Statistics::Method]',
+    isa     => 'ArrayRef[Test::Class::Moose::Reporting::Method]',
     default => sub { [] },
     handles => {
         all_test_methods => 'elements',
@@ -31,7 +31,7 @@ __END__
 
 =head1 NAME
 
-Test::Class::Moose::Statistics::class - Statistics on test classes
+Test::Class::Moose::Reporting::class - Reporting on test classes
 
 =head1 VERSION
 
@@ -43,11 +43,11 @@ Should be considered experimental and B<read only>.
 
 =head1 IMPLEMENTS
 
-C<Test::Class::Moose::Statistics::Role::Statistics>.
+C<Test::Class::Moose::Reporting::Role::Reporting>.
 
 =head1 ATTRIBUTES
 
 =head2 C<test_methods>
 
-Returns an array reference of L<Test::Class::Moose::Statistics::Method>
+Returns an array reference of L<Test::Class::Moose::Reporting::Method>
 objects.

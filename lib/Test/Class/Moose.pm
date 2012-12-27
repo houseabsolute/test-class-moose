@@ -10,9 +10,9 @@ use Test::Builder;
 use Test::Most;
 use Try::Tiny;
 use Test::Class::Moose::Config;
-use Test::Class::Moose::Statistics;
-use Test::Class::Moose::Statistics::Class;
-use Test::Class::Moose::Statistics::Method;
+use Test::Class::Moose::Reporting;
+use Test::Class::Moose::Reporting::Class;
+use Test::Class::Moose::Reporting::Method;
 
 our $VERSION = 0.02;
 
@@ -23,7 +23,7 @@ has 'configuration' => (
 
 has 'statistics' => (
     is => 'ro',
-    isa => 'Test::Class::Moose::Statistics',
+    isa => 'Test::Class::Moose::Reporting',
 );
 
 has 'this_class' => (
@@ -57,7 +57,7 @@ around 'BUILDARGS' => sub {
     my $class = shift;
     return $class->$orig(
         {   configuration => Test::Class::Moose::Config->new(@_),
-            statistics    => Test::Class::Moose::Statistics->new,
+            statistics    => Test::Class::Moose::Reporting->new,
         }
     );
 };
@@ -109,7 +109,7 @@ my $run_test_method = sub {
 
     my $test_class = $test_instance->this_class;
     my $statistics_method =
-      Test::Class::Moose::Statistics::Method->new( { name => $test_method } );
+      Test::Class::Moose::Reporting::Method->new( { name => $test_method } );
 
     $test_instance->$run_test_control_method( 'test_setup',
         $statistics_method );
@@ -163,7 +163,7 @@ sub runtests {
             sub {
                 my $test_instance = $test_class->new( $self->configuration->args );
                 my $statistics_class =
-                  Test::Class::Moose::Statistics::Class->new(
+                  Test::Class::Moose::Reporting::Class->new(
                     {   name => $test_class,
                     }
                   );
@@ -534,7 +534,7 @@ Returns the C<Test::Class::Moose::Config> object.
 
  my $statistics = $test->statistics;
 
-Returns the C<Test::Class::Moose::Statistics> object. Useful if you want to do
+Returns the C<Test::Class::Moose::Reporting> object. Useful if you want to do
 your own statistics reporting and not rely on the default output provided.
 
 =head3 C<this_class>
@@ -623,10 +623,6 @@ We use nested tests (subtests) at each level:
 =head1 TODO
 
 =over 4
-
-=item * Add C<Test::Class::Moose::Reporting>
-
-Gather up the reporting in one module rather than doing it on an ad-hoc basis.
 
 =item * Load classes
 

@@ -1,10 +1,10 @@
-package Test::Class::Moose::Statistics::Method;
+package Test::Class::Moose::Reporting::Method;
 
 use Moose;
 use Carp;
 use namespace::autoclean;
 with qw(
-  Test::Class::Moose::Statistics::Role::Statistics
+  Test::Class::Moose::Reporting::Role::Reporting
 );
 
 our $VERSION = 0.02;
@@ -22,7 +22,7 @@ __END__
 
 =head1 NAME
 
-Test::Class::Moose::Statistics::Method - Statistics on test methods
+Test::Class::Moose::Reporting::Method - Reporting on test methods
 
 =head1 VERSION
 
@@ -34,7 +34,7 @@ Should be considered experimental and B<read only>.
 
 =head1 IMPLEMENTS
 
-C<Test::Class::Moose::Statistics::Role::Statistics>.
+C<Test::Class::Moose::Reporting::Role::Reporting>.
 
 =head1 ATTRIBUTES
 
