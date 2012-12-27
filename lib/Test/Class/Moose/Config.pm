@@ -35,9 +35,30 @@ has 'randomize' => (
     default => 0,
 );
 
+has 'include' => (
+    is  => 'ro',
+    isa => 'Regexp',
+);
+
+has 'exclude' => (
+    is  => 'ro',
+    isa => 'Regexp',
+);
+
 __PACKAGE__->meta->make_immutable;
 
+sub args {
+    my $self = shift;
+
+    return {
+        map { defined $self->$_ ? ( $_ => $self->$_ ) : () }
+        map { $_->name } $self->meta->get_all_attributes
+    };
+}
+
 1;
+
+__PACKAGE__->meta->make_immutable;
 
 __END__
 
@@ -86,6 +107,15 @@ own if it conforms to the interface.
 =head2 C<randomize>
 
 Boolean. Will run tests in a random order.
+
+=head1 METHODS
+
+=head2 C<args>
+
+ my $tests = Some::Test::Class->new($test_suite->configuration->args);
+
+Returns a hash reference of the args used to build the configuration. Used in
+testing. You probably won't need it.
 
 =head1 AUTHOR
 

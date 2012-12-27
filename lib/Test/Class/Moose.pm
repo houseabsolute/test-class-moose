@@ -151,7 +151,7 @@ sub runtests {
                 $self->$time_this(
                     "Runtime for $test_class",
                     sub {
-                        my $test_instance = $test_class->new;
+                        my $test_instance = $test_class->new( $self->configuration->args );
                         if (!$test_instance->$run_test_control_method(
                                 'test_startup')
                           )
@@ -209,6 +209,14 @@ sub get_test_methods {
       grep { /^test_/ and not $test_control_methods->()->{$_} }
       $self->meta->get_method_list;
     # eventually we'll want to control the test method order
+
+    if ( my $include = $self->configuration->include ) {
+        @method_list = grep {/$include/} @method_list;
+    }
+    if ( my $exclude = $self->configuration->exclude ) {
+        @method_list = grep { !/$exclude/ } @method_list;
+    }
+
     return ($self->configuration->randomize)
      ? shuffle(@method_list)
      : sort @method_list;
@@ -382,7 +390,7 @@ Or:
  # do something
  $test_suite->runtests;
 
-Note that in reality, the above is equivalent to:
+Note that in reality, the above is sort of equivalent to:
 
  my $test_suite = Test::Class::Moose->new({
      configuration => Test::Class::Moose::Config->new({
@@ -393,6 +401,8 @@ Note that in reality, the above is equivalent to:
  });
  # do something
  $test_suite->runtests;
+
+But you can't call it like that.
 
 By pushing the attributes to L<Test::Class::Moose::Config>, we avoid namespace
 pollution. We do I<not> delegate the attributes directly as a result. If you
@@ -422,6 +432,30 @@ Boolean. Will run test methods in a random order.
 Defaults to C<< Test::Builder->new >>. You can supply your own builder if you
 want, but it must conform to the C<Test::Builder> interface. We make no
 guarantees about which part of the interface it needs.
+
+=item * C<include>
+
+Regex. If present, only test methods whose name matches C<include> will be
+included. B<However>, they must still start with C<test_>.
+
+For example:
+
+ my $test_suite = Test::Class::Moose->new({
+     include => qr/customer/,
+ });
+
+The above constructor will let you match test methods named C<test_customer>
+and C<test_customer_account>, but will not suddenly match a method named
+C<default_customer>.
+
+By enforcing the leading C<test_> behavior, we don't surprise developers who
+are trying to figure out why C<default_customer> is being run as a test. This
+means an C<include> such as C<< /^customer.*/ >> will never run any tests.
+
+=item * C<exclude>
+
+Regex. If present, only test methods whose names don't match C<exclude> will be
+included. B<However>, they must still start with C<test_>. See C<include>.
 
 =back
 
@@ -454,6 +488,10 @@ C<Test::Class::Moose>
 
 You may override this in a subclass. Currently returns all methods in a test
 class that start with C<test_> (except for the test control methods).
+
+Please note that the behavior for C<include> and C<exclude> is also contained
+in this method. If you override it, you will need to account for those
+yourself.
 
 =head3 C<runtests>
 
@@ -521,13 +559,6 @@ We use nested tests (subtests) at each level:
 =item * Add C<Test::Class::Moose::Reporting>
 
 Gather up the reporting in one module rather than doing it on an ad-hoc basis.
-
-=item * Test method filtering
-
- Test::Class::Moose->new({
-     include => qr/customer/,
-     exclude => qr/database/,
- })->runtests;
 
 =item * Load classes
 
