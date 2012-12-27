@@ -306,12 +306,13 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 DESCRIPTION
 
-This is B<ALPHA> code. It is not production ready, but the basics seem to work
-well.
+This is B<ALPHA> code. I encourage you to give it a shot if you want test
+classes based on Moose, along with reporting. Feedback welcome as we try to
+improve it.
 
-This is a tiny proof of concept for writing Test::Class-style tests with
-Moose. Better docs will come later. You should already know how to use Moose
-and Test::Class.
+This is a proof of concept for writing Test::Class-style tests with Moose.
+Better docs will come later. You should already know how to use Moose and
+L<Test::Class>.
 
 =head1 BASICS
 
@@ -348,7 +349,7 @@ Each test method relies on an implicit C<done_testing> call.
 
 =head2 Inheriting from another Test::Class::Moose class
 
-List it as the C<extends> (or C<parent>) in the import list.
+List it as the C<extends> in the import list.
 
  package TestsFor::Some::Class::Subclass;
  use Test::Class::Moose extends => 'TestsFor::Some::Class';
@@ -380,15 +381,15 @@ List it as the C<extends> (or C<parent>) in the import list.
 
 =head1 TEST CONTROL METHODS
 
-Do not run tests in test control methods. They are not needed and in the
-future, will cause test failures. If a test control method fails, the
-class/method will fail and testing for that class should stop.
+Do not run tests in test control methods. This will cause the test control
+method to fail (this is a feature, not a bug).  If a test control method
+fails, the class/method will fail and testing for that class should stop.
 
 B<Every> test control method will be passed two arguments. The first is the
 C<$test> invocant. The second is an object implementing
-C<Test::Class::Moose::Role::Reporting>. Find that the C<notes> hashref is a
-handy way of recording information you later wish to use if you call C<<
-$test_suite->reporting >>.
+C<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
+is a handy way of recording information you later wish to use if you call
+C<< $test_suite->reporting >>.
 
 These are:
 
@@ -403,7 +404,7 @@ These are:
  }
 
 Runs at the start of each test class. If you need to know the name of the
-class you're running this in (though usually you shouldn't), the use
+class you're running this in (though usually you shouldn't), use
 C<< $test->this_class >>, or the C<name> method on the C<$reporting> object.
 
 The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
@@ -711,8 +712,6 @@ automatically load. Completely optional, of course. And then in your test:
 Because it's an attribute, you can merely declare it in a subclass, if you
 prefer, or override it in a subclass (in other words, this is OO code and you,
 the developer, will have full control over it).
-
-=item * Pass class/method names to test control methods
 
 =item * Make it easy to skip an entire class
 
