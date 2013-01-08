@@ -179,7 +179,7 @@ sub runtests {
                     my $message =
                       "Skipping '$test_class': no test methods found";
                     $reporting_class->skipped($message);
-                    SKIP:{ skip $message, 0; };
+                    $builder->plan( skip_all => $message);
                     return;
                 }
                 my $start = Benchmark->new;
