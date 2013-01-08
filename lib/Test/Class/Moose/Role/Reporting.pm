@@ -34,7 +34,7 @@ has skipped => (
 
 sub duration_ref {
     my $self = shift;
-    foreach my $method qw(start_benchmark end_benchmark) {
+    foreach my $method ( qw(start_benchmark end_benchmark) ) {
         next if defined $self->$method;
         croak("Cannot fetch duration(). $method not set");
     }

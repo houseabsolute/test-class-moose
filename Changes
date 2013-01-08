@@ -1,6 +1,7 @@
 Revision history for Test-Class-Moose
 
 0.02
+        - Don't use a bare qw() for parens (reported on github by beresfordt)
         - Make sure we have hi-res time reporting
         - Move statistics gathering into its own classes
         - Add include/exclude test method filtering
