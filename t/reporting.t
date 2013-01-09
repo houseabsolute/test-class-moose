@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use lib 'lib';
 use Test::Most;
+use Scalar::Util 'looks_like_number';
 use Test::Class::Moose::Load qw(t/lib);
 my $test_suite = Test::Class::Moose->new;
 
@@ -19,10 +20,18 @@ foreach my $class ( $reporting->all_test_classes ) {
             ok !$method->is_skipped, "$method_name was not skipped";
             cmp_ok $method->num_tests, '>', 0,
               '... and some tests should have been run';
-            explain "Run time for $method_name: ".$method->duration;
+            explain "Run time for $method_name: ".$method->time->duration;
         }
     };
-    explain "Run time for $class_name: ".$class->duration;
+    can_ok $class, 'time';
+    my $time = $class->time;
+    isa_ok $time, 'Test::Class::Moose::Reporting::Time', 
+    '... and the object it returns';
+    foreach my $method (qw/real user system/) {
+        ok looks_like_number( $time->$method ),
+          "... and its '$method()' method should return a number";
+    }
+    explain "Run time for $class_name: ".$time->duration;
 }
 explain "Number of test classes: " . $reporting->num_test_classes;
 explain "Number of test methods: " . $reporting->num_test_methods;

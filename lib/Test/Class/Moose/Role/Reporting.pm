@@ -2,6 +2,7 @@ package Test::Class::Moose::Role::Reporting;
 
 use Moose::Role;
 use Benchmark qw(timediff timestr :hireswallclock);
+use Test::Class::Moose::Reporting::Time;
 
 has 'name' => (
     is       => 'ro',
@@ -17,6 +18,13 @@ has 'start_benchmark' => (
 has 'end_benchmark' => (
     is  => 'rw',
     isa => 'Benchmark',
+    trigger => sub {
+        my $self = shift;
+        my $time = Test::Class::Moose::Reporting::Time->new(
+            timediff( $self->end_benchmark, $self->start_benchmark ) 
+        );
+        $self->time($time);
+    },
 );
 
 has 'notes' => (
@@ -31,20 +39,10 @@ has skipped => (
     predicate => 'is_skipped',
 );
 
-
-sub duration_ref {
-    my $self = shift;
-    foreach my $method ( qw(start_benchmark end_benchmark) ) {
-        next if defined $self->$method;
-        croak("Cannot fetch duration(). $method not set");
-    }
-    return timediff( $self->end_benchmark, $self->start_benchmark );
-}
-
-sub duration {
-    my $self = shift;
-    return timestr( $self->duration_ref );
-}
+has 'time' => (
+    is  => 'rw',
+    isa => 'Test::Class::Moose::Reporting::Time',
+);
 
 1;
 
@@ -91,12 +89,7 @@ If the class or method is skipped, this will return the skip message.
 
 Returns true if the class or method is skipped.
 
-=head1 METHODS
+=head2 C<time>
 
-=head2 C<duration_ref>
-
-Returns the C<Benchmark> duration array reference. Do with it as you will.
-
-=head2 C<duration>
-
-Returns the Benchmark::timestr() of the C<duration_ref>.
+Returns a C<Test::Class::Moose::Reporting::Time> object. This object
+represents the duration of this class or method.

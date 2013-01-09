@@ -645,8 +645,7 @@ We use nested tests (subtests) at each level:
 
 =head1 REPORTING
 
-Reporting features are subject to change. Currently the timing relies on
-L<Benchmark> and your author's not quite happy about that.
+Reporting features are subject to change.
 
 Sometimes you want more information about your test classes, it's time to do
 some reporting. Maybe you even want some tests for your reporting. If you do
@@ -673,10 +672,16 @@ that, run the test suite in a subtest.
                 ok !$method->is_skipped, "$method_name was not skipped";
                 cmp_ok $method->num_tests, '>', 0,
                   '... and some tests should have been run';
-                diag "Run time for $method_name: ".$method->duration;
+                diag "Run time for $method_name: ".$method->time->duration;
             }
         };
-        diag "Run time for $class_name: ".$class->duration;
+        my $time   = $class->time;
+        diag "Run time for $class_name: ".$class->time->duration;
+
+        my $real   = $time->real;
+        my $user   = $time->user;
+        my $system = $time->system;
+        # do with these as you will
     }
     diag "Number of test classes: " . $reporting->num_test_classes;
     diag "Number of test methods: " . $reporting->num_test_methods;
