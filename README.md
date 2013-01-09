@@ -471,6 +471,13 @@ You can also look for information at:
 
 # ACKNOWLEDGEMENTS
 
+Thanks to Tom Beresford (beresfordt) for spotting an issue when a class has no
+test methods.
+
+Thanks to Judioo for adding the randomize attribute.
+
+Thanks to Adrian Howard for [Test::Class](http://search.cpan.org/perldoc?Test::Class).
+
 # LICENSE AND COPYRIGHT
 
 Copyright 2012 Curtis "Ovid" Poe.
