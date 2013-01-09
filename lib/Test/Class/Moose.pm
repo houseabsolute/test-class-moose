@@ -764,6 +764,13 @@ L<http://search.cpan.org/dist/Test-Class-Moose/>
 
 =head1 ACKNOWLEDGEMENTS
 
+Thanks to Tom Beresford (beresfordt) for spotting an issue when a class has no
+test methods.
+
+Thanks to Judioo for adding the randomize attribute.
+
+Thanks to Adrian Howard for L<Test::Class>.
+
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2012 Curtis "Ovid" Poe.
