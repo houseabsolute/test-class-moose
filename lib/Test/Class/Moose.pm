@@ -546,7 +546,7 @@ you'll need to access the C<test_configuration> attribute:
 
  my $builder = $test_suite->test_configuration->builder;
 
-Attributes to it:
+=head2 Contructor Attributes
 
 =over 4
 
@@ -595,7 +595,7 @@ included. B<However>, they must still start with C<test_>. See C<include>.
 
 =back
 
-=head1 SKIPPING CLASSES AND METHODS
+=head2 Skipping Classes and Methods
 
 If you wish to skip a class, set the reason in the C<test_startup> method.
 

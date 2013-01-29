@@ -197,7 +197,7 @@ you'll need to access the `test_configuration` attribute:
 
     my $builder = $test_suite->test_configuration->builder;
 
-Attributes to it:
+## Contructor Attributes
 
 - `show_timing`
 
@@ -242,7 +242,7 @@ means an `include` such as `/^customer.*/` will never run any tests.
 Regex. If present, only test methods whose names don't match `exclude` will be
 included. __However__, they must still start with `test_`. See `include`.
 
-# SKIPPING CLASSES AND METHODS
+## Skipping Classes and Methods
 
 If you wish to skip a class, set the reason in the `test_startup` method.
 
