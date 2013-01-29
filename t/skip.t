@@ -8,60 +8,24 @@ my $test_suite = Test::Class::Moose->new;
 subtest 'skip' => sub {
     $test_suite->runtests;
 };
-done_testing;
-__END__
 
-my %methods_for = (
-    'TestsFor::Basic'           => [qw/test_me test_this_baby/],
-    'TestsFor::Basic::Subclass' => [
-        qw/
-          test_me
-          test_this_baby
-          test_this_should_be_run
-          /
-    ],
-);
-my @test_classes = sort $test_suite->test_classes;
-eq_or_diff \@test_classes, [ sort keys %methods_for ],
-  'test_classes() should return a sorted list of test classes';
+my $classes = $test_suite->test_reporting->test_classes;
+is $classes->[0]->name, 'TestsFor::Basic',
+  'Our first class should be listed in reporting';
+ok $classes->[0]->is_skipped, '... and it should be listed as skipped';
+explain $classes->[0]->skipped;    # the skip reason
 
-foreach my $class (@test_classes) {
-    eq_or_diff [ $class->new->test_methods ], $methods_for{$class},
-      "$class should have the correct test methods";
-}
+is $classes->[1]->name, 'TestsFor::SkipSomeMethods',
+  'Our second class should be listed in reporting';
+ok !$classes->[1]->is_skipped, '... and it should NOT be listed as skipped';
+my $methods = $classes->[1]->test_methods;
 
-subtest 'test suite' => sub {
-    $test_suite->runtests;
-};
+is @$methods, 3, '... and it should have three test methods';
 
-TestsFor::Basic::Subclass->meta->add_method(
-    'test_this_will_die' => sub { die 'forced die' },
-);
-my $builder = $test_suite->test_configuration->builder;
-$builder->todo_start('testing a dying test');
-my @tests;
-$test_suite = Test::Class::Moose->new;
-subtest 'test_this_will_die() dies' => sub {
-    $test_suite->runtests;
-    @tests = $test_suite->test_configuration->builder->details;
-};
-$builder->todo_end;
-
-my @expected_tests = (
-    {   'actual_ok' => 1,
-        'name'      => 'TestsFor::Basic',
-        'ok'        => 1,
-        'reason'    => '',
-        'type'      => ''
-    },
-    {   'actual_ok' => 0,
-        'name'      => 'TestsFor::Basic::Subclass',
-        'ok'        => 0,
-        'reason'    => '',
-        'type'      => ''
-    }
-);
-eq_or_diff \@tests, \@expected_tests,
-  'Dying test methods should fail but not kill the test suite';
+my @skipped = grep { $_->is_skipped } @$methods;
+is scalar @skipped, 1,
+  '... and the correct number of methods should be skipped';
+is $skipped[0]->name, 'test_me',
+    '... and they should be the correct methods';
 
 done_testing;
