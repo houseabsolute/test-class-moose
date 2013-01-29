@@ -258,6 +258,10 @@ included. __However__, they must still start with `test_`. See `include`.
 
 # THINGS YOU CAN OVERRIDE
 
+As a general rule, methods beginning with `/^test_/` are reserved for
+`Test::Class::Moose`. This makes it easier to remember what you can and
+cannot override.
+
 ## `test_configuration`
 
     my $test_configuration = $test->test_configuration;

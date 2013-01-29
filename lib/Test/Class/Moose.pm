@@ -544,6 +544,10 @@ included. B<However>, they must still start with C<test_>. See C<include>.
 
 =head1 THINGS YOU CAN OVERRIDE
 
+As a general rule, methods beginning with C</^test_/> are reserved for
+C<Test::Class::Moose>. This makes it easier to remember what you can and
+cannot override.
+
 =head2 C<test_configuration>
 
  my $test_configuration = $test->test_configuration;
