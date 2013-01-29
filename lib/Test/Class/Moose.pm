@@ -16,7 +16,7 @@ use Test::Class::Moose::Reporting::Method;
 
 our $VERSION = 0.02;
 
-has 'configuration' => (
+has 'test_configuration' => (
     is  => 'ro',
     isa => 'Test::Class::Moose::Config',
 );
@@ -57,7 +57,7 @@ around 'BUILDARGS' => sub {
     my $orig  = shift;
     my $class = shift;
     return $class->$orig(
-        {   configuration => Test::Class::Moose::Config->new(@_),
+        {   test_configuration => Test::Class::Moose::Config->new(@_),
             reporting     => Test::Class::Moose::Reporting->new,
         }
     );
@@ -89,7 +89,7 @@ my $run_test_control_method = sub {
       or croak("Unknown test control method ($phase)");
 
     my $success;
-    my $builder = $self->configuration->builder;
+    my $builder = $self->test_configuration->builder;
     try {
         my $num_tests = $builder->current_test;
         $self->$phase($maybe_test_method);
@@ -119,7 +119,7 @@ my $run_test_method = sub {
     );
     my $num_tests;
 
-    my $builder = $self->configuration->builder;
+    my $builder = $self->test_configuration->builder;
     Test::Most::explain("$test_class->$test_method()"), $builder->subtest(
         $test_method,
         sub {
@@ -137,9 +137,9 @@ my $run_test_method = sub {
 
             my $end = Benchmark->new;
             $reporting_method->end_benchmark($end);
-            if ( $self->configuration->show_timing ) {
+            if ( $self->test_configuration->show_timing ) {
                 my $time = timestr( timediff( $end, $start ) );
-                $self->configuration->builder->diag(
+                $self->test_configuration->builder->diag(
                     $reporting_method->name . ": $time" );
             }
         },
@@ -157,7 +157,7 @@ sub runtests {
     my $self = shift;
 
     my @test_classes = $self->get_test_classes;
-    my $builder      = $self->configuration->builder;
+    my $builder      = $self->test_configuration->builder;
     my $reporting    = $self->reporting;
 
     $builder->plan( tests => scalar @test_classes );
@@ -167,7 +167,7 @@ sub runtests {
             $test_class,
             sub {
                 my $test_instance =
-                  $test_class->new( $self->configuration->args );
+                  $test_class->new( $self->test_configuration->args );
                 my $reporting_class =
                   Test::Class::Moose::Reporting::Class->new(
                     {   name => $test_class,
@@ -211,14 +211,14 @@ sub runtests {
 
                 my $end = Benchmark->new;
                 $reporting_class->end_benchmark($end);
-                if ( $self->configuration->show_timing ) {
+                if ( $self->test_configuration->show_timing ) {
                     my $time = timestr( timediff( $end, $start ) );
-                    $self->configuration->builder->diag("$test_class: $time");
+                    $self->test_configuration->builder->diag("$test_class: $time");
                 }
             }
           );
     }
-    $builder->diag(<<"END") if $self->configuration->statistics;
+    $builder->diag(<<"END") if $self->test_configuration->statistics;
 Test classes:    @{[ $reporting->num_test_classes ]}
 Test methods:    @{[ $reporting->num_test_methods ]}
 Total tests run: @{[ $reporting->num_tests ]}
@@ -252,14 +252,14 @@ sub get_test_methods {
 
     # eventually we'll want to control the test method order
 
-    if ( my $include = $self->configuration->include ) {
+    if ( my $include = $self->test_configuration->include ) {
         @method_list = grep {/$include/} @method_list;
     }
-    if ( my $exclude = $self->configuration->exclude ) {
+    if ( my $exclude = $self->test_configuration->exclude ) {
         @method_list = grep { !/$exclude/ } @method_list;
     }
 
-    return ( $self->configuration->randomize )
+    return ( $self->test_configuration->randomize )
       ? shuffle(@method_list)
       : sort @method_list;
 }
@@ -476,7 +476,7 @@ Or:
 Note that in reality, the above is sort of equivalent to:
 
  my $test_suite = Test::Class::Moose->new({
-     configuration => Test::Class::Moose::Config->new({
+     test_configuration => Test::Class::Moose::Config->new({
          show_timing => 1,
          randomize   => 0,
          statistics  => 1,
@@ -489,9 +489,9 @@ But you can't call it like that.
 
 By pushing the attributes to L<Test::Class::Moose::Config>, we avoid namespace
 pollution. We do I<not> delegate the attributes directly as a result. If you
-need them at runtime, you'll need to access the C<configuration> attribute:
+need them at runtime, you'll need to access the C<test_configuration> attribute:
 
- my $builder = $test_suite->configuration->builder;
+ my $builder = $test_suite->test_configuration->builder;
 
 Attributes to it:
 
@@ -546,9 +546,9 @@ included. B<However>, they must still start with C<test_>. See C<include>.
 
 =head2 Attributes
 
-=head3 C<configuration>
+=head3 C<test_configuration>
 
- my $configuration = $test->configuration;
+ my $test_configuration = $test->test_configuration;
 
 Returns the C<Test::Class::Moose::Config> object.
 

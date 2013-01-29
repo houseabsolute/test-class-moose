@@ -194,7 +194,7 @@ Or:
 Note that in reality, the above is sort of equivalent to:
 
     my $test_suite = Test::Class::Moose->new({
-        configuration => Test::Class::Moose::Config->new({
+        test_configuration => Test::Class::Moose::Config->new({
             show_timing => 1,
             randomize   => 0,
             statistics  => 1,
@@ -207,9 +207,9 @@ But you can't call it like that.
 
 By pushing the attributes to [Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config), we avoid namespace
 pollution. We do _not_ delegate the attributes directly as a result. If you
-need them at runtime, you'll need to access the `configuration` attribute:
+need them at runtime, you'll need to access the `test_configuration` attribute:
 
-    my $builder = $test_suite->configuration->builder;
+    my $builder = $test_suite->test_configuration->builder;
 
 Attributes to it:
 
@@ -260,9 +260,9 @@ included. __However__, they must still start with `test_`. See `include`.
 
 ## Attributes
 
-### `configuration`
+### `test_configuration`
 
-    my $configuration = $test->configuration;
+    my $test_configuration = $test->test_configuration;
 
 Returns the `Test::Class::Moose::Config` object.
 

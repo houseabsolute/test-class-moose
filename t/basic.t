@@ -31,13 +31,13 @@ subtest 'test suite' => sub {
 TestsFor::Basic::Subclass->meta->add_method(
     'test_this_will_die' => sub { die 'forced die' },
 );
-my $builder = $test_suite->configuration->builder;
+my $builder = $test_suite->test_configuration->builder;
 $builder->todo_start('testing a dying test');
 my @tests;
 $test_suite = Test::Class::Moose->new;
 subtest 'test_this_will_die() dies' => sub {
     $test_suite->runtests;
-    @tests = $test_suite->configuration->builder->details;
+    @tests = $test_suite->test_configuration->builder->details;
 };
 $builder->todo_end;
 

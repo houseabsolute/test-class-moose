@@ -11,7 +11,7 @@ my $tests = Test::Class::Moose->new(
         statistics  => 1,
     }
 );
-my $builder = $tests->configuration->builder;
+my $builder = $tests->test_configuration->builder;
 
 #
 # exceptions in test control methods should cause the test classes to fail
@@ -23,7 +23,7 @@ $builder->todo_start('testing the startup() method');
 my @tests;
 subtest 'test_startup() dies' => sub {
     $tests->runtests;
-    @tests = $tests->configuration->builder->details;
+    @tests = $tests->test_configuration->builder->details;
 };
 $builder->todo_end;
 
@@ -70,7 +70,7 @@ TestsFor::Basic::Subclass->meta->add_method(
 $tests = Test::Class::Moose->new;
 subtest 'test_startup() has tests in it' => sub {
     $tests->runtests;
-    @tests = $tests->configuration->builder->details;
+    @tests = $tests->test_configuration->builder->details;
 };
 
 eq_or_diff \@tests, \@expected,
@@ -106,7 +106,7 @@ $builder->todo_start('fail?');
 $tests = Test::Class::Moose->new;
 subtest 'test_setup() has tests in it' => sub {
     $tests->runtests;
-    @tests = $tests->configuration->builder->details;
+    @tests = $tests->test_configuration->builder->details;
 };
 $builder->todo_end;
 

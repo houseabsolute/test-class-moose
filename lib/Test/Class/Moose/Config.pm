@@ -109,7 +109,7 @@ Boolean. Will run tests in a random order.
 
 =head2 C<args>
 
- my $tests = Some::Test::Class->new($test_suite->configuration->args);
+ my $tests = Some::Test::Class->new($test_suite->test_configuration->args);
 
 Returns a hash reference of the args used to build the configuration. Used in
 testing. You probably won't need it.
