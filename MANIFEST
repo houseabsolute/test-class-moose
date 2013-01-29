@@ -18,4 +18,7 @@ t/basic.t
 t/lib/TestsFor/Basic.pm
 t/lib/TestsFor/Basic/Subclass.pm
 t/reporting.t
+t/skip.t
+t/skiplib/TestsFor/Basic.pm
+t/skiplib/TestsFor/SkipSomeMethods.pm
 t/test_control_methods.t
