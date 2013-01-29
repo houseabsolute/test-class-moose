@@ -21,7 +21,7 @@ has 'test_configuration' => (
     isa => 'Test::Class::Moose::Config',
 );
 
-has 'reporting' => (
+has 'test_reporting' => (
     is  => 'ro',
     isa => 'Test::Class::Moose::Reporting',
 );
@@ -58,7 +58,7 @@ around 'BUILDARGS' => sub {
     my $class = shift;
     return $class->$orig(
         {   test_configuration => Test::Class::Moose::Config->new(@_),
-            reporting     => Test::Class::Moose::Reporting->new,
+            test_reporting     => Test::Class::Moose::Reporting->new,
         }
     );
 };
@@ -148,7 +148,7 @@ my $run_test_method = sub {
         'test_teardown',
         $reporting_method
     );
-    $self->reporting->current_class->add_test_method($reporting_method);
+    $self->test_reporting->current_class->add_test_method($reporting_method);
     $reporting_method->num_tests($num_tests);
     return $reporting_method;
 };
@@ -158,7 +158,7 @@ sub runtests {
 
     my @test_classes = $self->get_test_classes;
     my $builder      = $self->test_configuration->builder;
-    my $reporting    = $self->reporting;
+    my $reporting    = $self->test_reporting;
 
     $builder->plan( tests => scalar @test_classes );
     foreach my $test_class (@test_classes) {
@@ -389,7 +389,7 @@ B<Every> test control method will be passed two arguments. The first is the
 C<$test> invocant. The second is an object implementing
 C<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
 is a handy way of recording information you later wish to use if you call
-C<< $test_suite->reporting >>.
+C<< $test_suite->test_reporting >>.
 
 These are:
 
@@ -554,7 +554,7 @@ Returns the C<Test::Class::Moose::Config> object.
 
 =head3 C<reporting>
 
- my $reporting = $test->reporting;
+ my $reporting = $test->test_reporting;
 
 Returns the C<Test::Class::Moose::Reporting> object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
@@ -660,7 +660,7 @@ that, run the test suite in a subtest.
     subtest 'run the test suite' => sub {
         $test_suite->runtests;
     };
-    my $reporting = $test_suite->reporting;
+    my $reporting = $test_suite->test_reporting;
 
     foreach my $class ( $reporting->all_test_classes ) {
         my $class_name = $class->name;

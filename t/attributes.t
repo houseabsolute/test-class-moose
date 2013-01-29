@@ -32,7 +32,7 @@ subtest 'runtests' => sub {
     @tests = $test_suite->test_configuration->builder->details;
 };
 
-ok my $reporting = $test_suite->reporting,
+ok my $reporting = $test_suite->test_reporting,
   'We should be able to fetch reporting information from the test suite';
 isa_ok $reporting, 'Test::Class::Moose::Reporting',
   '... and the object it returns';
@@ -70,7 +70,7 @@ subtest 'runtests' => sub {
     @tests = $test_suite->test_configuration->builder->details;
 };
 
-ok $reporting = $test_suite->reporting,
+ok $reporting = $test_suite->test_reporting,
   'We should be able to fetch reporting information from the test suite';
 isa_ok $reporting, 'Test::Class::Moose::Reporting',
   '... and the object it returns';
