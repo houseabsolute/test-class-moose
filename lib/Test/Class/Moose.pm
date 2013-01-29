@@ -765,36 +765,7 @@ that, run the test suite in a subtest.
 
 =head1 TODO
 
-=over 4
-
-=item * Load classes
-
- Test::Class::Moose->new({
-    load => sub {
-        my $test  = shift;
-        my $class = $test->test_class;
-        $class    =~ s/^TestsFor:://;
-        return $class;
-    },
- })->runtests;
- 
-If present, takes a sub that returns a classname we'll attempt to
-automatically load. Completely optional, of course. And then in your test:
-
- sub test_something {
-     my $test   = shift;
-     my $class  = $test->class_to_test;
-     my $object = $class->new;
-     ok ...
- }
-
-Because it's an attribute, you can merely declare it in a subclass, if you
-prefer, or override it in a subclass (in other words, this is OO code and you,
-the developer, will have full control over it).
-
-=item * Make it easy to skip an entire class
-
-=back
+All TODO items have currently been implemented.
 
 =head1 AUTHOR
 
