@@ -24,7 +24,7 @@ Test::Class::Moose - Test::Class + Moose
         is 2, 2, "whee! ($class)";
     }
 
-    1;
+    ;
 
 # DESCRIPTION
 
@@ -176,8 +176,6 @@ To override a test control method, just remember that this is OO:
 
 # RUNNING THE TEST SUITE
 
-We have a constructor now:
-
     use Test::Class::Moose::Load 't/lib';
     Test::Class::Moose->new->runtests
 
@@ -191,23 +189,11 @@ Or:
     # do something
     $test_suite->runtests;
 
-Note that in reality, the above is sort of equivalent to:
-
-    my $test_suite = Test::Class::Moose->new({
-        test_configuration => Test::Class::Moose::Config->new({
-            show_timing => 1,
-            randomize   => 0,
-            statistics  => 1,
-        }),
-    });
-    # do something
-    $test_suite->runtests;
-
-But you can't call it like that.
-
-By pushing the attributes to [Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config), we avoid namespace
-pollution. We do _not_ delegate the attributes directly as a result. If you
-need them at runtime, you'll need to access the `test_configuration` attribute:
+The attributes passed in the constructor are not directly available from the
+`Test::Class::Moose` instance. They're available in
+[Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config) and to avoid namespace pollution, we do _not_
+delegate the attributes directly as a result. If you need them at runtime,
+you'll need to access the `test_configuration` attribute:
 
     my $builder = $test_suite->test_configuration->builder;
 
@@ -256,7 +242,28 @@ means an `include` such as `/^customer.*/` will never run any tests.
 Regex. If present, only test methods whose names don't match `exclude` will be
 included. __However__, they must still start with `test_`. See `include`.
 
+# SKIPPING CLASSES AND METHODS
+
+If you wish to skip a class, set the reason in the `test_startup` method.
+
+    sub test_startup {
+        my ( $self, $reporting ) = @_;
+        $test->test_skip("I don't want to run this class");
+    }
+
+If you wish to skip an individual method, do so in the `test_setup` method.
+
+    sub test_setup {
+        my ( $self, $reporting ) = @_;
+
+        if ( 'test_time_travel' eq $reporting->name ) {
+            $test->test_skip("Time travel not yet available");
+        }
+    }
+
 # THINGS YOU CAN OVERRIDE
+
+... but probably shouldn't.
 
 As a general rule, methods beginning with `/^test_/` are reserved for
 `Test::Class::Moose`. This makes it easier to remember what you can and
