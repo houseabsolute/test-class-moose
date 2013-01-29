@@ -1,6 +1,7 @@
 Revision history for Test-Class-Moose
 
 0.02
+        - Rename almost every overrideable method to /^test_/.
         - Add a time reporting class. You can now fetch real, user and system
           time for each class or test method.
         - Fix for errors when no test methods found (they should be skipped -
