@@ -24,7 +24,7 @@ has 'statistics' => (
     isa => 'Bool',
 );
 
-has 'this_class' => (
+has 'test_class' => (
     is  => 'rw',
     isa => 'Str',
 );

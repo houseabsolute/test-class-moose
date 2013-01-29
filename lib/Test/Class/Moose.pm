@@ -26,7 +26,7 @@ has 'reporting' => (
     isa => 'Test::Class::Moose::Reporting',
 );
 
-has 'this_class' => (
+has 'test_class' => (
     is  => 'rw',
     isa => 'Str',
 );
@@ -67,7 +67,7 @@ sub BUILD {
     my $self = shift;
 
     # stash that name lest something change it later. Paranoid?
-    $self->this_class( $self->meta->name );
+    $self->test_class( $self->meta->name );
 }
 
 my $test_control_methods = sub {
@@ -100,7 +100,7 @@ my $run_test_control_method = sub {
     }
     catch {
         my $error = $_;
-        my $class = $self->this_class;
+        my $class = $self->test_class;
         $builder->diag("$class->$phase() failed: $error");
     };
     return $success;
@@ -109,7 +109,7 @@ my $run_test_control_method = sub {
 my $run_test_method = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
-    my $test_class = $test_instance->this_class;
+    my $test_class = $test_instance->test_class;
     my $reporting_method =
       Test::Class::Moose::Reporting::Method->new( { name => $test_method } );
 
@@ -291,14 +291,14 @@ Test::Class::Moose - Test::Class + Moose
 
  sub test_me {
      my $test  = shift;
-     my $class = $test->this_class;
+     my $class = $test->test_class;
      ok 1, "test_me() ran ($class)";
      ok 2, "this is another test ($class)";
  }
 
  sub test_this_baby {
      my $test  = shift;
-     my $class = $test->this_class;
+     my $class = $test->test_class;
      is 2, 2, "whee! ($class)";
  }
 
@@ -356,13 +356,13 @@ List it as the C<extends> in the import list.
 
  sub test_me {
      my $test  = shift;
-     my $class = $test->this_class;
+     my $class = $test->test_class;
      ok 1, "I overrode my parent! ($class)";
  }
 
  before 'test_this_baby' => sub {
      my $test  = shift;
-     my $class = $test->this_class;
+     my $class = $test->test_class;
      pass "This should run before my parent method ($class)";
  };
 
@@ -405,7 +405,7 @@ These are:
 
 Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
-C<< $test->this_class >>, or the C<name> method on the C<$reporting> object.
+C<< $test->test_class >>, or the C<name> method on the C<$reporting> object.
 
 The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
 
@@ -560,9 +560,9 @@ Returns the C<Test::Class::Moose::Reporting> object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 C<statistics> boolean option.
 
-=head3 C<this_class>
+=head3 C<test_class>
 
- my $class = $test->this_class;
+ my $class = $test->test_class;
 
 Returns the name for this class. Useful if you rebless an object (such as
 applying a role at runtime) and lose the original class name.
@@ -698,7 +698,7 @@ that, run the test suite in a subtest.
  Test::Class::Moose->new({
     load => sub {
         my $test  = shift;
-        my $class = $test->this_class;
+        my $class = $test->test_class;
         $class    =~ s/^TestsFor:://;
         return $class;
     },

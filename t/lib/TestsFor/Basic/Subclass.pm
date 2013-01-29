@@ -3,13 +3,13 @@ use Test::Class::Moose extends => 'TestsFor::Basic';
 
 sub test_me {
     my $test  = shift;
-    my $class = $test->this_class;
+    my $class = $test->test_class;
     ok 1, "I overrode my parent! ($class)";
 }
 
 before 'test_this_baby' => sub {
     my $test  = shift;
-    my $class = $test->this_class;
+    my $class = $test->test_class;
     pass "This should run before my parent method ($class)";
 };
 
