@@ -82,7 +82,7 @@ my $test_control_methods = sub {
     };
 };
 
-my $run_test_control_method = sub {
+my $RUN_TEST_CONTROL_METHOD = sub {
     my ( $self, $phase, $maybe_test_method ) = @_;
 
     $test_control_methods->()->{$phase}
@@ -106,21 +106,22 @@ my $run_test_control_method = sub {
     return $success;
 };
 
-my $run_test_method = sub {
+my $RUN_TEST_METHOD = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->test_class;
     my $reporting_method =
       Test::Class::Moose::Reporting::Method->new( { name => $test_method } );
 
-    $test_instance->$run_test_control_method(
+    $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_setup',
         $reporting_method
     );
     my $num_tests;
 
     my $builder = $self->test_configuration->builder;
-    Test::Most::explain("$test_class->$test_method()"), $builder->subtest(
+    Test::Most::explain("$test_class->$test_method()");
+    $builder->subtest(
         $test_method,
         sub {
             my $start = Benchmark->new;
@@ -144,7 +145,7 @@ my $run_test_method = sub {
             }
         },
     );
-    $test_instance->$run_test_control_method(
+    $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
         $reporting_method
     );
@@ -153,71 +154,86 @@ my $run_test_method = sub {
     return $reporting_method;
 };
 
+my $RUN_TEST_CLASS = sub {
+    my  ( $self, $test_class ) = @_;
+    my $builder   = $self->test_configuration->builder;
+    my $reporting = $self->test_reporting;
+
+    return sub {
+
+        # set up test class reporting
+        my $test_instance =
+          $test_class->new( $self->test_configuration->args );
+        my $reporting_class = Test::Class::Moose::Reporting::Class->new(
+            {   name => $test_class,
+            }
+        );
+        $reporting->add_test_class($reporting_class);
+        my @test_methods = $test_instance->test_methods;
+        unless (@test_methods) {
+            my $message = "Skipping '$test_class': no test methods found";
+            $reporting_class->skipped($message);
+            $builder->plan( skip_all => $message );
+            return;
+        }
+        my $start = Benchmark->new;
+        $reporting_class->start_benchmark($start);
+
+        $reporting->inc_test_methods( scalar @test_methods );
+
+        # startup
+        if (!$test_instance->$RUN_TEST_CONTROL_METHOD(
+                'test_startup', $reporting_class
+            )
+          )
+        {
+            fail "test_startup failed";
+            return;
+        }
+
+        $builder->plan( tests => scalar @test_methods );
+
+        # run test methods
+        foreach my $test_method (@test_methods) {
+            my $reporting_method = $self->$RUN_TEST_METHOD(
+                $test_instance,
+                $test_method
+            );
+            $reporting->inc_tests( $reporting_method->num_tests );
+        }
+
+        # shutdown
+        $test_instance->$RUN_TEST_CONTROL_METHOD(
+            'test_shutdown',
+            $reporting_class
+        ) or fail("test_shutdown() failed");
+
+        # finalize reporting
+        my $end = Benchmark->new;
+        $reporting_class->end_benchmark($end);
+        if ( $self->test_configuration->show_timing ) {
+            my $time = timestr( timediff( $end, $start ) );
+            $self->test_configuration->builder->diag("$test_class: $time");
+        }
+    };
+};
+
 sub runtests {
     my $self = shift;
 
     my @test_classes = $self->test_classes;
-    my $builder      = $self->test_configuration->builder;
-    my $reporting    = $self->test_reporting;
 
+    my $builder = $self->test_configuration->builder;
     $builder->plan( tests => scalar @test_classes );
     foreach my $test_class (@test_classes) {
-        Test::Most::explain("\nExecuting tests for $test_class\n\n"),
-          $builder->subtest(
+        Test::Most::explain("\nRunning tests for $test_class\n\n");
+        $builder->subtest(
             $test_class,
-            sub {
-                my $test_instance =
-                  $test_class->new( $self->test_configuration->args );
-                my $reporting_class =
-                  Test::Class::Moose::Reporting::Class->new(
-                    {   name => $test_class,
-                    }
-                  );
-                $reporting->add_test_class($reporting_class);
-                my @test_methods = $test_instance->test_methods;
-                unless (@test_methods) {
-                    my $message =
-                      "Skipping '$test_class': no test methods found";
-                    $reporting_class->skipped($message);
-                    $builder->plan( skip_all => $message);
-                    return;
-                }
-                my $start = Benchmark->new;
-                $reporting_class->start_benchmark($start);
-
-                $reporting->inc_test_methods( scalar @test_methods );
-
-                if (!$test_instance->$run_test_control_method(
-                        'test_startup', $reporting_class
-                    )
-                  )
-                {
-                    fail "test_startup failed";
-                    return;
-                }
-
-                $builder->plan( tests => scalar @test_methods );
-
-                foreach my $test_method (@test_methods) {
-                    my $reporting_method = $self->$run_test_method(
-                        $test_instance,
-                        $test_method
-                    );
-                    $reporting->inc_tests( $reporting_method->num_tests );
-                }
-                $test_instance->$run_test_control_method( 'test_shutdown',
-                    $reporting_class )
-                  or fail("test_shutdown() failed");
-
-                my $end = Benchmark->new;
-                $reporting_class->end_benchmark($end);
-                if ( $self->test_configuration->show_timing ) {
-                    my $time = timestr( timediff( $end, $start ) );
-                    $self->test_configuration->builder->diag("$test_class: $time");
-                }
-            }
-          );
+            $self->$RUN_TEST_CLASS($test_class),
+        );
     }
+
+    my $reporting = $self->test_reporting;
     $builder->diag(<<"END") if $self->test_configuration->statistics;
 Test classes:    @{[ $reporting->num_test_classes ]}
 Test methods:    @{[ $reporting->num_test_methods ]}
