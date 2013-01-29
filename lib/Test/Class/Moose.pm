@@ -31,6 +31,12 @@ has 'test_class' => (
     isa => 'Str',
 );
 
+has 'test_skip' => (
+    is      => 'rw',
+    isa     => 'Str',
+    clearer => 'test_skip_clear',
+);
+
 has 'test_use' => (
     is      => 'ro',
     isa     => 'CodeRef',
@@ -79,7 +85,8 @@ sub BUILD {
     $self->test_class( $self->meta->name );
 }
 
-my $test_control_methods = sub {
+my $TEST_CONTROL_METHODS = sub {
+    local *__ANON__ = 'ANON_TEST_CONTROL_METHODS';
     return {
         map { $_ => 1 }
           qw/
@@ -92,9 +99,10 @@ my $test_control_methods = sub {
 };
 
 my $RUN_TEST_CONTROL_METHOD = sub {
+    local *__ANON__ = 'ANON_RUN_TEST_CONTROL_METHOD';
     my ( $self, $phase, $maybe_test_method ) = @_;
 
-    $test_control_methods->()->{$phase}
+    $TEST_CONTROL_METHODS->()->{$phase}
       or croak("Unknown test control method ($phase)");
 
     my $success;
@@ -116,25 +124,32 @@ my $RUN_TEST_CONTROL_METHOD = sub {
 };
 
 my $RUN_TEST_METHOD = sub {
+    local *__ANON__ = 'ANON_RUN_TEST_METHOD';
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->test_class;
-    my $reporting_method =
+    my $reporting =
       Test::Class::Moose::Reporting::Method->new( { name => $test_method } );
 
+    my $builder = $self->test_configuration->builder;
+    $test_instance->test_skip_clear;
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_setup',
-        $reporting_method
+        $reporting
     );
     my $num_tests;
 
-    my $builder = $self->test_configuration->builder;
     Test::Most::explain("$test_class->$test_method()");
     $builder->subtest(
         $test_method,
         sub {
+            if ( my $message = $test_instance->test_skip ) {
+                $reporting->skipped($message);
+                $builder->plan( skip_all => $message );
+                return;
+            }
             my $start = Benchmark->new;
-            $reporting_method->start_benchmark($start);
+            $reporting->start_benchmark($start);
 
             my $old_test_count = $builder->current_test;
             try {
@@ -146,25 +161,26 @@ my $RUN_TEST_METHOD = sub {
             $num_tests = $builder->current_test - $old_test_count;
 
             my $end = Benchmark->new;
-            $reporting_method->end_benchmark($end);
+            $reporting->end_benchmark($end);
             if ( $self->test_configuration->show_timing ) {
                 my $time = timestr( timediff( $end, $start ) );
                 $self->test_configuration->builder->diag(
-                    $reporting_method->name . ": $time" );
+                    $reporting->name . ": $time" );
             }
         },
     );
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
-        $reporting_method
+        $reporting
     );
-    $self->test_reporting->current_class->add_test_method($reporting_method);
-    $reporting_method->num_tests($num_tests);
-    return $reporting_method;
+    $self->test_reporting->current_class->add_test_method($reporting);
+    $reporting->num_tests($num_tests) unless $reporting->is_skipped;
+    return $reporting;
 };
 
 # XXX Deliberately undocumented and experimental
 my $MAYBE_USE_TEST_CLASS = sub {
+    local *__ANON__ = 'ANON_MAYBE_USE_TEST_CLASS';
     my ( $self, $report ) = @_;
 
     my $class = $self->test_use->($report)
@@ -178,6 +194,7 @@ my $MAYBE_USE_TEST_CLASS = sub {
 };
 
 my $RUN_TEST_CLASS = sub {
+    local *__ANON__ = 'ANON_RUN_TEST_CLASS';
     my  ( $self, $test_class ) = @_;
     my $builder   = $self->test_configuration->builder;
     my $reporting = $self->test_reporting;
@@ -215,6 +232,13 @@ my $RUN_TEST_CLASS = sub {
           )
         {
             fail "test_startup failed";
+            return;
+        }
+
+        if ( my $message = $test_instance->test_skip ) {
+            # test_startup skipped the class
+            $reporting_class->skipped($message);
+            $builder->plan( skip_all => $message );
             return;
         }
 
@@ -290,7 +314,7 @@ sub test_methods {
     my $self = shift;
 
     my @method_list =
-      grep { /^test_/ and not $test_control_methods->()->{$_} }
+      grep { /^test_/ and not $TEST_CONTROL_METHODS->()->{$_} }
       $self->meta->get_method_list;
 
     # eventually we'll want to control the test method order
