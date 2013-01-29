@@ -15,12 +15,12 @@ my %methods_for = (
           /
     ],
 );
-my @test_classes = sort $test_suite->get_test_classes;
+my @test_classes = sort $test_suite->test_classes;
 eq_or_diff \@test_classes, [ sort keys %methods_for ],
-  'get_test_classes() should return a sorted list of test classes';
+  'test_classes() should return a sorted list of test classes';
 
 foreach my $class (@test_classes) {
-    eq_or_diff [ $class->new->get_test_methods ], $methods_for{$class},
+    eq_or_diff [ $class->new->test_methods ], $methods_for{$class},
       "$class should have the correct test methods";
 }
 

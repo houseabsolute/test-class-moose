@@ -258,15 +258,13 @@ included. __However__, they must still start with `test_`. See `include`.
 
 # THINGS YOU CAN OVERRIDE
 
-## Attributes
-
-### `test_configuration`
+## `test_configuration`
 
     my $test_configuration = $test->test_configuration;
 
 Returns the `Test::Class::Moose::Config` object.
 
-### `reporting`
+## `test_reporting`
 
     my $reporting = $test->test_reporting;
 
@@ -274,22 +272,20 @@ Returns the `Test::Class::Moose::Reporting` object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 `statistics` boolean option.
 
-### `test_class`
+## `test_class`
 
     my $class = $test->test_class;
 
-Returns the name for this class. Useful if you rebless an object (such as
-applying a role at runtime) and lose the original class name.
+Returns the name for this test class. Useful if you rebless an object (such as
+applying a role at runtime) and don't want to lose the original class name.
 
-## METHODS
-
-### `get_test_classes`
+## `test_classes`
 
 You may override this in a subclass. Currently returns a sorted list of all
 loaded classes that inherit directly or indirectly through
 `Test::Class::Moose`
 
-### `get_test_methods`
+## `test_methods`
 
 You may override this in a subclass. Currently returns all methods in a test
 class that start with `test_` (except for the test control methods).
@@ -298,12 +294,12 @@ Please note that the behavior for `include` and `exclude` is also contained
 in this method. If you override it, you will need to account for those
 yourself.
 
-### `runtests`
+## `runtests`
 
 If you really, really want to change how this module works, you can override
 the `runtests` method. We don't recommend it.
 
-### `import`
+## `import`
 
 Sadly, we have an `import` method. This is used to automatically provide you
 with all of the `Test::Most` behavior.

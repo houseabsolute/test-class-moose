@@ -156,7 +156,7 @@ my $run_test_method = sub {
 sub runtests {
     my $self = shift;
 
-    my @test_classes = $self->get_test_classes;
+    my @test_classes = $self->test_classes;
     my $builder      = $self->test_configuration->builder;
     my $reporting    = $self->test_reporting;
 
@@ -174,7 +174,7 @@ sub runtests {
                     }
                   );
                 $reporting->add_test_class($reporting_class);
-                my @test_methods = $test_instance->get_test_methods;
+                my @test_methods = $test_instance->test_methods;
                 unless (@test_methods) {
                     my $message =
                       "Skipping '$test_class': no test methods found";
@@ -226,7 +226,7 @@ END
     $builder->done_testing;
 }
 
-sub get_test_classes {
+sub test_classes {
     my $self        = shift;
     my %metaclasses = Class::MOP::get_all_metaclasses();
     my @classes;
@@ -243,7 +243,7 @@ sub get_test_classes {
     return sort @classes;
 }
 
-sub get_test_methods {
+sub test_methods {
     my $self = shift;
 
     my @method_list =
@@ -544,15 +544,13 @@ included. B<However>, they must still start with C<test_>. See C<include>.
 
 =head1 THINGS YOU CAN OVERRIDE
 
-=head2 Attributes
-
-=head3 C<test_configuration>
+=head2 C<test_configuration>
 
  my $test_configuration = $test->test_configuration;
 
 Returns the C<Test::Class::Moose::Config> object.
 
-=head3 C<reporting>
+=head2 C<test_reporting>
 
  my $reporting = $test->test_reporting;
 
@@ -560,22 +558,20 @@ Returns the C<Test::Class::Moose::Reporting> object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 C<statistics> boolean option.
 
-=head3 C<test_class>
+=head2 C<test_class>
 
  my $class = $test->test_class;
 
-Returns the name for this class. Useful if you rebless an object (such as
-applying a role at runtime) and lose the original class name.
+Returns the name for this test class. Useful if you rebless an object (such as
+applying a role at runtime) and don't want to lose the original class name.
 
-=head2 METHODS
-
-=head3 C<get_test_classes>
+=head2 C<test_classes>
 
 You may override this in a subclass. Currently returns a sorted list of all
 loaded classes that inherit directly or indirectly through
 C<Test::Class::Moose>
 
-=head3 C<get_test_methods>
+=head2 C<test_methods>
 
 You may override this in a subclass. Currently returns all methods in a test
 class that start with C<test_> (except for the test control methods).
@@ -584,12 +580,12 @@ Please note that the behavior for C<include> and C<exclude> is also contained
 in this method. If you override it, you will need to account for those
 yourself.
 
-=head3 C<runtests>
+=head2 C<runtests>
 
 If you really, really want to change how this module works, you can override
 the C<runtests> method. We don't recommend it.
 
-=head3 C<import>
+=head2 C<import>
 
 Sadly, we have an C<import> method. This is used to automatically provide you
 with all of the C<Test::Most> behavior.

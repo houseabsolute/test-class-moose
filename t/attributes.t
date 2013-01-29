@@ -18,11 +18,11 @@ my %methods_for = (
           /
     ],
 );
-my @test_classes = sort $test_suite->get_test_classes;
+my @test_classes = sort $test_suite->test_classes;
 
 foreach my $class (@test_classes) {
     eq_or_diff [
-        $class->new( $test_suite->test_configuration->args )->get_test_methods ],
+        $class->new( $test_suite->test_configuration->args )->test_methods ],
       $methods_for{$class},
       "$class should have the correct test methods";
 }
@@ -61,7 +61,7 @@ $test_suite = Test::Class::Moose->new(
 
 foreach my $class (@test_classes) {
     eq_or_diff [
-        $class->new( $test_suite->test_configuration->args )->get_test_methods ],
+        $class->new( $test_suite->test_configuration->args )->test_methods ],
       $methods_for{$class},
       "$class should have the correct test methods";
 }
