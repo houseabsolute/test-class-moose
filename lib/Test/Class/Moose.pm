@@ -31,6 +31,15 @@ has 'test_class' => (
     isa => 'Str',
 );
 
+has 'test_use' => (
+    is      => 'ro',
+    isa     => 'CodeRef',
+    default => sub {
+        sub { }
+    },
+    documentation => 'Deliberately undocumented and experimental',
+);
+
 sub import {
     my ( $class, %arg_for ) = @_;
     my $caller = caller;
@@ -154,6 +163,20 @@ my $RUN_TEST_METHOD = sub {
     return $reporting_method;
 };
 
+# XXX Deliberately undocumented and experimental
+my $MAYBE_USE_TEST_CLASS = sub {
+    my ( $self, $report ) = @_;
+
+    my $class = $self->test_use->($report)
+        or return $self;
+    eval "use $class";
+    if ( my $error = $@ ) {
+        $report->error($error);
+        return;
+    }
+    return $self;
+};
+
 my $RUN_TEST_CLASS = sub {
     my  ( $self, $test_class ) = @_;
     my $builder   = $self->test_configuration->builder;
@@ -174,6 +197,10 @@ my $RUN_TEST_CLASS = sub {
             my $message = "Skipping '$test_class': no test methods found";
             $reporting_class->skipped($message);
             $builder->plan( skip_all => $message );
+            return;
+        }
+        if ( not $self->$MAYBE_USE_TEST_CLASS($reporting) ) {
+            fail($reporting->error);
             return;
         }
         my $start = Benchmark->new;

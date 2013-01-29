@@ -22,6 +22,12 @@ has test_methods => (
     },
 );
 
+has 'error' => (
+    is        => 'rw',
+    isa       => 'Str',
+    predicate => 'has_error',
+);
+
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -51,3 +57,11 @@ C<Test::Class::Moose::Role::Reporting>.
 
 Returns an array reference of L<Test::Class::Moose::Reporting::Method>
 objects.
+
+=head2 C<error>
+
+If this class could not be run, returns a string explaining the error.
+
+=head2 C<has_error>
+
+Returns a boolean indicating whether or not the class has an error.
