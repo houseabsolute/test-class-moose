@@ -5,8 +5,10 @@ WriteMakefile
   'NAME' => 'Test::Class::Moose',
   'VERSION_FROM' => 'lib/Test/Class/Moose.pm',
   'PREREQ_PM' => {
-                   'Moose' => 0,
-                   'Test::Most' => '0.31'
+                   'Moose' => '2.0402',
+                   'Test::Most' => '0.31',
+                   'Try::Tiny' => '0.11',
+                   'namespace::autoclean' => '0.13'
                  },
   'INSTALLDIRS' => 'site',
   'EXE_FILES' => [],
