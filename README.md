@@ -24,7 +24,7 @@ Test::Class::Moose - Test::Class + Moose
         is 2, 2, "whee! ($class)";
     }
 
-    ;
+    1;
 
 # DESCRIPTION
 
