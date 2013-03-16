@@ -763,6 +763,11 @@ that, run the test suite in a subtest.
 
     done_testing;
 
+=head1 EXTRAS
+
+If you would like C<Test::Class::Moose> to take care of loading your classes
+for you, see C<Test::Class::Moose::Role::AutoUse> in this distribution.
+
 =head1 TODO
 
 All TODO items have currently been implemented.
