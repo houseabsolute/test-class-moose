@@ -7,7 +7,7 @@ with qw(
   Test::Class::Moose::Role::Reporting
 );
 
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 
 has 'num_tests' => (
     is  => 'rw',
@@ -26,7 +26,7 @@ Test::Class::Moose::Reporting::Method - Reporting on test methods
 
 =head1 VERSION
 
-0.02
+0.03
 
 =head1 DESCRIPTION
 

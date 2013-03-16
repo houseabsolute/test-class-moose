@@ -4,7 +4,7 @@ use 5.10.0;
 use Moose;
 use namespace::autoclean;
 
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 
 has 'num_test_methods' => (
     is      => 'rw',
@@ -61,7 +61,7 @@ Test::Class::Moose::Reporting - Test information for Test::Class::Moose
 
 =head1 VERSION
 
-0.02
+0.03
 
 =head1 SYNOPSIS
 

@@ -1,5 +1,9 @@
 Revision history for Test-Class-Moose
 
+0.03    March 16, 2013
+        - Add Test::Class::Moose::Role::AutoUse (automatically loads your
+          actual classes)
+
 0.02    January 29, 2013
         - Add class/method skipping. 
         - Rename almost every overrideable method to /^test_/.

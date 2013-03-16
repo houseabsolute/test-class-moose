@@ -10,7 +10,6 @@ my $builder = Module::Build->new(
     dist_version_from => 'lib/Test/Class/Moose.pm',
     build_requires    => {},
     requires          => {
-        #'DateTime'             => '0.72',
         'Moose'                => '2.0402',
         'namespace::autoclean' => '0.13',
         'Test::Most'           => '0.31',
