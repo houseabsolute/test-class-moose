@@ -300,7 +300,7 @@ sub test_classes {
     while ( my ( $class, $metaclass ) = each %metaclasses ) {
         next unless $metaclass->can('superclasses');
         next if $class eq __PACKAGE__;
-        next if $class eq 'main';        # XXX track down this bug
+        next if $class eq 'main';        # XXX no longer needed?
 
         push @classes => $class
           if grep { $_ eq __PACKAGE__ } $metaclass->linearized_isa;
@@ -313,13 +313,18 @@ sub test_classes {
 sub test_methods {
     my $self = shift;
 
-    # must be test_ and cannot be methods defined in this package
-    my @method_list = 
-      grep { /^test_/ and not __PACKAGE__->can($_) }
-      map  { $_->name } 
-      $self->meta->get_all_methods;
+    my @method_list;
+    foreach my $method ( $self->meta->get_all_methods ) {
 
-    # eventually we'll want to control the test method order
+        # attributes cannot be test methods
+        next if $method->isa('Moose::Meta::Method::Accessor');
+        my $name = $method->name;
+        next unless $name =~ /^test_/;
+
+        # don't use anything defined in this package
+        next if __PACKAGE__->can($name);
+        push @method_list => $name;
+    }
 
     if ( my $include = $self->test_configuration->include ) {
         @method_list = grep {/$include/} @method_list;

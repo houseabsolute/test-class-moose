@@ -1,5 +1,8 @@
 Revision history for Test-Class-Moose
 
+0.05
+        - Even if attributes start with test_, they cannot be test methods.
+
 0.04    March 17, 2013
         - Fix test inheritance bug.
 
