@@ -14,7 +14,7 @@ use Test::Class::Moose::Reporting;
 use Test::Class::Moose::Reporting::Class;
 use Test::Class::Moose::Reporting::Method;
 
-our $VERSION = 0.05;
+our $VERSION = 0.06;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -356,7 +356,7 @@ Test::Class::Moose - Test::Class + Moose
 
 =head1 VERSION
 
-0.05
+0.06
 
 =head1 SYNOPSIS
 

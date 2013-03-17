@@ -6,7 +6,7 @@ use warnings;
 use File::Find;
 use File::Spec;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # Override to get your own filter
 sub is_test_class {
@@ -68,7 +68,7 @@ Test::Class::Moose::Load - Load C<Test::Class::Moose> classes automatically.
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =head1 SYNOPSIS
 

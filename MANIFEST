@@ -7,15 +7,17 @@ lib/Test/Class/Moose/Reporting.pm
 lib/Test/Class/Moose/Reporting/Class.pm
 lib/Test/Class/Moose/Reporting/Method.pm
 lib/Test/Class/Moose/Reporting/Time.pm
-lib/Test/Class/Moose/Role/Reporting.pm
 lib/Test/Class/Moose/Role/AutoUse.pm
+lib/Test/Class/Moose/Role/Reporting.pm
 Makefile.PL
 MANIFEST			This list of files
 META.json
 META.yml
 README.md
 t/attributes.t
+t/autouse.t
 t/basic.t
+t/lib/PersonTest.pm
 t/lib/TestsFor/Basic.pm
 t/lib/TestsFor/Basic/Subclass.pm
 t/reporting.t

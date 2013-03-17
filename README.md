@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-0.04
+0.06
 
 # SYNOPSIS
 
@@ -361,7 +361,7 @@ We use nested tests (subtests) at each level:
     # Total tests run: 11
     ok
     All tests successful.
-    Files=1, Tests=2,  2 wallclock secs ( 0.04 usr  0.00 sys +  0.27 cusr  0.01 csys =  0.31 CPU)
+    Files=1, Tests=2,  2 wallclock secs ( 0.03 usr  0.00 sys +  0.27 cusr  0.01 csys =  0.31 CPU)
     Result: PASS
 
 # REPORTING

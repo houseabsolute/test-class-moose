@@ -1,5 +1,9 @@
 Revision history for Test-Class-Moose
 
+0.06    March 17, 2013
+        - Fix the MANIFEST again. That's it. After this I'm switching to
+          Dist::Zilla.
+
 0.05    March 17, 2013
         - Even if attributes start with test_, they cannot be test methods.
         - Add AutoUse to the MANIFEST :/

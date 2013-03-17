@@ -4,7 +4,7 @@ use Moose;
 use Carp;
 use namespace::autoclean;
 
-our $VERSION = 0.05;
+our $VERSION = 0.06;
 
 with qw(
   Test::Class::Moose::Role::Reporting
@@ -41,7 +41,7 @@ Test::Class::Moose::Reporting::class - Reporting on test classes
 
 =head1 VERSION
 
-0.05
+0.06
 
 =head1 DESCRIPTION
 
