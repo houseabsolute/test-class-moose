@@ -1,5 +1,7 @@
 package Test::Class::Moose::Reporting::Time;
 
+# ABSTRACT: Reporting object for timing
+
 use Moose;
 use Benchmark qw(timestr :hireswallclock);
 use namespace::autoclean;
@@ -40,10 +42,6 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
-
-=head1 NAME
-
-Test::Class::Moose::Reporting::Time - Reporting object for timing
 
 =head1 DESCRIPTION
 

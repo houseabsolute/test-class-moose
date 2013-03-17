@@ -1,5 +1,7 @@
 package Test::Class::Moose;
 
+# ABSTRACT: Test::Class + Moose
+
 use 5.10.0;
 use Moose;
 use Benchmark qw(timediff timestr);
@@ -13,8 +15,6 @@ use Test::Class::Moose::Config;
 use Test::Class::Moose::Reporting;
 use Test::Class::Moose::Reporting::Class;
 use Test::Class::Moose::Reporting::Method;
-
-our $VERSION = 0.06;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -349,14 +349,6 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
-
-=head1 NAME
-
-Test::Class::Moose - Test::Class + Moose
-
-=head1 VERSION
-
-0.06
 
 =head1 SYNOPSIS
 
@@ -779,10 +771,6 @@ for you, see C<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 All TODO items have currently been implemented.
 
-=head1 AUTHOR
-
-Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
-
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-test-class-moose at rt.cpan.org>,
@@ -827,16 +815,6 @@ test methods.
 Thanks to Judioo for adding the randomize attribute.
 
 Thanks to Adrian Howard for L<Test::Class>.
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2012 Curtis "Ovid" Poe.
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of either: the GNU General Public License as published by the Free
-Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
 
 =cut
 

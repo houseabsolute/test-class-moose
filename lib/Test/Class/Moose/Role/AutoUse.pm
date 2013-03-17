@@ -1,8 +1,8 @@
 package Test::Class::Moose::Role::AutoUse;
 
-use Moose::Role;
+# ABSTRACT: Automatically load the classes you're testing
 
-our $VERSION = 0.06;
+use Moose::Role;
 
 has 'class_name' => (
     is      => 'ro',
@@ -31,15 +31,6 @@ sub get_class_name_to_use {
 
 1;
 __END__
-
-
-=head1 NAME
-
-Test::Class::Moose::Role::AutoUse - Automatically load the classes you're testing
-
-=head1 VERSION
-
-0.06
 
 =head1 SYNOPSIS
 
@@ -159,10 +150,6 @@ Yes, that's correct. We should have done this, except that now it's almost
 identical to the AutoUse code, except that the first time you forget to C<use>
 the class in question, you'll be unhappy. Why not automate this?
 
-=head1 AUTHOR
-
-Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
-
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-test-class-moose at rt.cpan.org>,
@@ -198,16 +185,6 @@ L<http://cpanratings.perl.org/d/Test-Class-Moose>
 L<http://search.cpan.org/dist/Test-Class-Moose/>
 
 =back
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2012 Curtis "Ovid" Poe.
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of either: the GNU General Public License as published by the Free
-Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
 
 =cut
 

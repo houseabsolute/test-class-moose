@@ -1,10 +1,10 @@
 package Test::Class::Moose::Reporting;
 
+# ABSTRACT: Test information for Test::Class::Moose
+
 use 5.10.0;
 use Moose;
 use namespace::autoclean;
-
-our $VERSION = 0.06;
 
 has 'num_test_methods' => (
     is      => 'rw',
@@ -55,14 +55,6 @@ __PACKAGE__->meta->make_immutable;
 1;
 __END__
 
-=head1 NAME
-
-Test::Class::Moose::Reporting - Test information for Test::Class::Moose
-
-=head1 VERSION
-
-0.06
-
 =head1 SYNOPSIS
 
  my $statistics = Test::Class::Moose::Reporting->new;
@@ -103,10 +95,6 @@ Integer. The number of tests run.
     $statistics->inc_tests;        # increments by 1
     $statistics->inc_tests($x);    # increments by $x
 
-=head1 AUTHOR
-
-Curtis "Ovid" Poe, C<< <ovid at cpan.org> >>
-
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-test-class-moose at rt.cpan.org>,
@@ -142,18 +130,6 @@ L<http://cpanratings.perl.org/d/Test-Class-Moose>
 L<http://search.cpan.org/dist/Test-Class-Moose/>
 
 =back
-
-=head1 ACKNOWLEDGEMENTS
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2012 Curtis "Ovid" Poe.
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of either: the GNU General Public License as published by the Free
-Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
 
 =cut
 

@@ -1,5 +1,7 @@
 package Test::Class::Moose::Role::Reporting;
 
+# ABSTRACT: Reporting gathering role
+
 use Moose::Role;
 use Benchmark qw(timediff timestr :hireswallclock);
 use Test::Class::Moose::Reporting::Time;
@@ -47,10 +49,6 @@ has 'time' => (
 1;
 
 __END__
-
-=head1 NAME
-
-Test::Class::Moose::Role::Reporting - Reporting gathering role
 
 =head1 DESCRIPTION
 

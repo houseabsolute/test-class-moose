@@ -1,10 +1,10 @@
 package Test::Class::Moose::Reporting::Class;
 
+# ABSTRACT: Reporting on test classes
+
 use Moose;
 use Carp;
 use namespace::autoclean;
-
-our $VERSION = 0.06;
 
 with qw(
   Test::Class::Moose::Role::Reporting
@@ -34,14 +34,6 @@ __PACKAGE__->meta->make_immutable;
 
 
 __END__
-
-=head1 NAME
-
-Test::Class::Moose::Reporting::class - Reporting on test classes
-
-=head1 VERSION
-
-0.06
 
 =head1 DESCRIPTION
 

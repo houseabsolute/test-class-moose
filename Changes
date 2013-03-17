@@ -1,5 +1,8 @@
 Revision history for Test-Class-Moose
 
+0.07
+        - Convert to Dist::Zilla
+
 0.06    March 17, 2013
         - Fix the MANIFEST again. That's it. After this I'm switching to
           Dist::Zilla.

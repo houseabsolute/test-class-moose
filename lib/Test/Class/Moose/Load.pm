@@ -1,12 +1,12 @@
 package Test::Class::Moose::Load;
 
+# ABSTRACT: Load C<Test::Class::Moose> classes automatically.
+
 use strict;
 use warnings;
 
 use File::Find;
 use File::Spec;
-
-our $VERSION = '0.06';
 
 # Override to get your own filter
 sub is_test_class {
@@ -61,14 +61,6 @@ sub import {
 1;
 
 __END__
-
-=head1 NAME
-
-Test::Class::Moose::Load - Load C<Test::Class::Moose> classes automatically.
-
-=head1 VERSION
-
-Version 0.06
 
 =head1 SYNOPSIS
 
@@ -240,10 +232,6 @@ them. Please file a bug report if this is too restrictive.
 
  my ($package) = $_package =~ /^([[:word:]]+(?:::[[:word:]]+)*)$/;
 
-=head1 AUTHOR
-
-Curtis "Ovid" Poe, C<< <ovid@cpan.org> >>
-
 =head1 BUGS
 
 Please report any bugs or feature requests to
@@ -256,10 +244,3 @@ I make changes.
 
 Thanks to David Wheeler for the idea and Adrian Howard for
 C<Test::Class::Moose>.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2006 Curtis "Ovid" Poe, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.

@@ -1,13 +1,13 @@
 package Test::Class::Moose::Reporting::Method;
 
+# ABSTRACT: Reporting on test methods
+
 use Moose;
 use Carp;
 use namespace::autoclean;
 with qw(
   Test::Class::Moose::Role::Reporting
 );
-
-our $VERSION = 0.06;
 
 has 'num_tests' => (
     is  => 'rw',
@@ -19,14 +19,6 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
-
-=head1 NAME
-
-Test::Class::Moose::Reporting::Method - Reporting on test methods
-
-=head1 VERSION
-
-0.06
 
 =head1 DESCRIPTION
 
