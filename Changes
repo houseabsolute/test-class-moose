@@ -1,7 +1,8 @@
 Revision history for Test-Class-Moose
 
-0.05
+0.05    March 17, 2013
         - Even if attributes start with test_, they cannot be test methods.
+        - Add AutoUse to the MANIFEST :/
 
 0.04    March 17, 2013
         - Fix test inheritance bug.
