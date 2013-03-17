@@ -807,6 +807,31 @@ L<http://search.cpan.org/dist/Test-Class-Moose/>
 
 =back
 
+=head1 SEE ALSO
+
+=over 4
+
+=item * L<Test::Routine>
+
+I always pointed people to this when they would ask about L<Test::Class> +
+L<Moose>, but I would always hear "that's not quite what I'm looking for".
+I don't quite understand what the reasoning was, but I strongly encourage you
+to take a look at L<Test::Routine>.
+
+=item * L<Test::Roo>
+
+L<Test::Routine>, but with L<Moo> instead of L<Moose>.
+
+=item * L<Test::Class>
+
+xUnit-style testing in Perl.
+
+=item * L<Test::Class::Most>
+
+L<Test::Class> + L<Test::Most>.
+
+=back
+
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Tom Beresford (beresfordt) for spotting an issue when a class has no
