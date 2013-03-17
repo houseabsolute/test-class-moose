@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-0.06
+version 0.07
 
 # SYNOPSIS
 
@@ -419,10 +419,6 @@ for you, see `Test::Class::Moose::Role::AutoUse` in this distribution.
 
 All TODO items have currently been implemented.
 
-# AUTHOR
-
-Curtis "Ovid" Poe, `<ovid at cpan.org>`
-
 # BUGS
 
 Please report any bugs or feature requests to `bug-test-class-moose at rt.cpan.org`,
@@ -464,12 +460,13 @@ Thanks to Judioo for adding the randomize attribute.
 
 Thanks to Adrian Howard for [Test::Class](http://search.cpan.org/perldoc?Test::Class).
 
-# LICENSE AND COPYRIGHT
+# AUTHOR
 
-Copyright 2012 Curtis "Ovid" Poe.
+Curtis "Ovid" Poe <ovid@cpan.org>
 
-This program is free software; you can redistribute it and/or modify it under
-the terms of either: the GNU General Public License as published by the Free
-Software Foundation; or the Artistic License.
+# COPYRIGHT AND LICENSE
 
-See http://dev.perl.org/licenses/ for more information.
+This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
