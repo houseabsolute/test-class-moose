@@ -31,27 +31,27 @@
    "provides" : {
       "Test::Class::Moose" : {
          "file" : "lib/Test/Class/Moose.pm",
-         "version" : "0.03"
+         "version" : "0.04"
       },
       "Test::Class::Moose::Config" : {
          "file" : "lib/Test/Class/Moose/Config.pm",
-         "version" : "0.03"
+         "version" : "0.04"
       },
       "Test::Class::Moose::Load" : {
          "file" : "lib/Test/Class/Moose/Load.pm",
-         "version" : "0.03"
+         "version" : "0.04"
       },
       "Test::Class::Moose::Reporting" : {
          "file" : "lib/Test/Class/Moose/Reporting.pm",
-         "version" : "0.03"
+         "version" : "0.04"
       },
       "Test::Class::Moose::Reporting::Class" : {
          "file" : "lib/Test/Class/Moose/Reporting/Class.pm",
-         "version" : "0.03"
+         "version" : "0.04"
       },
       "Test::Class::Moose::Reporting::Method" : {
          "file" : "lib/Test/Class/Moose/Reporting/Method.pm",
-         "version" : "0.03"
+         "version" : "0.04"
       },
       "Test::Class::Moose::Reporting::Time" : {
          "file" : "lib/Test/Class/Moose/Reporting/Time.pm",
@@ -71,5 +71,5 @@
          "url" : "https://github.com/Ovid/test-class-moose"
       }
    },
-   "version" : "0.03"
+   "version" : "0.04"
 }
