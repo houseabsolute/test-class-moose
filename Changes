@@ -1,5 +1,8 @@
 Revision history for Test-Class-Moose
 
+0.04    March 17, 2013
+        - Fix test inheritance bug.
+
 0.03    March 16, 2013
         - Add Test::Class::Moose::Role::AutoUse (automatically loads your
           actual classes)

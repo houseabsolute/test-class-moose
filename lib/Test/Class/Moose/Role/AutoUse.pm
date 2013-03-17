@@ -2,7 +2,7 @@ package Test::Class::Moose::Role::AutoUse;
 
 use Moose::Role;
 
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 
 has 'class_name' => (
     is      => 'ro',
@@ -39,7 +39,7 @@ Test::Class::Moose::Role::AutoUse - Automatically load the classes you're testin
 
 =head1 VERSION
 
-0.03
+0.04
 
 =head1 SYNOPSIS
 

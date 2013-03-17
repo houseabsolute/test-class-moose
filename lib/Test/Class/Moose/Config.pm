@@ -4,7 +4,7 @@ use 5.10.0;
 use Moose;
 use namespace::autoclean;
 
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 
 has 'show_timing' => (
     is  => 'ro',
@@ -65,7 +65,7 @@ Test::Class::Moose::Config - Configuration information for Test::Class
 
 =head1 VERSION
 
-0.03
+0.04
 
 =head1 SYNOPSIS
 
