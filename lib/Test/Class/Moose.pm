@@ -313,9 +313,11 @@ sub test_classes {
 sub test_methods {
     my $self = shift;
 
-    my @method_list =
-      grep { /^test_/ and not $TEST_CONTROL_METHODS->()->{$_} }
-      $self->meta->get_method_list;
+    # must be test_ and cannot be methods defined in this package
+    my @method_list = 
+      grep { /^test_/ and not __PACKAGE__->can($_) }
+      map  { $_->name } 
+      $self->meta->get_all_methods;
 
     # eventually we'll want to control the test method order
 
