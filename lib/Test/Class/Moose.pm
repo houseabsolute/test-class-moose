@@ -291,6 +291,7 @@ Test methods:    @{[ $reporting->num_test_methods ]}
 Total tests run: @{[ $reporting->num_tests ]}
 END
     $builder->done_testing;
+    return $self;
 }
 
 sub test_classes {
