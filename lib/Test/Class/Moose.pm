@@ -59,7 +59,8 @@ END
     croak($@) if $@;
     strict->import;
     warnings->import;
-    if ( my $parent = ( delete $arg_for{parent} || delete $arg_for{extends} ) )
+    if ( my $parent
+        = ( delete $arg_for{parent} || delete $arg_for{extends} ) )
     {
         my @parents = 'ARRAY' eq ref $parent ? @$parent : $parent;
         $caller->meta->superclasses(@parents);
@@ -126,8 +127,8 @@ my $RUN_TEST_METHOD = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->test_class;
-    my $reporting =
-      Test::Class::Moose::Reporting::Method->new( { name => $test_method } );
+    my $reporting  = Test::Class::Moose::Reporting::Method->new(
+        { name => $test_method } );
 
     my $builder = $self->test_configuration->builder;
     $test_instance->test_skip_clear;
@@ -190,7 +191,7 @@ my $MAYBE_USE_TEST_CLASS = sub {
     my ( $self, $report ) = @_;
 
     my $class = $self->test_use->($report)
-        or return $self;
+      or return $self;
     eval "use $class";
     if ( my $error = $@ ) {
         $report->error($error);
@@ -201,15 +202,15 @@ my $MAYBE_USE_TEST_CLASS = sub {
 
 my $RUN_TEST_CLASS = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CLASS';
-    my  ( $self, $test_class ) = @_;
+    my ( $self, $test_class ) = @_;
     my $builder   = $self->test_configuration->builder;
     my $reporting = $self->test_reporting;
 
     return sub {
 
         # set up test class reporting
-        my $test_instance =
-          $test_class->new( $self->test_configuration->args );
+        my $test_instance
+          = $test_class->new( $self->test_configuration->args );
         my $reporting_class = Test::Class::Moose::Reporting::Class->new(
             {   name => $test_class,
             }
@@ -223,7 +224,7 @@ my $RUN_TEST_CLASS = sub {
             return;
         }
         if ( not $self->$MAYBE_USE_TEST_CLASS($reporting) ) {
-            fail($reporting->error);
+            fail( $reporting->error );
             return;
         }
         my $start = Benchmark->new;
@@ -242,6 +243,7 @@ my $RUN_TEST_CLASS = sub {
         }
 
         if ( my $message = $test_instance->test_skip ) {
+
             # test_startup skipped the class
             $reporting_class->skipped($message);
             $builder->plan( skip_all => $message );
