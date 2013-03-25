@@ -177,10 +177,12 @@ my $RUN_TEST_METHOD = sub {
         $reporting
     );
     $self->test_reporting->current_class->add_test_method($reporting);
-    if ( !$reporting->has_plan && !$reporting->is_skipped ) {
-        $reporting->num_tests($num_tests);
+    if ( !$reporting->is_skipped ) {
+        $reporting->tests_run($num_tests);
+        if ( !$reporting->has_plan ) {
+            $reporting->num_tests($num_tests);
+        }
     }
-    $reporting->tests_run($num_tests);
     return $reporting;
 };
 

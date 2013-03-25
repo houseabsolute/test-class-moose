@@ -10,8 +10,9 @@ with qw(
 );
 
 has 'tests_run' => (
-    is  => 'rw',
-    isa => 'Int',
+    is      => 'rw',
+    isa     => 'Int',
+    default => 0,
 );
 
 has 'num_tests' => (
