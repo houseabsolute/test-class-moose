@@ -10,9 +10,29 @@ with qw(
 );
 
 has 'num_tests' => (
-    is  => 'rw',
-    isa => 'Int',
+    is        => 'rw',
+    isa       => 'Int',
+    predicate => 'has_plan',
 );
+
+sub plan {
+    my ( $self, $integer ) = @_;
+    if ( $self->has_plan ) {
+        my $name = $self->name;
+        croak("You tried to plan twice in test method '$name'");
+    }
+    $self->num_tests($integer);
+}
+
+sub add_to_plan {
+    my ( $self, $integer ) = @_;
+
+    unless ( $self->has_plan ) {
+        my $name = $self->name;
+        croak("You cannot add to a non-existent plan in method $name");
+    }
+    $self->num_tests( $self->num_tests + $integer );
+}
 
 __PACKAGE__->meta->make_immutable;
 

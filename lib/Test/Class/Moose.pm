@@ -153,7 +153,10 @@ my $RUN_TEST_METHOD = sub {
 
             my $old_test_count = $builder->current_test;
             try {
-                $test_instance->$test_method;
+                $test_instance->$test_method($reporting);
+                if ( $reporting->has_plan ) {
+                    $builder->plan( tests => $reporting->num_tests );
+                }
             }
             catch {
                 fail "$test_method failed: $_";
@@ -174,7 +177,9 @@ my $RUN_TEST_METHOD = sub {
         $reporting
     );
     $self->test_reporting->current_class->add_test_method($reporting);
-    $reporting->num_tests($num_tests) unless $reporting->is_skipped;
+    if ( !$reporting->has_plan && !$reporting->is_skipped ) {
+        $reporting->num_tests($num_tests);
+    }
     return $reporting;
 };
 
@@ -413,6 +418,22 @@ No plans needed. The test suite declares a plan of the number of test classes.
 Each test class is a subtest declaring a plan of the number of test methods.
 
 Each test method relies on an implicit C<done_testing> call.
+
+If you prefer, you can declare a plan in a test method:
+
+    sub test_something {
+        my ( $test, $report ) = @_;
+        $report->plan($num_tests);
+        ...
+    }
+
+You can only call C<plan()> once for a given test method report. Otherwise,
+you must call C<add_to_plan()>. For example, with a method modifier:
+
+    after 'test_something' => sub {
+        my ( $test, $report ) = @_;
+        $report->add_to_plan($num_extra_tests);
+    };
 
 =head2 Inheriting from another Test::Class::Moose class
 
