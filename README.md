@@ -69,6 +69,22 @@ Each test class is a subtest declaring a plan of the number of test methods.
 
 Each test method relies on an implicit `done_testing` call.
 
+If you prefer, you can declare a plan in a test method:
+
+    sub test_something {
+        my ( $test, $report ) = @_;
+        $report->plan($num_tests);
+        ...
+    }
+
+You can only call `plan()` once for a given test method report. Otherwise,
+you must call `add_to_plan()`. For example, with a method modifier:
+
+    after 'test_something' => sub {
+        my ( $test, $report ) = @_;
+        $report->add_to_plan($num_extra_tests);
+    };
+
 ## Inheriting from another Test::Class::Moose class
 
 List it as the `extends` in the import list.
@@ -450,6 +466,27 @@ You can also look for information at:
 - Search CPAN
 
 [http://search.cpan.org/dist/Test-Class-Moose/](http://search.cpan.org/dist/Test-Class-Moose/)
+
+# SEE ALSO
+
+- [Test::Routine](http://search.cpan.org/perldoc?Test::Routine)
+
+I always pointed people to this when they would ask about [Test::Class](http://search.cpan.org/perldoc?Test::Class) +
+[Moose](http://search.cpan.org/perldoc?Moose), but I would always hear "that's not quite what I'm looking for".
+I don't quite understand what the reasoning was, but I strongly encourage you
+to take a look at [Test::Routine](http://search.cpan.org/perldoc?Test::Routine).
+
+- [Test::Roo](http://search.cpan.org/perldoc?Test::Roo)
+
+[Test::Routine](http://search.cpan.org/perldoc?Test::Routine), but with [Moo](http://search.cpan.org/perldoc?Moo) instead of [Moose](http://search.cpan.org/perldoc?Moose).
+
+- [Test::Class](http://search.cpan.org/perldoc?Test::Class)
+
+xUnit-style testing in Perl.
+
+- [Test::Class::Most](http://search.cpan.org/perldoc?Test::Class::Most)
+
+[Test::Class](http://search.cpan.org/perldoc?Test::Class) + [Test::Most](http://search.cpan.org/perldoc?Test::Most).
 
 # ACKNOWLEDGEMENTS
 
