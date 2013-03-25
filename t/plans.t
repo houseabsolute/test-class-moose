@@ -39,15 +39,21 @@ subtest 'run the test suite' => sub {
 };
 
 my $report = $test_suite->test_reporting;
-my %expected_planned_tests = (
+my %expected_tests_planned = (
     'TestsFor::Person::test_person'           => 2,
     'TestsFor::Person::Employee::test_person' => 3,
+);
+my %expected_tests_run = (
+    'TestsFor::Person::test_person'           => 1,
+    'TestsFor::Person::Employee::test_person' => 2,
 );
 foreach my $class ( $report->all_test_classes ) {
     foreach my $method ( $class->all_test_methods ) {
         my $fq_name = join '::' => $class->name, $method->name;
-        is $method->num_tests, $expected_planned_tests{$fq_name},
-            "$fq_name should have $expected_planned_tests{$fq_name} tests planned";
+        is $method->num_tests, $expected_tests_planned{$fq_name},
+            "$fq_name should have $expected_tests_planned{$fq_name} tests planned";
+        is $method->tests_run, $expected_tests_run{$fq_name},
+            "$fq_name should have $expected_tests_run{$fq_name} tests run";
     }
 }
 

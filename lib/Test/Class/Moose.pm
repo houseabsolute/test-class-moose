@@ -180,6 +180,7 @@ my $RUN_TEST_METHOD = sub {
     if ( !$reporting->has_plan && !$reporting->is_skipped ) {
         $reporting->num_tests($num_tests);
     }
+    $reporting->tests_run($num_tests);
     return $reporting;
 };
 

@@ -9,6 +9,11 @@ with qw(
   Test::Class::Moose::Role::Reporting
 );
 
+has 'tests_run' => (
+    is  => 'rw',
+    isa => 'Int',
+);
+
 has 'num_tests' => (
     is        => 'rw',
     isa       => 'Int',
