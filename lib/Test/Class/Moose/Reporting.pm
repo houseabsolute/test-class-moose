@@ -13,10 +13,10 @@ has 'num_test_methods' => (
     default => 0,
 );
 
-has 'num_tests' => (
+has 'tests_run' => (
     is      => 'rw',
     isa     => 'Int',
-    writer  => 'set_num_tests',
+    writer  => 'set_tests_run',
     default => 0,
 );
 
@@ -42,7 +42,7 @@ sub inc_test_methods {
 sub inc_tests {
     my ( $self, $tests ) = @_;
     $tests //= 1;
-    $self->set_num_tests( $self->num_tests + $tests );
+    $self->set_tests_run( $self->tests_run + $tests );
 }
 
 sub current_class {
@@ -74,7 +74,7 @@ Integer. The number of test classes run.
 
 Integer. The number of test methods run.
 
-=head2 C<num_tests>
+=head2 C<tests_run>
 
 Integer. The number of tests run.
 

@@ -154,7 +154,7 @@ my $RUN_TEST_METHOD = sub {
             try {
                 $test_instance->$test_method($reporting);
                 if ( $reporting->has_plan ) {
-                    $builder->plan( tests => $reporting->num_tests );
+                    $builder->plan( tests => $reporting->tests_planned );
                 }
             }
             catch {
@@ -179,7 +179,7 @@ my $RUN_TEST_METHOD = sub {
     if ( !$reporting->is_skipped ) {
         $reporting->tests_run($num_tests);
         if ( !$reporting->has_plan ) {
-            $reporting->num_tests($num_tests);
+            $reporting->tests_planned($num_tests);
         }
     }
     return $reporting;
@@ -258,7 +258,7 @@ my $RUN_TEST_CLASS = sub {
                 $test_instance,
                 $test_method
             );
-            $reporting->inc_tests( $reporting_method->num_tests );
+            $reporting->inc_tests( $reporting_method->tests_run );
         }
 
         # shutdown
@@ -296,7 +296,7 @@ sub runtests {
     $builder->diag(<<"END") if $self->test_configuration->statistics;
 Test classes:    @{[ $reporting->num_test_classes ]}
 Test methods:    @{[ $reporting->num_test_methods ]}
-Total tests run: @{[ $reporting->num_tests ]}
+Total tests run: @{[ $reporting->tests_run ]}
 END
     $builder->done_testing;
     return $self;

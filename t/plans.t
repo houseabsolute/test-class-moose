@@ -50,7 +50,7 @@ my %expected_tests_run = (
 foreach my $class ( $report->all_test_classes ) {
     foreach my $method ( $class->all_test_methods ) {
         my $fq_name = join '::' => $class->name, $method->name;
-        is $method->num_tests, $expected_tests_planned{$fq_name},
+        is $method->tests_planned, $expected_tests_planned{$fq_name},
             "$fq_name should have $expected_tests_planned{$fq_name} tests planned";
         is $method->tests_run, $expected_tests_run{$fq_name},
             "$fq_name should have $expected_tests_run{$fq_name} tests run";
