@@ -22,8 +22,9 @@ has 'test_configuration' => (
 );
 
 has 'test_reporting' => (
-    is  => 'ro',
-    isa => 'Test::Class::Moose::Reporting',
+    is      => 'ro',
+    isa     => 'Test::Class::Moose::Reporting',
+    default => sub { Test::Class::Moose::Reporting->new },
 );
 
 has 'test_class' => (
@@ -72,10 +73,7 @@ around 'BUILDARGS' => sub {
     my $orig  = shift;
     my $class = shift;
     return $class->$orig(
-        {   test_configuration => Test::Class::Moose::Config->new(@_),
-            test_reporting     => Test::Class::Moose::Reporting->new,
-        }
-    );
+        { test_configuration => Test::Class::Moose::Config->new(@_) } );
 };
 
 sub BUILD {
