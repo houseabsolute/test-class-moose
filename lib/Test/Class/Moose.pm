@@ -278,13 +278,9 @@ sub test_classes {
     my $self        = shift;
     my %metaclasses = Class::MOP::get_all_metaclasses();
     my @classes;
-    while ( my ( $class, $metaclass ) = each %metaclasses ) {
-        next unless $metaclass->can('superclasses');
+    foreach my $class ( keys %metaclasses ) {
         next if $class eq __PACKAGE__;
-        next if $class eq 'main';        # XXX no longer needed?
-
-        push @classes => $class
-          if grep { $_ eq __PACKAGE__ } $metaclass->linearized_isa;
+        push @classes => $class if $class->isa(__PACKAGE__);
     }
 
     # eventually we'll want to control the test class order
