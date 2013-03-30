@@ -1,6 +1,7 @@
 Revision history for Test-Class-Moose
 
 0.07
+        - Rename tests_run() to num_tests_run() (internal consistency)
         - Rename test_reporting() to test_report()
         - Rename ::Reporting classes to ::Report
         - Allow plans in methods. See #84046 in RT queue (Steffen W)

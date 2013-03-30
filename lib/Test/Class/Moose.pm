@@ -172,7 +172,7 @@ my $RUN_TEST_METHOD = sub {
     );
     $self->test_report->current_class->add_test_method($report);
     if ( !$report->is_skipped ) {
-        $report->tests_run($num_tests);
+        $report->num_tests_run($num_tests);
         if ( !$report->has_plan ) {
             $report->tests_planned($num_tests);
         }
@@ -234,7 +234,7 @@ my $RUN_TEST_CLASS = sub {
                 $test_instance,
                 $test_method
             );
-            $report->inc_tests( $report_method->tests_run );
+            $report->inc_tests( $report_method->num_tests_run );
         }
 
         # shutdown
@@ -272,7 +272,7 @@ sub runtests {
     $builder->diag(<<"END") if $self->test_configuration->statistics;
 Test classes:    @{[ $report->num_test_classes ]}
 Test methods:    @{[ $report->num_test_methods ]}
-Total tests run: @{[ $report->tests_run ]}
+Total tests run: @{[ $report->num_tests_run ]}
 END
     $builder->done_testing;
     return $self;
@@ -659,6 +659,8 @@ yourself.
 If you really, really want to change how this module works, you can override
 the C<runtests> method. We don't recommend it.
 
+Returns the L<Test::Class::Moose> instance.
+
 =head2 C<import>
 
 Sadly, we have an C<import> method. This is used to automatically provide you
@@ -719,7 +721,8 @@ Reporting features are subject to change.
 
 Sometimes you want more information about your test classes, it's time to do
 some reporting. Maybe you even want some tests for your reporting. If you do
-that, run the test suite in a subtest.
+that, run the test suite in a subtest (because the plans will otherwise be
+wrong).
 
     #!/usr/bin/env perl
     use lib 'lib';
@@ -758,6 +761,21 @@ that, run the test suite in a subtest.
     diag "Number of tests:        " . $report->num_tests;
 
     done_testing;
+
+If you just want to output reporting information, you do not need to run the
+test suite in a subtest:
+
+    my $test_suite = Test::Class::Moose->new->runtests;
+    my $report     = $test_suite->test_report;
+    ...
+
+Or even shorter:
+
+    my $report = Test::Class::Moose->new->runtests->test_report;
+
+=head2 The Test Report
+
+The test report is a L<Test::Class::Moose::Report> object.
 
 =head1 EXTRAS
 

@@ -3,6 +3,7 @@ package Test::Class::Moose::Report;
 # ABSTRACT: Test information for Test::Class::Moose
 
 use 5.10.0;
+use Carp;
 use Moose;
 use namespace::autoclean;
 
@@ -13,18 +14,23 @@ has 'num_test_methods' => (
     default => 0,
 );
 
-has 'tests_run' => (
+has 'num_tests_run' => (
     is      => 'rw',
     isa     => 'Int',
     writer  => 'set_tests_run',
     default => 0,
 );
 
+sub tests_run {
+    carp "tests_run() deprecated as of version 0.07. Use num_tests_run().";
+    goto &num_tests_run;
+}
+
 # see Moose::Meta::Attribute::Native::Trait::Array
 has test_classes => (
-    is     => 'ro',
-    traits => ['Array'],
-    isa    => 'ArrayRef[Test::Class::Moose::Report::Class]',
+    is      => 'ro',
+    traits  => ['Array'],
+    isa     => 'ArrayRef[Test::Class::Moose::Report::Class]',
     default => sub { [] },
     handles => {
         all_test_classes => 'elements',
@@ -42,7 +48,7 @@ sub inc_test_methods {
 sub inc_tests {
     my ( $self, $tests ) = @_;
     $tests //= 1;
-    $self->set_tests_run( $self->tests_run + $tests );
+    $self->set_tests_run( $self->num_tests_run + $tests );
 }
 
 sub current_class {
@@ -66,6 +72,14 @@ stable.
 
 =head1 ATTRIBUTES
 
+=head2 * C<test_classes>
+
+Returns an array reference of L<Test::Class::Moose::Report::Class> instances.
+
+=head2 * C<all_test_classes>
+
+Returns an array of L<Test::Class::Moose::Report::Class> instances.
+
 =head2 * C<num_test_classes>
 
 Integer. The number of test classes run.
@@ -74,11 +88,14 @@ Integer. The number of test classes run.
 
 Integer. The number of test methods run.
 
-=head2 C<tests_run>
+=head2 C<num_tests_run>
 
 Integer. The number of tests run.
 
 =head1 METHODS
+
+The following methods are for internal use only. They are included here for
+those who might want to hack on L<Test::Class::Moose>.
 
 =head2 C<inc_test_classes>
 

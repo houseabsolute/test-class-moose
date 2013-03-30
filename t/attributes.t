@@ -40,7 +40,7 @@ is $report->num_test_classes, 2,
   '... and it should return the correct number of test classes';
 is $report->num_test_methods, 2,
   '... and the correct number of test methods';
-is $report->tests_run, 3, '... and the correct number of tests';
+is $report->num_tests_run, 3, '... and the correct number of tests';
 
 $test_suite = Test::Class::Moose->new(
     {   show_timing => 0,
@@ -78,6 +78,6 @@ is $report->num_test_classes, 2,
   '... and it should return the correct number of test classes';
 is $report->num_test_methods, 3,
   '... and the correct number of test methods';
-is $report->tests_run, 8, '... and the correct number of tests';
+is $report->num_tests_run, 8, '... and the correct number of tests';
 
 done_testing;

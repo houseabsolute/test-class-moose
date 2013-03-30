@@ -27,7 +27,7 @@ is scalar @skipped, 1,
   '... and the correct number of methods should be skipped';
 is $skipped[0]->name, 'test_me',
     '... and they should be the correct methods';
-is $skipped[0]->tests_run, 0,
+is $skipped[0]->num_tests_run, 0,
     '... and we should have 0 tests run';
 
 done_testing;

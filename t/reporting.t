@@ -18,7 +18,7 @@ foreach my $class ( $report->all_test_classes ) {
         foreach my $method ( $class->all_test_methods ) {
             my $method_name = $method->name;
             ok !$method->is_skipped, "$method_name was not skipped";
-            cmp_ok $method->tests_run, '>', 0,
+            cmp_ok $method->num_tests_run, '>', 0,
               '... and some tests should have been run';
             explain "Run time for $method_name: ".$method->time->duration;
         }
@@ -35,6 +35,6 @@ foreach my $class ( $report->all_test_classes ) {
 }
 explain "Number of test classes: " . $report->num_test_classes;
 explain "Number of test methods: " . $report->num_test_methods;
-explain "Number of tests:        " . $report->tests_run;
+explain "Number of tests:        " . $report->num_tests_run;
 
 done_testing;

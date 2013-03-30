@@ -9,11 +9,16 @@ with qw(
   Test::Class::Moose::Role::Reporting
 );
 
-has 'tests_run' => (
+has 'num_tests_run' => (
     is      => 'rw',
     isa     => 'Int',
     default => 0,
 );
+
+sub tests_run {
+    carp "tests_run() deprecated as of version 0.07. Use num_tests_run().";
+    goto &num_tests_run;
+}
 
 has 'tests_planned' => (
     is        => 'rw',
@@ -56,9 +61,9 @@ L<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
 
-=head2 C<tests_run>
+=head2 C<num_tests_run>
 
-    my $tests_run = $method->tests_run;
+    my $tests_run = $method->num_tests_run;
 
 The number of tests run for this test method.
 
