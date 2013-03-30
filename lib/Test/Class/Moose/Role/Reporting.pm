@@ -4,7 +4,7 @@ package Test::Class::Moose::Role::Reporting;
 
 use Moose::Role;
 use Benchmark qw(timediff timestr :hireswallclock);
-use Test::Class::Moose::Reporting::Time;
+use Test::Class::Moose::Report::Time;
 
 has 'name' => (
     is       => 'ro',
@@ -22,7 +22,7 @@ has 'end_benchmark' => (
     isa => 'Benchmark',
     trigger => sub {
         my $self = shift;
-        my $time = Test::Class::Moose::Reporting::Time->new(
+        my $time = Test::Class::Moose::Report::Time->new(
             timediff( $self->end_benchmark, $self->start_benchmark ) 
         );
         $self->time($time);
@@ -43,7 +43,7 @@ has skipped => (
 
 has 'time' => (
     is  => 'rw',
-    isa => 'Test::Class::Moose::Reporting::Time',
+    isa => 'Test::Class::Moose::Report::Time',
 );
 
 1;
@@ -89,5 +89,5 @@ Returns true if the class or method is skipped.
 
 =head2 C<time>
 
-Returns a C<Test::Class::Moose::Reporting::Time> object. This object
+Returns a C<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class or method.

@@ -1,4 +1,4 @@
-package Test::Class::Moose::Reporting;
+package Test::Class::Moose::Report;
 
 # ABSTRACT: Test information for Test::Class::Moose
 
@@ -24,7 +24,7 @@ has 'tests_run' => (
 has test_classes => (
     is     => 'ro',
     traits => ['Array'],
-    isa    => 'ArrayRef[Test::Class::Moose::Reporting::Class]',
+    isa    => 'ArrayRef[Test::Class::Moose::Report::Class]',
     default => sub { [] },
     handles => {
         all_test_classes => 'elements',
@@ -57,7 +57,7 @@ __END__
 
 =head1 SYNOPSIS
 
- my $statistics = Test::Class::Moose::Reporting->new;
+ my $statistics = Test::Class::Moose::Report->new;
 
 =head1 DESCRIPTION
 

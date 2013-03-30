@@ -143,7 +143,7 @@ Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
 `$test->test_class`, or the `name` method on the `$reporting` object.
 
-The `$reporting` object is a `Test::Class::Moose::Reporting::Class` object.
+The `$reporting` object is a `Test::Class::Moose::Report::Class` object.
 
 - `test_setup`
 
@@ -156,7 +156,7 @@ The `$reporting` object is a `Test::Class::Moose::Reporting::Class` object.
 Runs at the start of each test method. If you must know the name of the test
 you're about to run, you can call `$reporting->name`.
 
-The `$reporting` object is a `Test::Class::Moose::Reporting::Method` object.
+The `$reporting` object is a `Test::Class::Moose::Report::Method` object.
 
 - `test_teardown`
 
@@ -168,7 +168,7 @@ The `$reporting` object is a `Test::Class::Moose::Reporting::Method` object.
 
 Runs at the end of each test method. 
 
-The `$reporting` object is a `Test::Class::Moose::Reporting::Method` object.
+The `$reporting` object is a `Test::Class::Moose::Report::Method` object.
 
 - `test_shutdown`
 
@@ -180,7 +180,7 @@ The `$reporting` object is a `Test::Class::Moose::Reporting::Method` object.
 
 Runs at the end of each test class. 
 
-The `$reporting` object is a `Test::Class::Moose::Reporting::Class` object.
+The `$reporting` object is a `Test::Class::Moose::Report::Class` object.
 
 To override a test control method, just remember that this is OO:
 
@@ -295,7 +295,7 @@ Returns the `Test::Class::Moose::Config` object.
 
     my $reporting = $test->test_reporting;
 
-Returns the `Test::Class::Moose::Reporting` object. Useful if you want to do
+Returns the `Test::Class::Moose::Report` object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 `statistics` boolean option.
 

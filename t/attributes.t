@@ -34,7 +34,7 @@ subtest 'runtests' => sub {
 
 ok my $reporting = $test_suite->test_reporting,
   'We should be able to fetch reporting information from the test suite';
-isa_ok $reporting, 'Test::Class::Moose::Reporting',
+isa_ok $reporting, 'Test::Class::Moose::Report',
   '... and the object it returns';
 is $reporting->num_test_classes, 2,
   '... and it should return the correct number of test classes';
@@ -72,7 +72,7 @@ subtest 'runtests' => sub {
 
 ok $reporting = $test_suite->test_reporting,
   'We should be able to fetch reporting information from the test suite';
-isa_ok $reporting, 'Test::Class::Moose::Reporting',
+isa_ok $reporting, 'Test::Class::Moose::Report',
   '... and the object it returns';
 is $reporting->num_test_classes, 2,
   '... and it should return the correct number of test classes';

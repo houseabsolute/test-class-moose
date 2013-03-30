@@ -1,4 +1,4 @@
-package Test::Class::Moose::Reporting::Class;
+package Test::Class::Moose::Report::Class;
 
 # ABSTRACT: Reporting on test classes
 
@@ -13,7 +13,7 @@ with qw(
 has test_methods => (
     is      => 'rw',
     traits  => ['Array'],
-    isa     => 'ArrayRef[Test::Class::Moose::Reporting::Method]',
+    isa     => 'ArrayRef[Test::Class::Moose::Report::Method]',
     default => sub { [] },
     handles => {
         all_test_methods => 'elements',
@@ -47,7 +47,7 @@ C<Test::Class::Moose::Role::Reporting>.
 
 =head2 C<test_methods>
 
-Returns an array reference of L<Test::Class::Moose::Reporting::Method>
+Returns an array reference of L<Test::Class::Moose::Report::Method>
 objects.
 
 =head2 C<error>

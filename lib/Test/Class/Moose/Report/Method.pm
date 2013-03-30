@@ -1,4 +1,4 @@
-package Test::Class::Moose::Reporting::Method;
+package Test::Class::Moose::Report::Method;
 
 # ABSTRACT: Reporting on test methods
 

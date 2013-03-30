@@ -1,4 +1,4 @@
-package Test::Class::Moose::Reporting::Time;
+package Test::Class::Moose::Report::Time;
 
 # ABSTRACT: Reporting object for timing
 

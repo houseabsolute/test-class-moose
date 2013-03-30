@@ -12,9 +12,9 @@ use Test::Builder;
 use Test::Most;
 use Try::Tiny;
 use Test::Class::Moose::Config;
-use Test::Class::Moose::Reporting;
-use Test::Class::Moose::Reporting::Class;
-use Test::Class::Moose::Reporting::Method;
+use Test::Class::Moose::Report;
+use Test::Class::Moose::Report::Class;
+use Test::Class::Moose::Report::Method;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -23,8 +23,8 @@ has 'test_configuration' => (
 
 has 'test_reporting' => (
     is      => 'ro',
-    isa     => 'Test::Class::Moose::Reporting',
-    default => sub { Test::Class::Moose::Reporting->new },
+    isa     => 'Test::Class::Moose::Report',
+    default => sub { Test::Class::Moose::Report->new },
 );
 
 has 'test_class' => (
@@ -118,7 +118,7 @@ my $RUN_TEST_METHOD = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->test_class;
-    my $reporting  = Test::Class::Moose::Reporting::Method->new(
+    my $reporting  = Test::Class::Moose::Report::Method->new(
         { name => $test_method } );
 
     my $builder = $self->test_configuration->builder;
@@ -187,7 +187,7 @@ my $RUN_TEST_CLASS = sub {
         # set up test class reporting
         my $test_instance
           = $test_class->new( $self->test_configuration->args );
-        my $reporting_class = Test::Class::Moose::Reporting::Class->new(
+        my $reporting_class = Test::Class::Moose::Report::Class->new(
             {   name => $test_class,
             }
         );
@@ -447,8 +447,8 @@ fails, the class/method will fail and testing for that class should stop.
 B<Every> test control method will be passed two arguments. The first is the
 C<$test> invocant. The second is an object implementing
 C<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
-is a handy way of recording information you later wish to use if you call
-C<< $test_suite->test_reporting >>.
+is a handy way of recording information you later wish to use if you call C<<
+$test_suite->test_reporting >>.
 
 These are:
 
@@ -466,7 +466,7 @@ Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
 C<< $test->test_class >>, or the C<name> method on the C<$reporting> object.
 
-The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
+The C<$reporting> object is a C<Test::Class::Moose::Report::Class> object.
 
 =item * C<test_setup>
 
@@ -479,7 +479,7 @@ The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
 Runs at the start of each test method. If you must know the name of the test
 you're about to run, you can call C<< $reporting->name >>.
 
-The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
+The C<$reporting> object is a C<Test::Class::Moose::Report::Method> object.
 
 =item * C<test_teardown>
 
@@ -491,7 +491,7 @@ The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
 
 Runs at the end of each test method. 
 
-The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
+The C<$reporting> object is a C<Test::Class::Moose::Report::Method> object.
 
 =item * C<test_shutdown>
 
@@ -503,7 +503,7 @@ The C<$reporting> object is a C<Test::Class::Moose::Reporting::Method> object.
 
 Runs at the end of each test class. 
 
-The C<$reporting> object is a C<Test::Class::Moose::Reporting::Class> object.
+The C<$reporting> object is a C<Test::Class::Moose::Report::Class> object.
 
 =back
 
@@ -624,7 +624,7 @@ Returns the C<Test::Class::Moose::Config> object.
 
  my $reporting = $test->test_reporting;
 
-Returns the C<Test::Class::Moose::Reporting> object. Useful if you want to do
+Returns the C<Test::Class::Moose::Report> object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 C<statistics> boolean option.
 
