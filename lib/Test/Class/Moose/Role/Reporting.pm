@@ -89,5 +89,5 @@ Returns true if the class or method is skipped.
 
 =head2 C<time>
 
-Returns a C<Test::Class::Moose::Report::Time> object. This object
+Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class or method.

@@ -72,7 +72,7 @@ used and tested.
 If you don't like how the name is calculated, you can override this method in
 your code.
 
-Warning: Don't use C<Test::> as a prefix. There are already plenty of modules
+Warning: Don't use L<Test::> as a prefix. There are already plenty of modules
 in that namespace and you could accidentally cause a collision.
 
 =head1 RATIONALE
@@ -107,7 +107,7 @@ Without this role, it would often look like this:
 That's OK, but there are a couple of issues here.
 
 First, if you need to rename your class, you must change this name repeatedly.
-With C<Test::Class::Moose::Role::AutoUse>, you only rename the test class name
+With L<Test::Class::Moose::Role::AutoUse>, you only rename the test class name
 to correspond to the new class name and you're done.
 
 The first problem is not very serious, but the second problem is. Let's say
@@ -125,7 +125,7 @@ C<TestsFor::Person::Employee> will inherit the
 C<TestsFor::Person->test_constructor()> method. Except as you can see in our
 example above, we've B<hardcoded> the class name, meaning that we won't be
 testing our code appropriately. The code using the
-C<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the classname (at
+L<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the classname (at
 least, it shouldn't), so when we call the inherited
 C<TestsFor::Person::Employee->test_constructor()> method, it constructs a
 C<TestsFor::Person::Employee> object, not a C<TestsFor::Person> object.

@@ -450,7 +450,7 @@ fails, the class/method will fail and testing for that class should stop.
 
 B<Every> test control method will be passed two arguments. The first is the
 C<$test> invocant. The second is an object implementing
-C<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
+L<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
 is a handy way of recording information you later wish to use if you call C<<
 $test_suite->test_report >>.
 
@@ -470,7 +470,7 @@ Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
 C<< $test->test_class >>, or the C<name> method on the C<$report> object.
 
-The C<$report> object is a C<Test::Class::Moose::Report::Class> object.
+The C<$report> object is a L<Test::Class::Moose::Report::Class> object.
 
 =item * C<test_setup>
 
@@ -483,7 +483,7 @@ The C<$report> object is a C<Test::Class::Moose::Report::Class> object.
 Runs at the start of each test method. If you must know the name of the test
 you're about to run, you can call C<< $report->name >>.
 
-The C<$report> object is a C<Test::Class::Moose::Report::Method> object.
+The C<$report> object is a L<Test::Class::Moose::Report::Method> object.
 
 =item * C<test_teardown>
 
@@ -495,7 +495,7 @@ The C<$report> object is a C<Test::Class::Moose::Report::Method> object.
 
 Runs at the end of each test method. 
 
-The C<$report> object is a C<Test::Class::Moose::Report::Method> object.
+The C<$report> object is a L<Test::Class::Moose::Report::Method> object.
 
 =item * C<test_shutdown>
 
@@ -507,7 +507,7 @@ The C<$report> object is a C<Test::Class::Moose::Report::Method> object.
 
 Runs at the end of each test class. 
 
-The C<$report> object is a C<Test::Class::Moose::Report::Class> object.
+The C<$report> object is a L<Test::Class::Moose::Report::Class> object.
 
 =back
 
@@ -535,7 +535,7 @@ Or:
  $test_suite->runtests;
 
 The attributes passed in the constructor are not directly available from the
-C<Test::Class::Moose> instance. They're available in
+L<Test::Class::Moose> instance. They're available in
 L<Test::Class::Moose::Config> and to avoid namespace pollution, we do I<not>
 delegate the attributes directly as a result. If you need them at runtime,
 you'll need to access the C<test_configuration> attribute:
@@ -562,7 +562,7 @@ Boolean. Will run test methods in a random order.
 =item * C<builder>
 
 Defaults to C<< Test::Builder->new >>. You can supply your own builder if you
-want, but it must conform to the C<Test::Builder> interface. We make no
+want, but it must conform to the L<Test::Builder> interface. We make no
 guarantees about which part of the interface it needs.
 
 =item * C<include>
@@ -615,20 +615,20 @@ If you wish to skip an individual method, do so in the C<test_setup> method.
 ... but probably shouldn't.
 
 As a general rule, methods beginning with C</^test_/> are reserved for
-C<Test::Class::Moose>. This makes it easier to remember what you can and
+L<Test::Class::Moose>. This makes it easier to remember what you can and
 cannot override.
 
 =head2 C<test_configuration>
 
  my $test_configuration = $test->test_configuration;
 
-Returns the C<Test::Class::Moose::Config> object.
+Returns the L<Test::Class::Moose::Config> object.
 
 =head2 C<test_report>
 
  my $report = $test->test_report;
 
-Returns the C<Test::Class::Moose::Report> object. Useful if you want to do
+Returns the L<Test::Class::Moose::Report> object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 C<statistics> boolean option.
 
@@ -643,7 +643,7 @@ applying a role at runtime) and don't want to lose the original class name.
 
 You may override this in a subclass. Currently returns a sorted list of all
 loaded classes that inherit directly or indirectly through
-C<Test::Class::Moose>
+L<Test::Class::Moose>
 
 =head2 C<test_methods>
 
@@ -662,7 +662,7 @@ the C<runtests> method. We don't recommend it.
 =head2 C<import>
 
 Sadly, we have an C<import> method. This is used to automatically provide you
-with all of the C<Test::Most> behavior.
+with all of the L<Test::Most> behavior.
 
 =head1 SAMPLE TAP OUTPUT
 
@@ -761,8 +761,8 @@ that, run the test suite in a subtest.
 
 =head1 EXTRAS
 
-If you would like C<Test::Class::Moose> to take care of loading your classes
-for you, see C<Test::Class::Moose::Role::AutoUse> in this distribution.
+If you would like L<Test::Class::Moose> to take care of loading your classes
+for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 TODO
 

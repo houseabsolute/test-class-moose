@@ -52,7 +52,7 @@ Should be considered experimental and B<read only>.
 
 =head1 IMPLEMENTS
 
-C<Test::Class::Moose::Role::Reporting>.
+L<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
 

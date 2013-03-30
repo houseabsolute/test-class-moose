@@ -125,9 +125,8 @@ fails, the class/method will fail and testing for that class should stop.
 
 __Every__ test control method will be passed two arguments. The first is the
 `$test` invocant. The second is an object implementing
-`Test::Class::Moose::Role::Reporting`. You may find that the `notes` hashref
-is a handy way of recording information you later wish to use if you call
-`$test_suite->test_report`.
+[Test::Class::Moose::Role::Reporting](http://search.cpan.org/perldoc?Test::Class::Moose::Role::Reporting). You may find that the `notes` hashref
+is a handy way of recording information you later wish to use if you call `$test_suite->test_report`.
 
 These are:
 
@@ -143,7 +142,7 @@ Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
 `$test->test_class`, or the `name` method on the `$report` object.
 
-The `$report` object is a `Test::Class::Moose::Report::Class` object.
+The `$report` object is a [Test::Class::Moose::Report::Class](http://search.cpan.org/perldoc?Test::Class::Moose::Report::Class) object.
 
 - `test_setup`
 
@@ -156,7 +155,7 @@ The `$report` object is a `Test::Class::Moose::Report::Class` object.
 Runs at the start of each test method. If you must know the name of the test
 you're about to run, you can call `$report->name`.
 
-The `$report` object is a `Test::Class::Moose::Report::Method` object.
+The `$report` object is a [Test::Class::Moose::Report::Method](http://search.cpan.org/perldoc?Test::Class::Moose::Report::Method) object.
 
 - `test_teardown`
 
@@ -168,7 +167,7 @@ The `$report` object is a `Test::Class::Moose::Report::Method` object.
 
 Runs at the end of each test method. 
 
-The `$report` object is a `Test::Class::Moose::Report::Method` object.
+The `$report` object is a [Test::Class::Moose::Report::Method](http://search.cpan.org/perldoc?Test::Class::Moose::Report::Method) object.
 
 - `test_shutdown`
 
@@ -180,7 +179,7 @@ The `$report` object is a `Test::Class::Moose::Report::Method` object.
 
 Runs at the end of each test class. 
 
-The `$report` object is a `Test::Class::Moose::Report::Class` object.
+The `$report` object is a [Test::Class::Moose::Report::Class](http://search.cpan.org/perldoc?Test::Class::Moose::Report::Class) object.
 
 To override a test control method, just remember that this is OO:
 
@@ -206,7 +205,7 @@ Or:
     $test_suite->runtests;
 
 The attributes passed in the constructor are not directly available from the
-`Test::Class::Moose` instance. They're available in
+[Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose) instance. They're available in
 [Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config) and to avoid namespace pollution, we do _not_
 delegate the attributes directly as a result. If you need them at runtime,
 you'll need to access the `test_configuration` attribute:
@@ -231,7 +230,7 @@ Boolean. Will run test methods in a random order.
 - `builder`
 
 Defaults to `Test::Builder->new`. You can supply your own builder if you
-want, but it must conform to the `Test::Builder` interface. We make no
+want, but it must conform to the [Test::Builder](http://search.cpan.org/perldoc?Test::Builder) interface. We make no
 guarantees about which part of the interface it needs.
 
 - `include`
@@ -282,20 +281,20 @@ If you wish to skip an individual method, do so in the `test_setup` method.
 ... but probably shouldn't.
 
 As a general rule, methods beginning with `/^test_/` are reserved for
-`Test::Class::Moose`. This makes it easier to remember what you can and
+[Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose). This makes it easier to remember what you can and
 cannot override.
 
 ## `test_configuration`
 
     my $test_configuration = $test->test_configuration;
 
-Returns the `Test::Class::Moose::Config` object.
+Returns the [Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config) object.
 
 ## `test_report`
 
     my $report = $test->test_report;
 
-Returns the `Test::Class::Moose::Report` object. Useful if you want to do
+Returns the [Test::Class::Moose::Report](http://search.cpan.org/perldoc?Test::Class::Moose::Report) object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 `statistics` boolean option.
 
@@ -310,7 +309,7 @@ applying a role at runtime) and don't want to lose the original class name.
 
 You may override this in a subclass. Currently returns a sorted list of all
 loaded classes that inherit directly or indirectly through
-`Test::Class::Moose`
+[Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose)
 
 ## `test_methods`
 
@@ -329,7 +328,7 @@ the `runtests` method. We don't recommend it.
 ## `import`
 
 Sadly, we have an `import` method. This is used to automatically provide you
-with all of the `Test::Most` behavior.
+with all of the [Test::Most](http://search.cpan.org/perldoc?Test::Most) behavior.
 
 # SAMPLE TAP OUTPUT
 
@@ -428,8 +427,8 @@ that, run the test suite in a subtest.
 
 # EXTRAS
 
-If you would like `Test::Class::Moose` to take care of loading your classes
-for you, see `Test::Class::Moose::Role::AutoUse` in this distribution.
+If you would like [Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose) to take care of loading your classes
+for you, see [Test::Class::Moose::Role::AutoUse](http://search.cpan.org/perldoc?Test::Class::Moose::Role::AutoUse) in this distribution.
 
 # TODO
 

@@ -1,6 +1,6 @@
 package Test::Class::Moose::Load;
 
-# ABSTRACT: Load C<Test::Class::Moose> classes automatically.
+# ABSTRACT: Load L<Test::Class::Moose> classes automatically.
 
 use strict;
 use warnings;
@@ -73,11 +73,11 @@ None.
 
 =head1 DESCRIPTION
 
-Note: This helper module was blatantly stolen from C<Test::Class::Load>.
+Note: This helper module was blatantly stolen from L<Test::Class::Load>.
 However, since your author is the person who originally wrote that code, he
 doesn't feel too bad.
 
-C<Test::Class::Moose> typically uses a helper script to load the test classes.
+L<Test::Class::Moose> typically uses a helper script to load the test classes.
 It often looks something like this:
 
  #!/usr/bin/perl -T
@@ -99,12 +99,12 @@ see that all tests pass, even though you don't notice that it didn't run your
 new test class.  Or you delete a test class and you forget to remove it from
 the helper script.
 
-C<Test::Class::Moose::Load> automatically finds and loads your test classes
+L<Test::Class::Moose::Load> automatically finds and loads your test classes
 for you. There is no longer a need to list them individually.
 
 =head1 BASIC USAGE
 
-Using C<Test::Class::Moose::Load> is as simple as this:
+Using L<Test::Class::Moose::Load> is as simple as this:
 
  #!/usr/bin/perl -T
 
@@ -131,15 +131,15 @@ of them in the import list.
 
 =head1 ADVANCED USAGE
 
-Here's some examples of advanced usage of C<Test::Class::Moose::Load>.
+Here's some examples of advanced usage of L<Test::Class::Moose::Load>.
 
 =head2 FILTER LOADED CLASSES
 
 You can redefine the filtering criteria, that is, decide what classes are
 picked up and what others are not. You do this simply by subclassing
-C<Test::Class::Moose::Load> overriding the C<is_test_class()> method. You
+L<Test::Class::Moose::Load> overriding the C<is_test_class()> method. You
 might want to do this to only load modules which inherit from
-C<Test::Class::Moose>, or anything else for that matter. 
+L<Test::Class::Moose>, or anything else for that matter. 
 
 =over 4
 
@@ -215,7 +215,7 @@ You can even automate this by binding it to a key in C<vim>:
 
 Then you can just type C<,t> ('comma', 'tee') and it will run the tests for
 your test class or the tests for your test script (if you're using a
-traditional C<Test::More> style script).
+traditional L<Test::More> style script).
 
 Of course, you can still run your helper script with C<prove>, C<make test> or
 C<./Build test> to run all of your test classes.
@@ -225,7 +225,7 @@ test class directories.
 
 =head1 SECURITY
 
-C<Test::Class::Moose::Load> is taint safe.  Because we're reading the class
+L<Test::Class::Moose::Load> is taint safe.  Because we're reading the class
 names from the directory structure, they're marked as tainted when running
 under taint mode.  We use the following ultra-paranoid bit of code to untaint
 them. Please file a bug report if this is too restrictive.
@@ -243,4 +243,4 @@ I make changes.
 =head1 ACKNOWLEDGMENTS
 
 Thanks to David Wheeler for the idea and Adrian Howard for
-C<Test::Class::Moose>.
+L<Test::Class::Moose>.
