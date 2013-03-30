@@ -38,7 +38,7 @@ subtest 'run the test suite' => sub {
     $builder->todo_end;
 };
 
-my $report = $test_suite->test_reporting;
+my $report = $test_suite->test_report;
 my %expected_tests_planned = (
     'TestsFor::Person::test_person'           => 2,
     'TestsFor::Person::Employee::test_person' => 3,

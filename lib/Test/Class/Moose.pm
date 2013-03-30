@@ -21,11 +21,15 @@ has 'test_configuration' => (
     isa => 'Test::Class::Moose::Config',
 );
 
-has 'test_reporting' => (
+has 'test_report' => (
     is      => 'ro',
     isa     => 'Test::Class::Moose::Report',
     default => sub { Test::Class::Moose::Report->new },
 );
+sub test_reporting {
+    carp "test_reporting() deprecated as of version 0.07. Use test_report().";
+    goto &test_report;
+}
 
 has 'test_class' => (
     is  => 'rw',
@@ -118,14 +122,14 @@ my $RUN_TEST_METHOD = sub {
     my ( $self, $test_instance, $test_method ) = @_;
 
     my $test_class = $test_instance->test_class;
-    my $reporting  = Test::Class::Moose::Report::Method->new(
+    my $report  = Test::Class::Moose::Report::Method->new(
         { name => $test_method } );
 
     my $builder = $self->test_configuration->builder;
     $test_instance->test_skip_clear;
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_setup',
-        $reporting
+        $report
     );
     my $num_tests;
 
@@ -134,18 +138,18 @@ my $RUN_TEST_METHOD = sub {
         $test_method,
         sub {
             if ( my $message = $test_instance->test_skip ) {
-                $reporting->skipped($message);
+                $report->skipped($message);
                 $builder->plan( skip_all => $message );
                 return;
             }
             my $start = Benchmark->new;
-            $reporting->start_benchmark($start);
+            $report->start_benchmark($start);
 
             my $old_test_count = $builder->current_test;
             try {
-                $test_instance->$test_method($reporting);
-                if ( $reporting->has_plan ) {
-                    $builder->plan( tests => $reporting->tests_planned );
+                $test_instance->$test_method($report);
+                if ( $report->has_plan ) {
+                    $builder->plan( tests => $report->tests_planned );
                 }
             }
             catch {
@@ -154,59 +158,59 @@ my $RUN_TEST_METHOD = sub {
             $num_tests = $builder->current_test - $old_test_count;
 
             my $end = Benchmark->new;
-            $reporting->end_benchmark($end);
+            $report->end_benchmark($end);
             if ( $self->test_configuration->show_timing ) {
                 my $time = timestr( timediff( $end, $start ) );
                 $self->test_configuration->builder->diag(
-                    $reporting->name . ": $time" );
+                    $report->name . ": $time" );
             }
         },
     );
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
-        $reporting
+        $report
     );
-    $self->test_reporting->current_class->add_test_method($reporting);
-    if ( !$reporting->is_skipped ) {
-        $reporting->tests_run($num_tests);
-        if ( !$reporting->has_plan ) {
-            $reporting->tests_planned($num_tests);
+    $self->test_report->current_class->add_test_method($report);
+    if ( !$report->is_skipped ) {
+        $report->tests_run($num_tests);
+        if ( !$report->has_plan ) {
+            $report->tests_planned($num_tests);
         }
     }
-    return $reporting;
+    return $report;
 };
 
 my $RUN_TEST_CLASS = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CLASS';
     my ( $self, $test_class ) = @_;
     my $builder   = $self->test_configuration->builder;
-    my $reporting = $self->test_reporting;
+    my $report = $self->test_report;
 
     return sub {
 
         # set up test class reporting
         my $test_instance
           = $test_class->new( $self->test_configuration->args );
-        my $reporting_class = Test::Class::Moose::Report::Class->new(
+        my $report_class = Test::Class::Moose::Report::Class->new(
             {   name => $test_class,
             }
         );
-        $reporting->add_test_class($reporting_class);
+        $report->add_test_class($report_class);
         my @test_methods = $test_instance->test_methods;
         unless (@test_methods) {
             my $message = "Skipping '$test_class': no test methods found";
-            $reporting_class->skipped($message);
+            $report_class->skipped($message);
             $builder->plan( skip_all => $message );
             return;
         }
         my $start = Benchmark->new;
-        $reporting_class->start_benchmark($start);
+        $report_class->start_benchmark($start);
 
-        $reporting->inc_test_methods( scalar @test_methods );
+        $report->inc_test_methods( scalar @test_methods );
 
         # startup
         if (!$test_instance->$RUN_TEST_CONTROL_METHOD(
-                'test_startup', $reporting_class
+                'test_startup', $report_class
             )
           )
         {
@@ -217,7 +221,7 @@ my $RUN_TEST_CLASS = sub {
         if ( my $message = $test_instance->test_skip ) {
 
             # test_startup skipped the class
-            $reporting_class->skipped($message);
+            $report_class->skipped($message);
             $builder->plan( skip_all => $message );
             return;
         }
@@ -226,22 +230,22 @@ my $RUN_TEST_CLASS = sub {
 
         # run test methods
         foreach my $test_method (@test_methods) {
-            my $reporting_method = $self->$RUN_TEST_METHOD(
+            my $report_method = $self->$RUN_TEST_METHOD(
                 $test_instance,
                 $test_method
             );
-            $reporting->inc_tests( $reporting_method->tests_run );
+            $report->inc_tests( $report_method->tests_run );
         }
 
         # shutdown
         $test_instance->$RUN_TEST_CONTROL_METHOD(
             'test_shutdown',
-            $reporting_class
+            $report_class
         ) or fail("test_shutdown() failed");
 
         # finalize reporting
         my $end = Benchmark->new;
-        $reporting_class->end_benchmark($end);
+        $report_class->end_benchmark($end);
         if ( $self->test_configuration->show_timing ) {
             my $time = timestr( timediff( $end, $start ) );
             $self->test_configuration->builder->diag("$test_class: $time");
@@ -264,11 +268,11 @@ sub runtests {
         );
     }
 
-    my $reporting = $self->test_reporting;
+    my $report = $self->test_report;
     $builder->diag(<<"END") if $self->test_configuration->statistics;
-Test classes:    @{[ $reporting->num_test_classes ]}
-Test methods:    @{[ $reporting->num_test_methods ]}
-Total tests run: @{[ $reporting->tests_run ]}
+Test classes:    @{[ $report->num_test_classes ]}
+Test methods:    @{[ $report->num_test_methods ]}
+Total tests run: @{[ $report->tests_run ]}
 END
     $builder->done_testing;
     return $self;
@@ -448,7 +452,7 @@ B<Every> test control method will be passed two arguments. The first is the
 C<$test> invocant. The second is an object implementing
 C<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
 is a handy way of recording information you later wish to use if you call C<<
-$test_suite->test_reporting >>.
+$test_suite->test_report >>.
 
 These are:
 
@@ -457,53 +461,53 @@ These are:
 =item * C<test_startup>
 
  sub test_startup {
-    my ( $test, $reporting ) = @_;
+    my ( $test, $report ) = @_;
     $test->next::method;
     # more startup
  }
 
 Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
-C<< $test->test_class >>, or the C<name> method on the C<$reporting> object.
+C<< $test->test_class >>, or the C<name> method on the C<$report> object.
 
-The C<$reporting> object is a C<Test::Class::Moose::Report::Class> object.
+The C<$report> object is a C<Test::Class::Moose::Report::Class> object.
 
 =item * C<test_setup>
 
  sub test_setup {
-    my ( $test, $reporting ) = @_;
+    my ( $test, $report ) = @_;
     $test->next::method;
     # more setup
  }
 
 Runs at the start of each test method. If you must know the name of the test
-you're about to run, you can call C<< $reporting->name >>.
+you're about to run, you can call C<< $report->name >>.
 
-The C<$reporting> object is a C<Test::Class::Moose::Report::Method> object.
+The C<$report> object is a C<Test::Class::Moose::Report::Method> object.
 
 =item * C<test_teardown>
 
  sub test_teardown {
-    my ( $test, $reporting ) = @_;
+    my ( $test, $report ) = @_;
     # more teardown
     $test->next::method;
  }
 
 Runs at the end of each test method. 
 
-The C<$reporting> object is a C<Test::Class::Moose::Report::Method> object.
+The C<$report> object is a C<Test::Class::Moose::Report::Method> object.
 
 =item * C<test_shutdown>
 
  sub test_shutdown {
-     my ( $test, $reporting ) = @_;
+     my ( $test, $report ) = @_;
      # more teardown
      $test->next::method;
  }
 
 Runs at the end of each test class. 
 
-The C<$reporting> object is a C<Test::Class::Moose::Report::Class> object.
+The C<$report> object is a C<Test::Class::Moose::Report::Class> object.
 
 =back
 
@@ -592,16 +596,16 @@ included. B<However>, they must still start with C<test_>. See C<include>.
 If you wish to skip a class, set the reason in the C<test_startup> method.
 
     sub test_startup {
-        my ( $self, $reporting ) = @_;
+        my ( $self, $report ) = @_;
         $test->test_skip("I don't want to run this class");
     }
 
 If you wish to skip an individual method, do so in the C<test_setup> method.
 
     sub test_setup {
-        my ( $self, $reporting ) = @_;
+        my ( $self, $report ) = @_;
 
-        if ( 'test_time_travel' eq $reporting->name ) {
+        if ( 'test_time_travel' eq $report->name ) {
             $test->test_skip("Time travel not yet available");
         }
     }
@@ -620,9 +624,9 @@ cannot override.
 
 Returns the C<Test::Class::Moose::Config> object.
 
-=head2 C<test_reporting>
+=head2 C<test_report>
 
- my $reporting = $test->test_reporting;
+ my $report = $test->test_report;
 
 Returns the C<Test::Class::Moose::Report> object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
@@ -726,9 +730,9 @@ that, run the test suite in a subtest.
     subtest 'run the test suite' => sub {
         $test_suite->runtests;
     };
-    my $reporting = $test_suite->test_reporting;
+    my $report = $test_suite->test_report;
 
-    foreach my $class ( $reporting->all_test_classes ) {
+    foreach my $class ( $report->all_test_classes ) {
         my $class_name = $class->name;
         ok !$class->is_skipped, "$class_name was not skipped";
 
@@ -749,9 +753,9 @@ that, run the test suite in a subtest.
         my $system = $time->system;
         # do with these as you will
     }
-    diag "Number of test classes: " . $reporting->num_test_classes;
-    diag "Number of test methods: " . $reporting->num_test_methods;
-    diag "Number of tests:        " . $reporting->num_tests;
+    diag "Number of test classes: " . $report->num_test_classes;
+    diag "Number of test methods: " . $report->num_test_methods;
+    diag "Number of tests:        " . $report->num_tests;
 
     done_testing;
 

@@ -9,7 +9,7 @@ subtest 'skip' => sub {
     $test_suite->runtests;
 };
 
-my $classes = $test_suite->test_reporting->test_classes;
+my $classes = $test_suite->test_report->test_classes;
 is $classes->[0]->name, 'TestsFor::Basic',
   'Our first class should be listed in reporting';
 ok $classes->[0]->is_skipped, '... and it should be listed as skipped';

@@ -8,7 +8,7 @@ my $test_suite = Test::Class::Moose->new;
 subtest 'run the test suite' => sub {
     $test_suite->runtests;
 };
-my $reporting = $test_suite->test_reporting;
+my $reporting = $test_suite->test_report;
 
 foreach my $class ( $reporting->all_test_classes ) {
     my $class_name = $class->name;

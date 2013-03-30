@@ -127,7 +127,7 @@ __Every__ test control method will be passed two arguments. The first is the
 `$test` invocant. The second is an object implementing
 `Test::Class::Moose::Role::Reporting`. You may find that the `notes` hashref
 is a handy way of recording information you later wish to use if you call
-`$test_suite->test_reporting`.
+`$test_suite->test_report`.
 
 These are:
 
@@ -291,9 +291,9 @@ cannot override.
 
 Returns the `Test::Class::Moose::Config` object.
 
-## `test_reporting`
+## `test_report`
 
-    my $reporting = $test->test_reporting;
+    my $reporting = $test->test_report;
 
 Returns the `Test::Class::Moose::Report` object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
@@ -397,7 +397,7 @@ that, run the test suite in a subtest.
     subtest 'run the test suite' => sub {
         $test_suite->runtests;
     };
-    my $reporting = $test_suite->test_reporting;
+    my $reporting = $test_suite->test_report;
 
     foreach my $class ( $reporting->all_test_classes ) {
         my $class_name = $class->name;
