@@ -8,9 +8,9 @@ my $test_suite = Test::Class::Moose->new;
 subtest 'run the test suite' => sub {
     $test_suite->runtests;
 };
-my $reporting = $test_suite->test_report;
+my $report = $test_suite->test_report;
 
-foreach my $class ( $reporting->all_test_classes ) {
+foreach my $class ( $report->all_test_classes ) {
     my $class_name = $class->name;
     ok !$class->is_skipped, "$class_name was not skipped";
 
@@ -33,8 +33,8 @@ foreach my $class ( $reporting->all_test_classes ) {
     }
     explain "Run time for $class_name: ".$time->duration;
 }
-explain "Number of test classes: " . $reporting->num_test_classes;
-explain "Number of test methods: " . $reporting->num_test_methods;
-explain "Number of tests:        " . $reporting->tests_run;
+explain "Number of test classes: " . $report->num_test_classes;
+explain "Number of test methods: " . $report->num_test_methods;
+explain "Number of tests:        " . $report->tests_run;
 
 done_testing;

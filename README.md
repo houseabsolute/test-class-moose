@@ -134,53 +134,53 @@ These are:
 - `test_startup`
 
     sub test_startup {
-       my ( $test, $reporting ) = @_;
+       my ( $test, $report ) = @_;
        $test->next::method;
        # more startup
     }
 
 Runs at the start of each test class. If you need to know the name of the
 class you're running this in (though usually you shouldn't), use
-`$test->test_class`, or the `name` method on the `$reporting` object.
+`$test->test_class`, or the `name` method on the `$report` object.
 
-The `$reporting` object is a `Test::Class::Moose::Report::Class` object.
+The `$report` object is a `Test::Class::Moose::Report::Class` object.
 
 - `test_setup`
 
     sub test_setup {
-       my ( $test, $reporting ) = @_;
+       my ( $test, $report ) = @_;
        $test->next::method;
        # more setup
     }
 
 Runs at the start of each test method. If you must know the name of the test
-you're about to run, you can call `$reporting->name`.
+you're about to run, you can call `$report->name`.
 
-The `$reporting` object is a `Test::Class::Moose::Report::Method` object.
+The `$report` object is a `Test::Class::Moose::Report::Method` object.
 
 - `test_teardown`
 
     sub test_teardown {
-       my ( $test, $reporting ) = @_;
+       my ( $test, $report ) = @_;
        # more teardown
        $test->next::method;
     }
 
 Runs at the end of each test method. 
 
-The `$reporting` object is a `Test::Class::Moose::Report::Method` object.
+The `$report` object is a `Test::Class::Moose::Report::Method` object.
 
 - `test_shutdown`
 
     sub test_shutdown {
-        my ( $test, $reporting ) = @_;
+        my ( $test, $report ) = @_;
         # more teardown
         $test->next::method;
     }
 
 Runs at the end of each test class. 
 
-The `$reporting` object is a `Test::Class::Moose::Report::Class` object.
+The `$report` object is a `Test::Class::Moose::Report::Class` object.
 
 To override a test control method, just remember that this is OO:
 
@@ -263,16 +263,16 @@ included. __However__, they must still start with `test_`. See `include`.
 If you wish to skip a class, set the reason in the `test_startup` method.
 
     sub test_startup {
-        my ( $self, $reporting ) = @_;
+        my ( $self, $report ) = @_;
         $test->test_skip("I don't want to run this class");
     }
 
 If you wish to skip an individual method, do so in the `test_setup` method.
 
     sub test_setup {
-        my ( $self, $reporting ) = @_;
+        my ( $self, $report ) = @_;
 
-        if ( 'test_time_travel' eq $reporting->name ) {
+        if ( 'test_time_travel' eq $report->name ) {
             $test->test_skip("Time travel not yet available");
         }
     }
@@ -293,7 +293,7 @@ Returns the `Test::Class::Moose::Config` object.
 
 ## `test_report`
 
-    my $reporting = $test->test_report;
+    my $report = $test->test_report;
 
 Returns the `Test::Class::Moose::Report` object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
@@ -397,9 +397,9 @@ that, run the test suite in a subtest.
     subtest 'run the test suite' => sub {
         $test_suite->runtests;
     };
-    my $reporting = $test_suite->test_report;
+    my $report = $test_suite->test_report;
 
-    foreach my $class ( $reporting->all_test_classes ) {
+    foreach my $class ( $report->all_test_classes ) {
         my $class_name = $class->name;
         ok !$class->is_skipped, "$class_name was not skipped";
 
@@ -420,9 +420,9 @@ that, run the test suite in a subtest.
         my $system = $time->system;
         # do with these as you will
     }
-    diag "Number of test classes: " . $reporting->num_test_classes;
-    diag "Number of test methods: " . $reporting->num_test_methods;
-    diag "Number of tests:        " . $reporting->num_tests;
+    diag "Number of test classes: " . $report->num_test_classes;
+    diag "Number of test methods: " . $report->num_test_methods;
+    diag "Number of tests:        " . $report->num_tests;
 
     done_testing;
 

@@ -3,8 +3,8 @@ package TestsFor::SkipSomeMethods;
 use Test::Class::Moose;
 
 sub test_setup {
-    my ( $test, $reporting ) = @_;
-    if ( 'test_me' eq $reporting->name ) {
+    my ( $test, $report ) = @_;
+    if ( 'test_me' eq $report->name ) {
         $test->test_skip('only methods listed as skipped should be skipped');
     }
 }
