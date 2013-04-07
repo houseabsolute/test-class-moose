@@ -143,7 +143,7 @@ my $RUN_TEST_METHOD = sub {
                 return;
             }
             my $start = Benchmark->new;
-            $report->start_benchmark($start);
+            $report->_start_benchmark($start);
 
             my $old_test_count = $builder->current_test;
             try {
@@ -158,7 +158,7 @@ my $RUN_TEST_METHOD = sub {
             $num_tests = $builder->current_test - $old_test_count;
 
             my $end = Benchmark->new;
-            $report->end_benchmark($end);
+            $report->_end_benchmark($end);
             if ( $self->test_configuration->show_timing ) {
                 my $time = timestr( timediff( $end, $start ) );
                 $self->test_configuration->builder->diag(
@@ -204,7 +204,7 @@ my $RUN_TEST_CLASS = sub {
             return;
         }
         my $start = Benchmark->new;
-        $report_class->start_benchmark($start);
+        $report_class->_start_benchmark($start);
 
         $report->inc_test_methods( scalar @test_methods );
 
@@ -245,7 +245,7 @@ my $RUN_TEST_CLASS = sub {
 
         # finalize reporting
         my $end = Benchmark->new;
-        $report_class->end_benchmark($end);
+        $report_class->_end_benchmark($end);
         if ( $self->test_configuration->show_timing ) {
             my $time = timestr( timediff( $end, $start ) );
             $self->test_configuration->builder->diag("$test_class: $time");

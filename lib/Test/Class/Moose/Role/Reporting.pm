@@ -12,18 +12,18 @@ has 'name' => (
     required => 1,
 );
 
-has 'start_benchmark' => (
+has '_start_benchmark' => (
     is  => 'rw',
     isa => 'Benchmark',
 );
 
-has 'end_benchmark' => (
+has '_end_benchmark' => (
     is  => 'rw',
     isa => 'Benchmark',
     trigger => sub {
         my $self = shift;
         my $time = Test::Class::Moose::Report::Time->new(
-            timediff( $self->end_benchmark, $self->start_benchmark ) 
+            timediff( $self->_end_benchmark, $self->_start_benchmark ) 
         );
         $self->time($time);
     },
@@ -66,14 +66,6 @@ None.
 
 The "name" of the statistic. For a class, this should be the class name. For a
 method, it should be the method name.
-
-=head2 C<start_benchmark>
-
-The starting C<Benchmark> object.
-
-=head2 C<end_benchmark>
-
-The ending C<Benchmark> object.
 
 =head2 C<notes>
 
