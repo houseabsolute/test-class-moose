@@ -119,6 +119,12 @@ Reporting is currently in alpha. The interface is not guaranteed to be stable.
 
  my $report = Test::Class::Moose->new->runtests->test_report;
 
+Or:
+
+ my $test_suite = Test::Class::Moose->new;
+ $test_suite->runtests;
+ my $report = $test_suite->test_report;
+
 After the test suite is run, you can call the C<test_report> method to get the
 report. The test report is a L<Test::Class::Moose::Report> object. This object
 provides the following methods:
@@ -165,75 +171,87 @@ If this class could not be run, returns a string explaining the error.
 
 Returns a boolean indicating whether or not the class has an error.
 
-=head2 C<name>
+=head3 C<name>
 
 The name of the test class.
 
-=head2 C<notes>
+=head3 C<notes>
 
 A hashref. The end user may use this to store anything desired.
 
-=head2 C<skipped>
+=head3 C<skipped>
 
 If the class or method is skipped, this will return the skip message.
 
-=head2 C<is_skipped>
+=head3 C<is_skipped>
 
 Returns true if the class or method is skipped.
 
-=head2 C<time>
+=head3 C<time>
 
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class.
 
+=head2 Test Report Methods
 
-Each L<Test::Class::Moose::Report::Class> instance provides the
-following methods:
+Each L<Test::Class::Moose::Report::Method> instance provides the following
+methods:
 
-=head3 C<test_methods>
+=head3 C<name>
 
-Returns an array reference of L<Test::Class::Moose::Report::Method>
-objects.
+The "name" of the test method.
 
-=head3 C<all_test_methods>
-
-Returns an array of L<Test::Class::Moose::Report::Method> objects.
-
-=head3 C<error>
-
-If this class could not be run, returns a string explaining the error.
-
-=head3 C<has_error>
-
-Returns a boolean indicating whether or not the class has an error.
-
-=head2 C<name>
-
-The name of the test class.
-
-=head2 C<notes>
+=head3 C<notes>
 
 A hashref. The end user may use this to store anything desired.
 
-=head2 C<skipped>
+=head3 C<skipped>
 
 If the class or method is skipped, this will return the skip message.
 
-=head2 C<is_skipped>
+=head3 C<is_skipped>
 
 Returns true if the class or method is skipped.
 
-=head2 C<time>
+=head3 C<time>
 
 Returns a L<Test::Class::Moose::Report::Time> object. This object
-represents the duration of this class.
+represents the duration of this class or method.
 
-=head
+=head2 Test Report Time
 
-=head1 METHODS
+Each L<Test::Class::Moose::Report::Time> instance has the following methods:
 
-The following methods are for internal use only. They are included here for
-those who might want to hack on L<Test::Class::Moose>.
+=head3 C<real>
+
+    my $real = $time->real;
+
+Returns the "real" amount of time the class or method took to run.
+
+=head3 C<user>
+
+    my $user = $time->user;
+
+Returns the "user" amount of time the class or method took to run.
+
+=head3 C<system>
+
+    my $system = $time->system;
+
+Returns the "system" amount of time the class or method took to run.
+
+=head3 C<duration>
+
+Returns the returns a human-readable representation of the time this class or
+method took to run. Something like:
+
+  0.00177908 wallclock secs ( 0.00 usr +  0.00 sys =  0.00 CPU)
+
+=head1 TRUSTED METHODS
+
+The following L<Test::Class::Moose::Report> methods are for internal use only
+and are called by L<Test::Class::Moose>.  They are included here for those who
+might want to hack on L<Test::Class::Moose>.
 
 =head2 C<inc_test_classes>
 
