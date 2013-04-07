@@ -1,6 +1,6 @@
 Revision history for Test-Class-Moose
 
-0.07
+0.07    April 7, 2013
         - The $test_suite object now has the time() method.
         - Fully document report methods
         - Marked a bunch of "trusted" methods as effectively private.
