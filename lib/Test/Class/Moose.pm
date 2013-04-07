@@ -206,7 +206,7 @@ my $RUN_TEST_CLASS = sub {
         my $start = Benchmark->new;
         $report_class->_start_benchmark($start);
 
-        $report->inc_test_methods( scalar @test_methods );
+        $report->_inc_test_methods( scalar @test_methods );
 
         # startup
         if (!$test_instance->$RUN_TEST_CONTROL_METHOD(
@@ -234,7 +234,7 @@ my $RUN_TEST_CLASS = sub {
                 $test_instance,
                 $test_method
             );
-            $report->inc_tests( $report_method->num_tests_run );
+            $report->_inc_tests( $report_method->num_tests_run );
         }
 
         # shutdown

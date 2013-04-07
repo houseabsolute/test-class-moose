@@ -39,13 +39,13 @@ has test_classes => (
     },
 );
 
-sub inc_test_methods {
+sub _inc_test_methods {
     my ( $self, $test_methods ) = @_;
     $test_methods //= 1;
     $self->set_num_test_methods( $self->num_test_methods + $test_methods );
 }
 
-sub inc_tests {
+sub _inc_tests {
     my ( $self, $tests ) = @_;
     $tests //= 1;
     $self->set_tests_run( $self->num_tests_run + $tests );
@@ -253,15 +253,15 @@ The following L<Test::Class::Moose::Report> methods are for internal use only
 and are called by L<Test::Class::Moose>.  They are included here for those who
 might want to hack on L<Test::Class::Moose>.
 
-=head2 C<inc_test_methods>
+=head2 C<_inc_test_methods>
 
-    $statistics->inc_test_methods;        # increments by 1
-    $statistics->inc_test_methods($x);    # increments by $x
+    $statistics->_inc_test_methods;        # increments by 1
+    $statistics->_inc_test_methods($x);    # increments by $x
 
-=head2 C<inc_tests>
+=head2 C<_inc_tests>
 
-    $statistics->inc_tests;        # increments by 1
-    $statistics->inc_tests($x);    # increments by $x
+    $statistics->_inc_tests;        # increments by 1
+    $statistics->_inc_tests($x);    # increments by $x
 
 =head1 BUGS
 

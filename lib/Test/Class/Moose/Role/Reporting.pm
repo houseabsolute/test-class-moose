@@ -13,20 +13,21 @@ has 'name' => (
 );
 
 has '_start_benchmark' => (
-    is  => 'rw',
-    isa => 'Benchmark',
+    is            => 'rw',
+    isa           => 'Benchmark',
+    documentation => 'Trusted method for Test::Class::Moose',
 );
 
 has '_end_benchmark' => (
-    is  => 'rw',
-    isa => 'Benchmark',
+    is      => 'rw',
+    isa     => 'Benchmark',
     trigger => sub {
         my $self = shift;
         my $time = Test::Class::Moose::Report::Time->new(
-            timediff( $self->_end_benchmark, $self->_start_benchmark ) 
-        );
+            timediff( $self->_end_benchmark, $self->_start_benchmark ) );
         $self->time($time);
     },
+    documentation => 'Trusted method for Test::Class::Moose',
 );
 
 has 'notes' => (
