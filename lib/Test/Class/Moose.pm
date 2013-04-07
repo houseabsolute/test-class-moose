@@ -256,6 +256,8 @@ my $RUN_TEST_CLASS = sub {
 sub runtests {
     my $self = shift;
 
+    my $report = $self->test_report;
+    $report->_start_benchmark( Benchmark->new );
     my @test_classes = $self->test_classes;
 
     my $builder = $self->test_configuration->builder;
@@ -268,13 +270,13 @@ sub runtests {
         );
     }
 
-    my $report = $self->test_report;
     $builder->diag(<<"END") if $self->test_configuration->statistics;
 Test classes:    @{[ $report->num_test_classes ]}
 Test methods:    @{[ $report->num_test_methods ]}
 Total tests run: @{[ $report->num_tests_run ]}
 END
     $builder->done_testing;
+    $report->_end_benchmark( Benchmark->new );
     return $self;
 }
 

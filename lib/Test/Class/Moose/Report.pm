@@ -6,6 +6,7 @@ use 5.10.0;
 use Carp;
 use Moose;
 use namespace::autoclean;
+with 'Test::Class::Moose::Role::Timing';
 
 has 'num_test_methods' => (
     is      => 'rw',
@@ -84,6 +85,8 @@ report information:
         $test_suite->runtests;
     };
     my $report = $test_suite->test_report;
+    my $duration = $report->time->duration;
+    diag "Test suite run time: $duration";
 
     foreach my $class ( $report->all_test_classes ) {
         my $class_name = $class->name;
@@ -148,6 +151,11 @@ Integer. The number of test methods run.
 =head3 C<num_tests_run>
 
 Integer. The number of tests run.
+
+=head2 C<time>
+
+Returns a L<Test::Class::Moose::Report::Time> object. This object
+represents the duration of the entire test suite.
 
 =head2 Test Report Class
 

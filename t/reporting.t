@@ -9,6 +9,7 @@ subtest 'run the test suite' => sub {
     $test_suite->runtests;
 };
 my $report = $test_suite->test_report;
+diag $report->time->duration;
 
 foreach my $class ( $report->all_test_classes ) {
     my $class_name = $class->name;
