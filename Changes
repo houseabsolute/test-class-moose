@@ -1,6 +1,8 @@
 Revision history for Test-Class-Moose
 
 0.07
+        - Fully document report methods
+        - Marked a bunch of "trusted" methods as effectively private.
         - Rename tests_run() to num_tests_run() (internal consistency)
         - Rename test_reporting() to test_report()
         - Rename ::Reporting classes to ::Report

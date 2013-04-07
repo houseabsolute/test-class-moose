@@ -1,27 +1,25 @@
-# NAME
-
-Test::Class::Moose - Test::Class + Moose
-
-# VERSION
-
-version 0.07
-
 # SYNOPSIS
 
-    package TestsFor::Some::Class;
+    package TestsFor::DateTime;
     use Test::Class::Moose;
+    use DateTime;
 
-    sub test_me {
-        my $test  = shift;
-        my $class = $test->test_class;
-        ok 1, "test_me() ran ($class)";
-        ok 2, "this is another test ($class)";
-    }
+    # this usually goes in a base class
+    INIT { Test::Class::Moose->new->runtests }
 
-    sub test_this_baby {
-        my $test  = shift;
-        my $class = $test->test_class;
-        is 2, 2, "whee! ($class)";
+    # methods that begin with test_ are test methods.
+    sub test_constructor {
+        my ( $test, $report ) = @_;
+        $report->plan(3);    # strictly optional
+
+        can_ok 'DateTime', 'new';
+        my %args = (
+            year  => 1967,
+            month => 6,
+            day   => 20,
+        );
+        isa_ok my $date = DateTime->new(%args), 'DateTime';
+        is $date->year, $args{year}, '... and the year should be correct';
     }
 
     1;
@@ -84,6 +82,10 @@ you must call `add_to_plan()`. For example, with a method modifier:
         my ( $test, $report ) = @_;
         $report->add_to_plan($num_extra_tests);
     };
+
+Please note that if you call `plan`, the plan will still show up at the end
+of the subtest run, but you'll get the desired failure if the number of tests
+run does not match the plan.
 
 ## Inheriting from another Test::Class::Moose class
 
@@ -325,6 +327,8 @@ yourself.
 If you really, really want to change how this module works, you can override
 the `runtests` method. We don't recommend it.
 
+Returns the [Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose) instance.
+
 ## `import`
 
 Sadly, we have an `import` method. This is used to automatically provide you
@@ -381,11 +385,14 @@ We use nested tests (subtests) at each level:
 
 # REPORTING
 
+See [Test::Class::Moose::Report](http://search.cpan.org/perldoc?Test::Class::Moose::Report) for more detailed information on reporting.
+
 Reporting features are subject to change.
 
 Sometimes you want more information about your test classes, it's time to do
 some reporting. Maybe you even want some tests for your reporting. If you do
-that, run the test suite in a subtest.
+that, run the test suite in a subtest (because the plans will otherwise be
+wrong).
 
     #!/usr/bin/env perl
     use lib 'lib';
@@ -424,6 +431,17 @@ that, run the test suite in a subtest.
     diag "Number of tests:        " . $report->num_tests;
 
     done_testing;
+
+If you just want to output reporting information, you do not need to run the
+test suite in a subtest:
+
+    my $test_suite = Test::Class::Moose->new->runtests;
+    my $report     = $test_suite->test_report;
+    ...
+
+Or even shorter:
+
+    my $report = Test::Class::Moose->new->runtests->test_report;
 
 # EXTRAS
 
@@ -495,14 +513,3 @@ test methods.
 Thanks to Judioo for adding the randomize attribute.
 
 Thanks to Adrian Howard for [Test::Class](http://search.cpan.org/perldoc?Test::Class).
-
-# AUTHOR
-
-Curtis "Ovid" Poe <ovid@cpan.org>
-
-# COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2013 by Curtis "Ovid" Poe.
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
