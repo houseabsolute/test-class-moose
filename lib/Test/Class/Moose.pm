@@ -333,23 +333,30 @@ __END__
 
 =head1 SYNOPSIS
 
- package TestsFor::Some::Class;
- use Test::Class::Moose;
+    package TestsFor::DateTime;
+    use Test::Class::Moose;
+    BEGIN { with 'Test::Class::Moose::Role::AutoUse'; }
 
- sub test_me {
-     my $test  = shift;
-     my $class = $test->test_class;
-     ok 1, "test_me() ran ($class)";
-     ok 2, "this is another test ($class)";
- }
+    # this usually goes in a base class
+    INIT { Test::Class::Moose->new->runtests }
 
- sub test_this_baby {
-     my $test  = shift;
-     my $class = $test->test_class;
-     is 2, 2, "whee! ($class)";
- }
+    # methods that begin with test_ are test methods.
+    sub test_constructor {
+        my ( $test, $report ) = @_;
+        $report->plan(3);    # strictly optional
 
- 1;
+        my $class = $test->class_name; # DateTime
+        can_ok $class, 'new';
+        my %args = (
+            year  => 1967,
+            month => 6,
+            day   => 20,
+        );
+        isa_ok my $date = $class->new(%args), $class;
+        is $date->year, $args{year}, '... and the year should be correct';
+    }
+
+    1;
 
 =head1 DESCRIPTION
 
@@ -409,6 +416,10 @@ you must call C<add_to_plan()>. For example, with a method modifier:
         my ( $test, $report ) = @_;
         $report->add_to_plan($num_extra_tests);
     };
+
+Please note that if you call C<plan>, the plan will still show up at the end
+of the subtest run, but you'll get the desired failure if the number of tests
+run does not match the plan.
 
 =head2 Inheriting from another Test::Class::Moose class
 
