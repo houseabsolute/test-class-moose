@@ -63,34 +63,172 @@ __END__
 
 =head1 SYNOPSIS
 
- my $statistics = Test::Class::Moose::Report->new;
+ my $report = Test::Class::Moose->new->runtests->test_report;
 
 =head1 DESCRIPTION
 
-For internal use only (maybe I'll expose it later). Not guaranteed to be
-stable.
+When working with larger test suites, it's useful to have full reporting
+information avaiable about the test suite. The reporting features of
+L<Test::Class::Moose> allow you to report on the number of test classes and
+methods run (and number of tests), along with timing information to help you
+track down which tests are running slowly. You can even run tests on your
+report information:
 
-=head1 ATTRIBUTES
+    #!/usr/bin/env perl
+    use lib 'lib';
+    use Test::Most;
+    use Test::Class::Moose::Load qw(t/lib);
+    my $test_suite = Test::Class::Moose->new;
 
-=head2 * C<test_classes>
+    subtest 'run the test suite' => sub {
+        $test_suite->runtests;
+    };
+    my $report = $test_suite->test_report;
+
+    foreach my $class ( $report->all_test_classes ) {
+        my $class_name = $class->name;
+        ok !$class->is_skipped, "$class_name was not skipped";
+
+        subtest "$class_name methods" => sub {
+            foreach my $method ( $class->all_test_methods ) {
+                my $method_name = $method->name;
+                ok !$method->is_skipped, "$method_name was not skipped";
+                cmp_ok $method->num_tests, '>', 0,
+                  '... and some tests should have been run';
+                diag "Run time for $method_name: ".$method->time->duration;
+            }
+        };
+        my $time   = $class->time;
+        diag "Run time for $class_name: ".$class->time->duration;
+
+        my $real   = $time->real;
+        my $user   = $time->user;
+        my $system = $time->system;
+        # do with these as you will
+    }
+    diag "Number of test classes: " . $report->num_test_classes;
+    diag "Number of test methods: " . $report->num_test_methods;
+    diag "Number of tests:        " . $report->num_tests;
+
+    done_testing;
+
+
+Reporting is currently in alpha. The interface is not guaranteed to be stable.
+
+=head2 The Report
+
+ my $report = Test::Class::Moose->new->runtests->test_report;
+
+After the test suite is run, you can call the C<test_report> method to get the
+report. The test report is a L<Test::Class::Moose::Report> object. This object
+provides the following methods:
+
+=head3 C<test_classes>
 
 Returns an array reference of L<Test::Class::Moose::Report::Class> instances.
 
-=head2 * C<all_test_classes>
+=head3 C<all_test_classes>
 
 Returns an array of L<Test::Class::Moose::Report::Class> instances.
 
-=head2 * C<num_test_classes>
+=head3 C<num_test_classes>
 
 Integer. The number of test classes run.
 
-=head2 * C<num_test_methods>
+=head3 C<num_test_methods>
 
 Integer. The number of test methods run.
 
-=head2 C<num_tests_run>
+=head3 C<num_tests_run>
 
 Integer. The number of tests run.
+
+=head2 Test Report Class
+
+Each L<Test::Class::Moose::Report::Class> instance provides the following
+methods:
+
+=head3 C<test_methods>
+
+Returns an array reference of L<Test::Class::Moose::Report::Method>
+objects.
+
+=head3 C<all_test_methods>
+
+Returns an array of L<Test::Class::Moose::Report::Method> objects.
+
+=head3 C<error>
+
+If this class could not be run, returns a string explaining the error.
+
+=head3 C<has_error>
+
+Returns a boolean indicating whether or not the class has an error.
+
+=head2 C<name>
+
+The name of the test class.
+
+=head2 C<notes>
+
+A hashref. The end user may use this to store anything desired.
+
+=head2 C<skipped>
+
+If the class or method is skipped, this will return the skip message.
+
+=head2 C<is_skipped>
+
+Returns true if the class or method is skipped.
+
+=head2 C<time>
+
+Returns a L<Test::Class::Moose::Report::Time> object. This object
+represents the duration of this class.
+
+
+Each L<Test::Class::Moose::Report::Class> instance provides the
+following methods:
+
+=head3 C<test_methods>
+
+Returns an array reference of L<Test::Class::Moose::Report::Method>
+objects.
+
+=head3 C<all_test_methods>
+
+Returns an array of L<Test::Class::Moose::Report::Method> objects.
+
+=head3 C<error>
+
+If this class could not be run, returns a string explaining the error.
+
+=head3 C<has_error>
+
+Returns a boolean indicating whether or not the class has an error.
+
+=head2 C<name>
+
+The name of the test class.
+
+=head2 C<notes>
+
+A hashref. The end user may use this to store anything desired.
+
+=head2 C<skipped>
+
+If the class or method is skipped, this will return the skip message.
+
+=head2 C<is_skipped>
+
+Returns true if the class or method is skipped.
+
+=head2 C<time>
+
+Returns a L<Test::Class::Moose::Report::Time> object. This object
+represents the duration of this class.
+
+=head
 
 =head1 METHODS
 

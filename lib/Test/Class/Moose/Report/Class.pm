@@ -50,6 +50,10 @@ L<Test::Class::Moose::Role::Reporting>.
 Returns an array reference of L<Test::Class::Moose::Report::Method>
 objects.
 
+=head2 C<all_test_methods>
+
+Returns an array of L<Test::Class::Moose::Report::Method> objects.
+
 =head2 C<error>
 
 If this class could not be run, returns a string explaining the error.

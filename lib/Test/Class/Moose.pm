@@ -717,6 +717,8 @@ We use nested tests (subtests) at each level:
 
 =head1 REPORTING
 
+See L<Test::Class::Moose::Report> for more detailed information on reporting.
+
 Reporting features are subject to change.
 
 Sometimes you want more information about your test classes, it's time to do
@@ -772,10 +774,6 @@ test suite in a subtest:
 Or even shorter:
 
     my $report = Test::Class::Moose->new->runtests->test_report;
-
-=head2 The Test Report
-
-The test report is a L<Test::Class::Moose::Report> object.
 
 =head1 EXTRAS
 
