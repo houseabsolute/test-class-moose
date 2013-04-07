@@ -1,3 +1,11 @@
+# NAME
+
+Test::Class::Moose - Test::Class + Moose
+
+# VERSION
+
+version 0.07
+
 # SYNOPSIS
 
     package TestsFor::DateTime;
@@ -513,3 +521,14 @@ test methods.
 Thanks to Judioo for adding the randomize attribute.
 
 Thanks to Adrian Howard for [Test::Class](http://search.cpan.org/perldoc?Test::Class).
+
+# AUTHOR
+
+Curtis "Ovid" Poe <ovid@cpan.org>
+
+# COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
