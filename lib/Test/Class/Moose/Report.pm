@@ -253,11 +253,6 @@ The following L<Test::Class::Moose::Report> methods are for internal use only
 and are called by L<Test::Class::Moose>.  They are included here for those who
 might want to hack on L<Test::Class::Moose>.
 
-=head2 C<inc_test_classes>
-
-    $statistics->inc_test_classes;        # increments by 1
-    $statistics->inc_test_classes($x);    # increments by $x
-
 =head2 C<inc_test_methods>
 
     $statistics->inc_test_methods;        # increments by 1
