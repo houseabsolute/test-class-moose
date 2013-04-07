@@ -335,7 +335,7 @@ __END__
 
     package TestsFor::DateTime;
     use Test::Class::Moose;
-    BEGIN { with 'Test::Class::Moose::Role::AutoUse'; }
+    use DateTime;
 
     # this usually goes in a base class
     INIT { Test::Class::Moose->new->runtests }
@@ -345,14 +345,13 @@ __END__
         my ( $test, $report ) = @_;
         $report->plan(3);    # strictly optional
 
-        my $class = $test->class_name; # DateTime
-        can_ok $class, 'new';
+        can_ok 'DateTime', 'new';
         my %args = (
             year  => 1967,
             month => 6,
             day   => 20,
         );
-        isa_ok my $date = $class->new(%args), $class;
+        isa_ok my $date = DateTime->new(%args), 'DateTime';
         is $date->year, $args{year}, '... and the year should be correct';
     }
 
