@@ -152,7 +152,7 @@ Integer. The number of test methods run.
 
 Integer. The number of tests run.
 
-=head2 C<time>
+=head3 C<time>
 
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of the entire test suite.
