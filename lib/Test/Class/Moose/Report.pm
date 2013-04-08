@@ -157,7 +157,7 @@ Integer. The number of tests run.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of the entire test suite.
 
-=head2 Test Report Class
+=head2 Test Report for Classes
 
 Each L<Test::Class::Moose::Report::Class> instance provides the following
 methods:
@@ -200,7 +200,7 @@ Returns true if the class or method is skipped.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class.
 
-=head2 Test Report Methods
+=head2 Test Report for Methods
 
 Each L<Test::Class::Moose::Report::Method> instance provides the following
 methods:
@@ -226,7 +226,7 @@ Returns true if the class or method is skipped.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class or method.
 
-=head2 Test Report Time
+=head2 Test Report for Time
 
 Each L<Test::Class::Moose::Report::Time> instance has the following methods:
 
