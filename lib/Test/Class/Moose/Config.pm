@@ -9,6 +9,13 @@ use namespace::autoclean;
 has 'show_timing' => (
     is  => 'ro',
     isa => 'Bool',
+    lazy => 1,
+    default => sub {
+        if ( $_[0]->use_environment and $ENV{HARNESS_IS_VERBOSE} ) {
+            return 1;
+        }
+        return;
+    },
 );
 
 has 'builder' => (
@@ -20,6 +27,18 @@ has 'builder' => (
 );
 
 has 'statistics' => (
+    is  => 'ro',
+    isa => 'Bool',
+    lazy => 1,
+    default => sub {
+        if ( $_[0]->use_environment and $ENV{HARNESS_IS_VERBOSE} ) {
+            return 1;
+        }
+        return;
+    },
+);
+
+has 'use_environment' => (
     is  => 'ro',
     isa => 'Bool',
 );
@@ -87,6 +106,10 @@ test class/test method to run.
 =head2 * C<statistics>
 
 Boolean. Will display number of classes, test methods and tests run.
+
+=head2 * C<use_environment>
+
+Boolean.  Sets show_timing and statistics to true if your test harness is running verbosely, false otherwise.
 
 =head2 C<builder>
 
