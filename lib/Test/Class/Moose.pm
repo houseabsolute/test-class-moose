@@ -4,7 +4,6 @@ package Test::Class::Moose;
 
 use 5.10.0;
 use Moose;
-use Benchmark qw(timediff timestr);
 use Carp;
 use List::Util qw(shuffle);
 use namespace::autoclean;
@@ -142,8 +141,7 @@ my $RUN_TEST_METHOD = sub {
                 $builder->plan( skip_all => $message );
                 return;
             }
-            my $start = Benchmark->new;
-            $report->_start_benchmark($start);
+            $report->_start_benchmark;
 
             my $old_test_count = $builder->current_test;
             try {
@@ -157,10 +155,9 @@ my $RUN_TEST_METHOD = sub {
             };
             $num_tests = $builder->current_test - $old_test_count;
 
-            my $end = Benchmark->new;
-            $report->_end_benchmark($end);
+            $report->_end_benchmark;
             if ( $self->test_configuration->show_timing ) {
-                my $time = timestr( timediff( $end, $start ) );
+                my $time = $report->time->duration;
                 $self->test_configuration->builder->diag(
                     $report->name . ": $time" );
             }
@@ -203,8 +200,7 @@ my $RUN_TEST_CLASS = sub {
             $builder->plan( skip_all => $message );
             return;
         }
-        my $start = Benchmark->new;
-        $report_class->_start_benchmark($start);
+        $report_class->_start_benchmark;
 
         $report->_inc_test_methods( scalar @test_methods );
 
@@ -244,10 +240,9 @@ my $RUN_TEST_CLASS = sub {
         ) or fail("test_shutdown() failed");
 
         # finalize reporting
-        my $end = Benchmark->new;
-        $report_class->_end_benchmark($end);
+        $report_class->_end_benchmark;
         if ( $self->test_configuration->show_timing ) {
-            my $time = timestr( timediff( $end, $start ) );
+            my $time = $report_class->time->duration;
             $self->test_configuration->builder->diag("$test_class: $time");
         }
     };
@@ -257,7 +252,7 @@ sub runtests {
     my $self = shift;
 
     my $report = $self->test_report;
-    $report->_start_benchmark( Benchmark->new );
+    $report->_start_benchmark;
     my @test_classes = $self->test_classes;
 
     my $builder = $self->test_configuration->builder;
@@ -276,7 +271,7 @@ Test methods:    @{[ $report->num_test_methods ]}
 Total tests run: @{[ $report->num_tests_run ]}
 END
     $builder->done_testing;
-    $report->_end_benchmark( Benchmark->new );
+    $report->_end_benchmark;
     return $self;
 }
 

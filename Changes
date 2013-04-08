@@ -1,5 +1,8 @@
 Revision history for Test-Class-Moose
 
+0.08
+        - Clean up how start and end times for timing is handled.
+
 0.07    April 7, 2013
         - The $test_suite object now has the time() method.
         - Fully document report methods
