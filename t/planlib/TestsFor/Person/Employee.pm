@@ -10,7 +10,6 @@ sub extra_constructor_args {
 
 BEGIN {
     after 'test_person' => sub {
-        $DB::single = 1;
         my ( $test, $report ) = @_;
         $report->add_to_plan(1);
         is $test->test_fixture->employee_number, 666,

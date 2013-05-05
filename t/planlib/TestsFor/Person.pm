@@ -18,7 +18,6 @@ sub test_setup {
 
 sub test_person {
     my ( $test, $report ) = @_;
-    $DB::single = 1;
     $report->plan(2);
     is $test->test_fixture->full_name, 'Bob Dobbs',
         'Our full name should be correct';
