@@ -34,7 +34,10 @@ sub _load {
     return unless defined $package;
 
     unshift @INC => $dir unless $Added_to_INC{ $dir }++;
-    eval "require $package"; ## no critic
+
+    # either "require" it or "use" it with no import list. Otherwise, this
+    # module will inherit from Test::Class::Moose and break everything.
+    eval "use $package ()"; ## no critic
     die $@ if $@;
 }
 
