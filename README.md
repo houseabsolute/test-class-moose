@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.07
+version 0.08
 
 # SYNOPSIS
 
@@ -267,6 +267,35 @@ means an `include` such as `/^customer.*/` will never run any tests.
 Regex. If present, only test methods whose names don't match `exclude` will be
 included. __However__, they must still start with `test_`. See `include`.
 
+- `include_tags`
+
+Array ref of strings matching method tags (a single string is also ok). If
+present, only test methods whose tags match `include_tags` or whose tags
+don't match `exclude_tags` will be included. __However__, they must still
+start with `test_`.
+
+For example:
+
+    my $test_suite = Test::Class::Moose->new({
+        include_tags => [qw/api database/],
+    });
+
+The above constructor will only run tests tagged with `api` or `database`.
+
+- `exclude_tags`
+
+The same as `include_tags`, but will exclude the tests rather than include
+them. For example, if your network is down:
+
+    my $test_suite = Test::Class::Moose->new({
+        exclude_tags => [ 'network' ],
+    });
+
+    # or
+    my $test_suite = Test::Class::Moose->new({
+        exclude_tags => 'network',
+    });
+
 ## Skipping Classes and Methods
 
 If you wish to skip a class, set the reason in the `test_startup` method.
@@ -285,6 +314,38 @@ If you wish to skip an individual method, do so in the `test_setup` method.
             $test->test_skip("Time travel not yet available");
         }
     }
+
+## Tagging Methods
+
+Sometimes you want to be able to assign metadata to help you better manage
+your test suite. You can now do this with tags:
+
+    sub test_save_poll_data : Tags(api network) {
+        ...
+    }
+
+Tags are strictly optional and you can provide one or more tags for each test
+method with a space separated list of tags. You can use this to filter your
+tests suite, if desired. For example, if your network goes down and all tests
+which rely on a network are tagged with `network`, you can skip those tests
+with this:
+
+    Test::Class::Moose->new( exclude_tags => 'network' )->runtests;
+
+Or maybe you want to run all `api` and `database` tests, but skip those
+marked `deprecated`:
+
+    Test::Class::Moose->new(
+        include_tags => [qw/api database/],
+        exclude_tags => 'deprecated',
+    )->runtests;
+
+Tagging support relies on [Sub::Attribute](http://search.cpan.org/perldoc?Sub::Attribute). If this module is not available,
+`include_tags` and `exclude_tags` will be ignored, but a warning will be
+issued if those are seen.
+
+Tagging support is relatively new and feature requests (and patches!) are
+welcome.
 
 # THINGS YOU CAN OVERRIDE
 
