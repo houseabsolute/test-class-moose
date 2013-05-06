@@ -4,10 +4,7 @@ use lib 'lib';
 use Test::Class::Moose::Load qw(t/taglib);
 
 my $test_suite = Test::Class::Moose->new(
-    {   show_timing  => 0,
-        statistics   => 0,
-        include_tags => [qw/first second/],
-    }
+    include_tags => [qw/first second/],
 );
 
 # For TestsFor::Basic::Subclass, the method modifier for 'test_this_baby' effectively overrides the
@@ -28,10 +25,7 @@ foreach my $class (@test_classes) {
 }
 
 $test_suite = Test::Class::Moose->new(
-    {   show_timing  => 0,
-        statistics   => 0,
-        exclude_tags => [qw/first/],
-    }
+    exclude_tags => [qw/first/],
 );
 
 %methods_for = (
