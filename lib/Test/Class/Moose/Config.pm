@@ -4,7 +4,12 @@ package Test::Class::Moose::Config;
 
 use 5.10.0;
 use Moose;
+use Moose::Util::TypeConstraints;
 use namespace::autoclean;
+
+subtype 'ArrayRefOfStrings', as 'ArrayRef[Str]';
+
+coerce 'ArrayRefOfStrings', from 'Str', via { [$_] };
 
 has 'show_timing' => (
     is  => 'ro',
@@ -62,6 +67,18 @@ has 'include' => (
 has 'exclude' => (
     is  => 'ro',
     isa => 'Regexp',
+);
+
+has 'include_tags' => (
+    is     => 'ro',
+    isa    => 'ArrayRefOfStrings',
+    coerce => 1,
+);
+
+has 'exclude_tags' => (
+    is     => 'ro',
+    isa    => 'ArrayRefOfStrings',
+    coerce => 1,
 );
 
 sub args {

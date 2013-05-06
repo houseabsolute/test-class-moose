@@ -6,7 +6,9 @@ use 5.10.0;
 use Moose;
 use Carp;
 use List::Util qw(shuffle);
+use List::MoreUtils qw(uniq);
 use namespace::autoclean;
+
 use Test::Builder;
 use Test::Most;
 use Try::Tiny;
@@ -14,6 +16,9 @@ use Test::Class::Moose::Config;
 use Test::Class::Moose::Report;
 use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Method;
+
+use Sub::Attribute;
+use Attribute::Method::Tags::Registry;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -47,8 +52,9 @@ sub import {
 
     eval <<"END";
 package $caller;
-use Test::Most;
 use Moose;
+use Test::Most;
+use Sub::Attribute;
 END
     croak($@) if $@;
     strict->import;
@@ -76,6 +82,33 @@ sub BUILD {
 
     # stash that name lest something change it later. Paranoid?
     $self->test_class( $self->meta->name );
+}
+
+sub Tags : ATTR_SUB {
+    my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
+
+    $data =~ s/^\s+//g;
+
+    my @tags = split /\s+/, $data;
+
+    if ( $symbol eq 'ANON' ) {
+        die "Cannot tag anonymous subs at file $file, line $line\n";
+    }
+
+    my $method = *{ $symbol }{ NAME };
+
+    {           # block for localising $@
+        local $@;
+
+        Attribute::Method::Tags::Registry->add(
+            $class,
+            $method,
+            \@tags,
+        );
+        if ( $@ ) {
+            croak "Error in adding tags: $@";
+        }
+    }
 }
 
 my $TEST_CONTROL_METHODS = sub {
@@ -311,9 +344,45 @@ sub test_methods {
         @method_list = grep { !/$exclude/ } @method_list;
     }
 
-    return ( $self->test_configuration->randomize )
-      ? shuffle(@method_list)
-      : sort @method_list;
+    my @tags = Attribute::Method::Tags::Registry->tags;
+    my $class = $self->test_class;
+    if ( my $include = $self->test_configuration->include_tags ) {
+        my @new_method_list;
+        foreach my $method (@method_list) {
+            my $subref = $class->can($method);
+            foreach my $tag (@$include) {
+                if (Attribute::Method::Tags::Registry->method_has_tag(
+                        $class, $method, $tag
+                    )
+                  )
+                {
+                    push @new_method_list => $method;
+                }
+            }
+        }
+        @method_list = @new_method_list;
+    }
+    if ( my $exclude = $self->test_configuration->exclude_tags ) {
+        my @new_method_list;
+        foreach my $method (@method_list) {
+            foreach my $tag (@$exclude) {
+                unless (Attribute::Method::Tags::Registry->method_has_tag(
+                        $class, $method, $tag
+                    )
+                  )
+                {
+                    push @new_method_list => $method;
+                }
+            }
+        }
+        @method_list = @new_method_list;
+    }
+
+    return uniq(
+        $self->test_configuration->randomize
+        ? shuffle(@method_list)
+        : sort @method_list
+    );
 }
 
 # empty stub methods guarantee that subclasses can always call these
@@ -595,6 +664,35 @@ means an C<include> such as C<< /^customer.*/ >> will never run any tests.
 
 Regex. If present, only test methods whose names don't match C<exclude> will be
 included. B<However>, they must still start with C<test_>. See C<include>.
+
+=item * C<include_tags>
+
+Array ref of strings matching method tags (a single string is also ok). If
+present, only test methods whose tags match C<include_tags> or whose tags
+don't match C<exclude_tags> will be included. B<However>, they must still
+start with C<test_>.
+
+For example:
+
+ my $test_suite = Test::Class::Moose->new({
+     include_tags => [qw/api database/],
+ });
+
+The above constructor will only run tests tagged with C<api> or C<database>.
+
+=item * C<exclude_tags>
+
+The same as C<include_tags>, but will exclude the tests rather than include
+them. For example, if your network is down:
+
+ my $test_suite = Test::Class::Moose->new({
+     exclude_tags => [ 'network' ],
+ });
+
+ # or
+ my $test_suite = Test::Class::Moose->new({
+     exclude_tags => 'network',
+ });
 
 =back
 
