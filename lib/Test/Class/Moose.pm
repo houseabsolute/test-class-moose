@@ -38,7 +38,7 @@ BEGIN {
             {           # block for localising $@
                 local $@;
 
-                Attribute::Method::Tags::Registry->add(
+                Test::Class::Moose::TagRegistry->add(
                     $class,
                     $method,
                     \@tags,
@@ -52,8 +52,7 @@ DECLARE_ATTRIBUTE
         $NO_CAN_HAZ_ATTRIBUTES = $@;
     }
 }
-
-use Attribute::Method::Tags::Registry;
+use Test::Class::Moose::TagRegistry;
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -361,14 +360,14 @@ sub test_methods {
         @method_list = grep { !/$exclude/ } @method_list;
     }
 
-    my @tags = Attribute::Method::Tags::Registry->tags;
+    my @tags = Test::Class::Moose::TagRegistry->tags;
     my $class = $self->test_class;
     if ( my $include = $self->test_configuration->include_tags ) {
         my @new_method_list;
         foreach my $method (@method_list) {
             my $subref = $class->can($method);
             foreach my $tag (@$include) {
-                if (Attribute::Method::Tags::Registry->method_has_tag(
+                if (Test::Class::Moose::TagRegistry->method_has_tag(
                         $class, $method, $tag
                     )
                   )
@@ -383,7 +382,7 @@ sub test_methods {
         my @new_method_list;
         foreach my $method (@method_list) {
             foreach my $tag (@$exclude) {
-                unless (Attribute::Method::Tags::Registry->method_has_tag(
+                unless (Test::Class::Moose::TagRegistry->method_has_tag(
                         $class, $method, $tag
                     )
                   )
