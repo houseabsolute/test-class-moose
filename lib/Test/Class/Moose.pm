@@ -17,7 +17,42 @@ use Test::Class::Moose::Report;
 use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Method;
 
-use Sub::Attribute;
+my $NO_CAN_HAZ_ATTRIBUTES;
+BEGIN {
+    eval "use Sub::Attribute";
+    unless ( $NO_CAN_HAZ_ATTRIBUTES = $@ ) {
+        eval <<'DECLARE_ATTRIBUTE';
+        sub Tags : ATTR_SUB {
+            my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
+
+            $data =~ s/^\s+//g;
+
+            my @tags = split /\s+/, $data;
+
+            if ( $symbol eq 'ANON' ) {
+                die "Cannot tag anonymous subs at file $file, line $line\n";
+            }
+
+            my $method = *{ $symbol }{ NAME };
+
+            {           # block for localising $@
+                local $@;
+
+                Attribute::Method::Tags::Registry->add(
+                    $class,
+                    $method,
+                    \@tags,
+                );
+                if ( $@ ) {
+                    croak "Error in adding tags: $@";
+                }
+            }
+        }
+DECLARE_ATTRIBUTE
+        $NO_CAN_HAZ_ATTRIBUTES = $@;
+    }
+}
+
 use Attribute::Method::Tags::Registry;
 
 has 'test_configuration' => (
@@ -80,35 +115,17 @@ around 'BUILDARGS' => sub {
 sub BUILD {
     my $self = shift;
 
+    my $config = $self->test_configuration;
+    if ( ( $config->include_tags or $config->exclude_tags )
+        and $NO_CAN_HAZ_ATTRIBUTES )
+    {
+        carp("Attributes not available: $NO_CAN_HAZ_ATTRIBUTES");
+        $config->clear_include_tags;
+        $config->clear_exclude_tags;
+    }
+    
     # stash that name lest something change it later. Paranoid?
     $self->test_class( $self->meta->name );
-}
-
-sub Tags : ATTR_SUB {
-    my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
-
-    $data =~ s/^\s+//g;
-
-    my @tags = split /\s+/, $data;
-
-    if ( $symbol eq 'ANON' ) {
-        die "Cannot tag anonymous subs at file $file, line $line\n";
-    }
-
-    my $method = *{ $symbol }{ NAME };
-
-    {           # block for localising $@
-        local $@;
-
-        Attribute::Method::Tags::Registry->add(
-            $class,
-            $method,
-            \@tags,
-        );
-        if ( $@ ) {
-            croak "Error in adding tags: $@";
-        }
-    }
 }
 
 my $TEST_CONTROL_METHODS = sub {

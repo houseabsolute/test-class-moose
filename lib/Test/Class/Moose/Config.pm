@@ -70,15 +70,17 @@ has 'exclude' => (
 );
 
 has 'include_tags' => (
-    is     => 'ro',
-    isa    => 'ArrayRefOfStrings',
-    coerce => 1,
+    is      => 'ro',
+    isa     => 'ArrayRefOfStrings',
+    coerce  => 1,
+    clearer => 'clear_include_tags',
 );
 
 has 'exclude_tags' => (
-    is     => 'ro',
-    isa    => 'ArrayRefOfStrings',
-    coerce => 1,
+    is      => 'ro',
+    isa     => 'ArrayRefOfStrings',
+    coerce  => 1,
+    clearer => 'clear_exclude_tags',
 );
 
 sub args {
