@@ -5,79 +5,78 @@ package Test::Class::Moose::TagRegistry;
 use strict;
 use warnings;
 
-use Carp qw( croak );
+use Carp;
 
-my $by_tag = {};
+my %BY_TAG;
 
 sub add {
-    my ( undef, $class, $method, $tags ) = @_;
+    my ( $class, $test_class, $method, $tags ) = @_;
 
-    if ( not scalar @{ $tags } ) {
+    if ( not scalar @{$tags} ) {
         die "no tags defined\n";
     }
 
-    foreach my $tag ( @{ $tags } ) {
+    foreach my $tag ( @{$tags} ) {
         if ( $tag !~ /^\w+$/ ) {
             die "tags must be alphanumeric\n";
         }
     }
 
     # dedupe tags
-    my %tags = map { $_ => 1 } @{ $tags };
+    my %tags = map { $_ => 1 } @{$tags};
 
     my $exists = grep {
-        exists $by_tag->{ $_ }{ $class }
-          and exists $by_tag->{ $_ }{ $class }{ $method }
-    } __PACKAGE__->tags;
-    if ( $exists ) {
-        die "tags for $class->$method already exists, method redefinition perhaps?\n";
+              exists $BY_TAG{$_}{$test_class}
+          and exists $BY_TAG{$_}{$test_class}{$method}
+    } $class->tags;
+    if ($exists) {
+        die
+          "tags for $test_class->$method already exists, method redefinition perhaps?\n";
     }
 
     foreach my $tag ( keys %tags ) {
-        $by_tag->{ $tag }{ $class }{ $method } = 1;
+        $BY_TAG{$tag}{$test_class}{$method} = 1;
     }
 }
 
 sub tags {
-    return sort keys %{ $by_tag };
+    return sort keys %BY_TAG;
 }
 
 sub classes_with_tag {
     my ( undef, $tag ) = @_;
 
-    croak( "no tag specified" ) if not defined $tag;
+    croak("no tag specified") if not defined $tag;
 
-    return if not exists $by_tag->{ $tag };
+    return if not exists $BY_TAG{$tag};
 
-    return sort keys %{ $by_tag->{ $tag } };
+    return sort keys %{ $BY_TAG{$tag} };
 }
 
 sub methods_with_tag {
-    my ( undef, $class, $tag ) = @_;
+    my ( undef, $test_class, $tag ) = @_;
 
-    croak( "no class specified" ) if not defined $class;
-    croak( "no tag specified" ) if not defined $tag;
+    croak("no class specified") if not defined $test_class;
+    croak("no tag specified")   if not defined $tag;
 
     # avoid auto-vivication
-    return if not exists $by_tag->{ $tag };
+    return if not exists $BY_TAG{$tag};
 
-    return sort keys %{ $by_tag->{ $tag }{ $class } };
+    return sort keys %{ $BY_TAG{$tag}{$test_class} };
 }
 
 sub method_has_tag {
-    my ( undef, $class, $method, $tag ) = @_;
+    my ( undef, $test_class, $method, $tag ) = @_;
 
-    croak( "no class specified" ) if not defined $class;
-    croak( "no method specified" ) if not defined $method;
-    croak( "no tag specified" ) if not defined $tag;
+    croak("no class specified")  if not defined $test_class;
+    croak("no method specified") if not defined $method;
+    croak("no tag specified")    if not defined $tag;
 
     # avoid auto-vivication
-    return 0 if not exists $by_tag->{ $tag };
-    return 0 if not exists $by_tag->{ $tag }{ $class };
+    return if not exists $BY_TAG{$tag};
+    return if not exists $BY_TAG{$tag}{$test_class};
 
-    return exists $by_tag->{ $tag }{ $class }{ $method }
-      ? 1
-      : 0;
+    return exists $BY_TAG{$tag}{$test_class}{$method};
 }
 
 1;
