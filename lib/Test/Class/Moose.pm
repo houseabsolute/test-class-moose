@@ -740,6 +740,38 @@ If you wish to skip an individual method, do so in the C<test_setup> method.
         }
     }
 
+=head2 Tagging Methods
+
+Sometimes you want to be able to assign metadata to help you better manage
+your test suite. You can now do this with tags:
+
+    sub test_save_poll_data : Tags(api network) {
+        ...
+    }
+
+Tags are strictly optional and you can provide one or more tags for each test
+method with a space separated list of tags. You can use this to filter your
+tests suite, if desired. For example, if your network goes down and all tests
+which rely on a network are tagged with C<network>, you can skip those tests
+with this:
+
+    Test::Class::Moose->new( exclude_tags => 'network' )->runtests;
+
+Or maybe you want to run all C<api> and C<database> tests, but skip those
+marked C<deprecated>:
+
+    Test::Class::Moose->new(
+        include_tags => [qw/api database/],
+        exclude_tags => 'deprecated',
+    )->runtests;
+
+Tagging support relies on L<Sub::Attribute>. If this module is not available,
+C<include_tags> and C<exclude_tags> will be ignored, but a warning will be
+issued if those are seen.
+
+Tagging support is relatively new and feature requests (and patches!) are
+welcome.
+
 =head1 THINGS YOU CAN OVERRIDE
 
 ... but probably shouldn't.
