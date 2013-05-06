@@ -337,6 +337,47 @@ sub test_classes {
     return sort @classes;
 }
 
+my $FILTER_BY_TAG = sub {
+    my ( $self, $methods ) = @_;
+
+    my @tags             = Test::Class::Moose::TagRegistry->tags;
+    my $class            = $self->test_class;
+    my @filtered_methods = @$methods;
+    if ( my $include = $self->test_configuration->include_tags ) {
+        my @new_method_list;
+        foreach my $method (@filtered_methods) {
+            my $subref = $class->can($method);
+            foreach my $tag (@$include) {
+                if (Test::Class::Moose::TagRegistry->method_has_tag(
+                        $class, $method, $tag
+                    )
+                  )
+                {
+                    push @new_method_list => $method;
+                }
+            }
+        }
+        @filtered_methods = @new_method_list;
+    }
+    if ( my $exclude = $self->test_configuration->exclude_tags ) {
+        my @new_method_list;
+        foreach my $method (@filtered_methods) {
+            foreach my $tag (@$exclude) {
+                unless (
+                    Test::Class::Moose::TagRegistry->method_has_tag(
+                        $class, $method, $tag
+                    )
+                  )
+                {
+                    push @new_method_list => $method;
+                }
+            }
+        }
+        @filtered_methods = @new_method_list;
+    }
+    return @filtered_methods;
+};
+
 sub test_methods {
     my $self = shift;
 
@@ -360,39 +401,7 @@ sub test_methods {
         @method_list = grep { !/$exclude/ } @method_list;
     }
 
-    my @tags = Test::Class::Moose::TagRegistry->tags;
-    my $class = $self->test_class;
-    if ( my $include = $self->test_configuration->include_tags ) {
-        my @new_method_list;
-        foreach my $method (@method_list) {
-            my $subref = $class->can($method);
-            foreach my $tag (@$include) {
-                if (Test::Class::Moose::TagRegistry->method_has_tag(
-                        $class, $method, $tag
-                    )
-                  )
-                {
-                    push @new_method_list => $method;
-                }
-            }
-        }
-        @method_list = @new_method_list;
-    }
-    if ( my $exclude = $self->test_configuration->exclude_tags ) {
-        my @new_method_list;
-        foreach my $method (@method_list) {
-            foreach my $tag (@$exclude) {
-                unless (Test::Class::Moose::TagRegistry->method_has_tag(
-                        $class, $method, $tag
-                    )
-                  )
-                {
-                    push @new_method_list => $method;
-                }
-            }
-        }
-        @method_list = @new_method_list;
-    }
+    @method_list = $self->$FILTER_BY_TAG(\@method_list);
 
     return uniq(
         $self->test_configuration->randomize
