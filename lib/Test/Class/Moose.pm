@@ -84,12 +84,16 @@ sub import {
     my ( $class, %arg_for ) = @_;
     my $caller = caller;
 
-    eval <<"END";
+    my $preamble = <<"END";
 package $caller;
 use Moose;
 use Test::Most;
-use Sub::Attribute;
 END
+
+    unless ($NO_CAN_HAZ_ATTRIBUTES) {
+        $preamble .= "use Sub::Attribute;\n";
+    }
+    eval $preamble;
     croak($@) if $@;
     strict->import;
     warnings->import;
