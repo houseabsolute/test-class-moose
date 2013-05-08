@@ -1,6 +1,12 @@
 #!/usr/bin/env perl
 use Test::Most;
 use lib 'lib';
+
+use Test::Class::Moose (); # prevents us from inheriting from it
+BEGIN {
+    plan skip_all => 'Sub::Attribute not available. Cannot test tags'
+        if $Test::Class::Moose::NO_CAN_HAZ_ATTRIBUTES;
+}
 use Test::Class::Moose::Load qw(t/taglib);
 
 my $test_suite = Test::Class::Moose->new(
