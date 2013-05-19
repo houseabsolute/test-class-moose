@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.10
+version 0.11
 
 # SYNOPSIS
 
@@ -34,7 +34,7 @@ version 0.10
 
 # DESCRIPTION
 
-This is __ALPHA__ code. I encourage you to give it a shot if you want test
+This is __BETA__ code. I encourage you to give it a shot if you want test
 classes based on Moose, along with reporting. Feedback welcome as we try to
 improve it.
 
@@ -201,10 +201,18 @@ To override a test control method, just remember that this is OO:
 
 # RUNNING THE TEST SUITE
 
-    use Test::Class::Moose::Load 't/lib';
-    Test::Class::Moose->new->runtests
+We _strongly_ recommend using [Test::Class::Moose::Load](http://search.cpan.org/perldoc?Test::Class::Moose::Load) as the driver for
+your test suite. Simply point it at the directory or directories containing
+your test classes:
 
-Or:
+    use Test::Class::Moose::Load 't/lib';
+    Test::Class::Moose->new->runtests;
+
+By running `Test::Class::Moose` with a single driver script like this, all
+classes are loaded once and this can be a significant performance boost. This
+does mean a global state will be shared, so keep this in mind.
+
+You can also pass arguments to `Test::Class::Moose`'s contructor.
 
     my $test_suite = Test::Class::Moose->new({
         show_timing => 1,
@@ -242,6 +250,21 @@ Boolean. Will run test methods in a random order.
 Defaults to `Test::Builder->new`. You can supply your own builder if you
 want, but it must conform to the [Test::Builder](http://search.cpan.org/perldoc?Test::Builder) interface. We make no
 guarantees about which part of the interface it needs.
+
+- `test_classes`
+
+Takes a class name or an array reference of class names. If it is present,
+only these test classes will be run. This is very useful if you wish to run an
+individual class as a test:
+
+    Test::Class::Moose->new(
+        test_classes => $ENV{TEST_CLASS}, # ignored if undef
+    )->runtests;
+
+You can also achieve this effect by writing a subclass and overriding the
+`test_classes` method, but this makes it trivial to do this:
+
+    TEST_CLASS=TestsFor::Our::Company::Invoice prove -lv t/test_classes.t
 
 - `include`
 
