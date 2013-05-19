@@ -330,6 +330,11 @@ END
 
 sub test_classes {
     my $self        = shift;
+
+    if ( my $classes = $self->test_configuration->include_classes ) {
+        return @$classes;
+    }
+
     my %metaclasses = Class::MOP::get_all_metaclasses();
     my @classes;
     foreach my $class ( keys %metaclasses ) {
@@ -454,7 +459,7 @@ __END__
 
 =head1 DESCRIPTION
 
-This is B<ALPHA> code. I encourage you to give it a shot if you want test
+This is B<BETA> code. I encourage you to give it a shot if you want test
 classes based on Moose, along with reporting. Feedback welcome as we try to
 improve it.
 
@@ -626,10 +631,18 @@ To override a test control method, just remember that this is OO:
 
 =head1 RUNNING THE TEST SUITE
 
- use Test::Class::Moose::Load 't/lib';
- Test::Class::Moose->new->runtests
+We I<strongly> recommend using L<Test::Class::Moose::Load> as the driver for
+your test suite. Simply point it at the directory or directories containing
+your test classes:
 
-Or:
+ use Test::Class::Moose::Load 't/lib';
+ Test::Class::Moose->new->runtests;
+
+By running C<Test::Class::Moose> with a single driver script like this, all
+classes are loaded once and this can be a significant performance boost. This
+does mean a global state will be shared, so keep this in mind.
+
+You can also pass arguments to C<Test::Class::Moose>'s contructor.
 
  my $test_suite = Test::Class::Moose->new({
      show_timing => 1,
@@ -669,6 +682,18 @@ Boolean. Will run test methods in a random order.
 Defaults to C<< Test::Builder->new >>. You can supply your own builder if you
 want, but it must conform to the L<Test::Builder> interface. We make no
 guarantees about which part of the interface it needs.
+
+=item * C<include_classes>
+
+Takes a class name or an array reference of class names. If it is present, the
+C<test_classes> method will only return these classes. This is very useful if
+you wish to run an individual class as a test:
+
+    INIT {
+        Test::Class::Moose->new(
+            test_class => $ENV{TEST_CLASS}, # ignored if undef
+        )->runtests;
+    }
 
 =item * C<include>
 

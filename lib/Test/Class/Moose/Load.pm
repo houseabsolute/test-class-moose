@@ -21,6 +21,7 @@ sub is_test_class {
 my %Added_to_INC;
 sub _load {
     my ( $class, $file, $dir ) = @_;
+
     $file =~ s{\.pm$}{};             # remove .pm extension
     $file =~ s{\\}{/}g;              # to make win32 happy
     $dir  =~ s{\\}{/}g;              # to make win32 happy
@@ -43,7 +44,6 @@ sub _load {
 
 sub import {
     my ( $class, @directories ) = @_;
-    my @test_classes;
 
     foreach my $dir ( @directories ) {
         $dir = File::Spec->catdir( split '/', $dir );

@@ -83,6 +83,12 @@ has 'exclude_tags' => (
     clearer => 'clear_exclude_tags',
 );
 
+has 'include_classes' => (
+    is     => 'ro',
+    isa    => 'ArrayRefOfStrings',
+    coerce => 1,
+);
+
 sub args {
     my $self = shift;
 
@@ -129,6 +135,48 @@ Boolean. Will display number of classes, test methods and tests run.
 =head2 * C<use_environment>
 
 Boolean.  Sets show_timing and statistics to true if your test harness is running verbosely, false otherwise.
+
+=head2 C<include_classes>
+
+Takes a class name or an array reference of class names. If it is present, the
+C<test_classes> method will only return these classes. This is very useful if
+you wish to run an individual class as a test:
+
+    INIT {
+        Test::Class::Moose->new(
+            test_class => $ENV{TEST_CLASS}, # ignored if undef
+        )->runtests;
+    }
+
+=head2 C<include_tags>
+
+Array ref of strings matching method tags (a single string is also ok). If
+present, only test methods whose tags match C<include_tags> or whose tags
+don't match C<exclude_tags> will be included. B<However>, they must still
+start with C<test_>.
+
+For example:
+
+ my $test_suite = Test::Class::Moose->new({
+     include_tags => [qw/api database/],
+ });
+
+The above constructor will only run tests tagged with C<api> or C<database>.
+
+=head2 C<exclude_tags>
+
+The same as C<include_tags>, but will exclude the tests rather than include
+them. For example, if your network is down:
+
+ my $test_suite = Test::Class::Moose->new({
+     exclude_tags => [ 'network' ],
+ });
+
+ # or
+ my $test_suite = Test::Class::Moose->new({
+     exclude_tags => 'network',
+ });
+
 
 =head2 C<builder>
 
