@@ -1,7 +1,7 @@
 Revision history for Test-Class-Moose
 
 0.11    May 19, 2013
-        - Added the include_classes attribute to the contructor. Allows you to
+        - Added the test_classes attribute to the contructor. Allows you to
           easily control which classes you wish to run.
 
 0.10    May 8, 2012

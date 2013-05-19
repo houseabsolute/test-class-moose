@@ -331,7 +331,7 @@ END
 sub test_classes {
     my $self        = shift;
 
-    if ( my $classes = $self->test_configuration->include_classes ) {
+    if ( my $classes = $self->test_configuration->test_classes ) {
         return @$classes;
     }
 
@@ -683,17 +683,20 @@ Defaults to C<< Test::Builder->new >>. You can supply your own builder if you
 want, but it must conform to the L<Test::Builder> interface. We make no
 guarantees about which part of the interface it needs.
 
-=item * C<include_classes>
+=item * C<test_classes>
 
-Takes a class name or an array reference of class names. If it is present, the
-C<test_classes> method will only return these classes. This is very useful if
-you wish to run an individual class as a test:
+Takes a class name or an array reference of class names. If it is present,
+only these test classes will be run. This is very useful if you wish to run an
+individual class as a test:
 
-    INIT {
-        Test::Class::Moose->new(
-            test_class => $ENV{TEST_CLASS}, # ignored if undef
-        )->runtests;
-    }
+    Test::Class::Moose->new(
+        test_classes => $ENV{TEST_CLASS}, # ignored if undef
+    )->runtests;
+
+You can also achieve this effect by writing a subclass and overriding the
+C<test_classes> method, but this makes it trivial to do this:
+
+    TEST_CLASS=TestsFor::Our::Company::Invoice prove -lv t/test_classes.t
 
 =item * C<include>
 

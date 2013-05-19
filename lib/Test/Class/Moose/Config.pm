@@ -83,7 +83,7 @@ has 'exclude_tags' => (
     clearer => 'clear_exclude_tags',
 );
 
-has 'include_classes' => (
+has 'test_classes' => (
     is     => 'ro',
     isa    => 'ArrayRefOfStrings',
     coerce => 1,
@@ -136,17 +136,15 @@ Boolean. Will display number of classes, test methods and tests run.
 
 Boolean.  Sets show_timing and statistics to true if your test harness is running verbosely, false otherwise.
 
-=head2 C<include_classes>
+=head2 C<test_classes>
 
 Takes a class name or an array reference of class names. If it is present, the
 C<test_classes> method will only return these classes. This is very useful if
 you wish to run an individual class as a test:
 
-    INIT {
-        Test::Class::Moose->new(
-            test_class => $ENV{TEST_CLASS}, # ignored if undef
-        )->runtests;
-    }
+    Test::Class::Moose->new(
+        test_classes => $ENV{TEST_CLASS}, # ignored if undef
+    )->runtests;
 
 =head2 C<include_tags>
 
