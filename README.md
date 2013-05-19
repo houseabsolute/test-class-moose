@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.11
+version 0.12
 
 # SYNOPSIS
 
@@ -83,12 +83,15 @@ If you prefer, you can declare a plan in a test method:
         ...
     }
 
-You can only call `plan()` once for a given test method report. Otherwise,
-you must call `add_to_plan()`. For example, with a method modifier:
+You may callcall `plan()` multiple times for a given test method. Each call
+        to `plan()` will add that number of tests to the plan.  For example,
+        with a method modifier:
 
-    after 'test_something' => sub {
+    before 'test_something' => sub {
         my ( $test, $report ) = @_;
-        $report->add_to_plan($num_extra_tests);
+        $report->plan($num_extra_tests);
+
+        # more tests
     };
 
 Please note that if you call `plan`, the plan will still show up at the end
