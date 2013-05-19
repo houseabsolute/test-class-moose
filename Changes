@@ -1,5 +1,10 @@
 Revision history for Test-Class-Moose
 
+0.12
+        - add_to_plan() is now deprecated. Use plan() instead. This solves the
+          problem where you might also have a before modifier wanting to alter
+          the plan.
+
 0.11    May 19, 2013
         - Added the test_classes attribute to the contructor. Allows you to
           easily control which classes you wish to run.
