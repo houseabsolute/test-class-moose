@@ -1,6 +1,8 @@
 Revision history for Test-Class-Moose
 
 0.12
+        - Bugfix: test_classes attribute to constructor is allowed to be
+          undef.
         - add_to_plan() is now deprecated. Use plan() instead. This solves the
           problem where you might also have a before modifier wanting to alter
           the plan.

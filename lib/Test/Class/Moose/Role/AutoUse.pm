@@ -3,6 +3,7 @@ package Test::Class::Moose::Role::AutoUse;
 # ABSTRACT: Automatically load the classes you're testing
 
 use Moose::Role;
+use Carp 'confess';
 
 has 'class_name' => (
     is      => 'ro',
