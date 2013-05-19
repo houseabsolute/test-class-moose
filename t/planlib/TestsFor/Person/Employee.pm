@@ -11,7 +11,7 @@ sub extra_constructor_args {
 BEGIN {
     after 'test_person' => sub {
         my ( $test, $report ) = @_;
-        $report->add_to_plan(1);
+        $report->plan(1);
         is $test->test_fixture->employee_number, 666,
           '... and we should get the correct employee number';
     };

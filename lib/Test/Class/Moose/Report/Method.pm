@@ -28,21 +28,13 @@ has 'tests_planned' => (
 
 sub plan {
     my ( $self, $integer ) = @_;
-    if ( $self->has_plan ) {
-        my $name = $self->name;
-        croak("You tried to plan twice in test method '$name'");
-    }
-    $self->tests_planned($integer);
+    $self->tests_planned( ( $self->tests_planned || 0 ) + $integer );
 }
 
 sub add_to_plan {
     my ( $self, $integer ) = @_;
-
-    unless ( $self->has_plan ) {
-        my $name = $self->name;
-        croak("You cannot add to a non-existent plan in method $name");
-    }
-    $self->tests_planned( $self->tests_planned + $integer );
+    carp("add_to_plan() is deprecated. You can now call plan() multiple times");
+    return $self->plan($integer);
 }
 
 __PACKAGE__->meta->make_immutable;

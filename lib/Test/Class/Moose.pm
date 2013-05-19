@@ -64,6 +64,7 @@ has 'test_report' => (
     isa     => 'Test::Class::Moose::Report',
     default => sub { Test::Class::Moose::Report->new },
 );
+
 sub test_reporting {
     carp "test_reporting() deprecated as of version 0.07. Use test_report().";
     goto &test_report;
@@ -508,12 +509,15 @@ If you prefer, you can declare a plan in a test method:
         ...
     }
 
-You can only call C<plan()> once for a given test method report. Otherwise,
-you must call C<add_to_plan()>. For example, with a method modifier:
+You may callcall C<plan()> multiple times for a given test method. Each call
+        to C<plan()> will add that number of tests to the plan.  For example,
+        with a method modifier:
 
-    after 'test_something' => sub {
+    before 'test_something' => sub {
         my ( $test, $report ) = @_;
-        $report->add_to_plan($num_extra_tests);
+        $report->plan($num_extra_tests);
+
+        # more tests
     };
 
 Please note that if you call C<plan>, the plan will still show up at the end
