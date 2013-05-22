@@ -197,7 +197,7 @@ The `$report` object is a [Test::Class::Moose::Report::Class](http://search.cpan
 To override a test control method, just remember that this is OO:
 
     sub test_setup {
-        my $test = shift;
+        my  ( $test, $report ) = @_;
         $test->next::method; # optional to call parent test_setup
         # more setup code here
     }
@@ -334,7 +334,7 @@ If you wish to skip a class, set the reason in the `test_startup` method.
 If you wish to skip an individual method, do so in the `test_setup` method.
 
     sub test_setup {
-        my ( $self, $report ) = @_;
+        my ( $test, $report ) = @_;
 
         if ( 'test_time_travel' eq $report->name ) {
             $test->test_skip("Time travel not yet available");
