@@ -12,9 +12,6 @@ version 0.12
     use Test::Class::Moose;
     use DateTime;
 
-    # this usually goes in a base class
-    INIT { Test::Class::Moose->new->runtests }
-
     # methods that begin with test_ are test methods.
     sub test_constructor {
         my ( $test, $report ) = @_;
@@ -268,6 +265,17 @@ You can also achieve this effect by writing a subclass and overriding the
 `test_classes` method, but this makes it trivial to do this:
 
     TEST_CLASS=TestsFor::Our::Company::Invoice prove -lv t/test_classes.t
+
+Alternatively:
+
+    Test::Class::Moose->new(
+        test_classes => \@ARGV, # ignored if empty
+    )->runtests;
+
+That lets you use the arisdottle to provide arguments to your test driver
+script:
+
+    prove -lv t/test_classes.t :: TestsFor::Our::Company::Invoice TestsFor::Something::Else
 
 - `include`
 
