@@ -333,7 +333,9 @@ sub test_classes {
     my $self        = shift;
 
     if ( my $classes = $self->test_configuration->test_classes ) {
-        return @$classes;
+        if (@$classes) {    # ignore it if the array is empty
+            return @$classes;
+        }
     }
 
     my %metaclasses = Class::MOP::get_all_metaclasses();
@@ -437,9 +439,6 @@ __END__
     package TestsFor::DateTime;
     use Test::Class::Moose;
     use DateTime;
-
-    # this usually goes in a base class
-    INIT { Test::Class::Moose->new->runtests }
 
     # methods that begin with test_ are test methods.
     sub test_constructor {
