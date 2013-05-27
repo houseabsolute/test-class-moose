@@ -701,6 +701,17 @@ C<test_classes> method, but this makes it trivial to do this:
 
     TEST_CLASS=TestsFor::Our::Company::Invoice prove -lv t/test_classes.t
 
+Alternatively:
+
+    Test::Class::Moose->new(
+        test_classes => \@ARGV, # ignored if empty
+    )->runtests;
+
+That lets you use the arisdottle to provide arguments to your test driver
+script:
+
+    prove -lv t/test_classes.t :: TestsFor::Our::Company::Invoice TestsFor::Something::Else
+
 =item * C<include>
 
 Regex. If present, only test methods whose name matches C<include> will be
