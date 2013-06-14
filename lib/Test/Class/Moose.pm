@@ -3,7 +3,7 @@ package Test::Class::Moose;
 # ABSTRACT: Test::Class + Moose
 
 use 5.10.0;
-use Moose;
+use Moose 2.0000;
 use Carp;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
