@@ -772,7 +772,7 @@ them. For example, if your network is down:
 If you wish to skip a class, set the reason in the C<test_startup> method.
 
     sub test_startup {
-        my ( $self, $report ) = @_;
+        my ( $test, $report ) = @_;
         $test->test_skip("I don't want to run this class");
     }
 
