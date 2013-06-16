@@ -18,7 +18,7 @@ my $test_suite = Test::Class::Moose->new(
 # this is the correct behavior.
 my %methods_for = (
     'TestsFor::Basic'           => [qw/test_me test_me_not_overridden test_this_baby/],
-    'TestsFor::Basic::Subclass' => [qw/test_this_should_be_run/],
+    'TestsFor::Basic::Subclass' => [qw/test_me_not_overridden test_this_should_be_run/],
 );
 my @test_classes = sort $test_suite->test_classes;
 
@@ -39,7 +39,6 @@ $test_suite = Test::Class::Moose->new(
     'TestsFor::Basic::Subclass' => [qw/
         test_a_method_with_no_tags
         test_me
-        test_me_not_overridden
         test_this_baby
         test_this_should_be_run
     /],
