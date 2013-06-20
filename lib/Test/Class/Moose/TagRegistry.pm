@@ -7,83 +7,120 @@ use warnings;
 
 use Carp;
 use Class::MOP;
+use List::MoreUtils qw( any uniq );
 
-my %BY_TAG;
+my %BY_METHOD;
 
 sub add {
     my ( $class, $test_class, $method, $tags ) = @_;
 
-    if ( not scalar @{$tags} ) {
-        die "no tags defined\n";
+    my @tags_copy = @{$tags};
+
+    # check for additions or deletions to the inherited tag list
+    if (any { /^[-+]/ } @tags_copy) {
+        @tags_copy = $class->_augment_tags($test_class, $method, $tags);
     }
 
-    foreach my $tag ( @{$tags} ) {
+    foreach my $tag ( @tags_copy ) {
         if ( $tag !~ /^\w+$/ ) {
             die "tags must be alphanumeric\n";
         }
     }
 
     # dedupe tags
-    my %tags = map { $_ => 1 } @{$tags};
+    my %tags = map { $_ => 1 } @tags_copy;
 
-    my $exists = grep {
-              exists $BY_TAG{$_}{$test_class}
-          and exists $BY_TAG{$_}{$test_class}{$method}
-    } $class->tags;
-    if ($exists) {
+    if (exists $BY_METHOD{$method} && exists $BY_METHOD{$method}{$test_class}) {
         die
           "tags for $test_class->$method already exists, method redefinition perhaps?\n";
     }
 
-    foreach my $tag ( keys %tags ) {
-        $BY_TAG{$tag}{$test_class}{$method} = 1;
-    }
+    $BY_METHOD{$method}{$test_class} = \%tags;
+
+    return;
 }
 
 sub tags {
-    return sort keys %BY_TAG;
-}
+    my @tags;
+    for my $method (keys %BY_METHOD) {
+        for my $test_class (keys $BY_METHOD{$method}) {
+            push @tags, keys %{$BY_METHOD{$method}{$test_class}};
+        }
+    }
 
-sub classes_with_tag {
-    my ( undef, $tag ) = @_;
-
-    croak("no tag specified") if not defined $tag;
-
-    return if not exists $BY_TAG{$tag};
-
-    return sort keys %{ $BY_TAG{$tag} };
-}
-
-sub methods_with_tag {
-    my ( undef, $test_class, $tag ) = @_;
-
-    croak("no class specified") if not defined $test_class;
-    croak("no tag specified")   if not defined $tag;
-
-    # avoid auto-vivication
-    return if not exists $BY_TAG{$tag};
-
-    return sort keys %{ $BY_TAG{$tag}{$test_class} };
+    return sort(uniq(@tags));
 }
 
 sub method_has_tag {
-    my ( undef, $test_class, $method, $tag ) = @_;
+    my ( $class, $test_class, $method, $tag ) = @_;
 
     croak("no class specified")  if not defined $test_class;
     croak("no method specified") if not defined $method;
     croak("no tag specified")    if not defined $tag;
 
     # avoid auto-vivication
-    return if not exists $BY_TAG{$tag};
+    return if not exists $BY_METHOD{$method};
 
-    my $class_meta = Class::MOP::Class->initialize($test_class);
-    my $method_meta = $class_meta->find_method_by_name($method);
-    return if not $method_meta;
+    if (not exists $BY_METHOD{$method}{$test_class}) {
+        # If this method has no tag data at all, then inherit the tags from
+        # from the superclass
+        $BY_METHOD{$method}{$test_class} = $class->_superclass_tags($test_class, $method);
+    }
 
-    my $real_test_class = $method_meta->package_name();
-    return if not exists $BY_TAG{$tag}{$real_test_class};
+    return exists $BY_METHOD{$method}{$test_class}{$tag};
+}
 
-    return exists $BY_TAG{$tag}{$real_test_class}{$method};
+sub _superclass_tags {
+    my ( $class, $test_class, $method ) = @_;
+
+    croak("no class specified")  if not defined $test_class;
+    croak("no method specified") if not defined $method;
+
+    return {} if not exists $BY_METHOD{$method};
+
+    my $test_class_meta = Class::MOP::Class->initialize($test_class);
+    my $method_meta     = $test_class_meta->find_next_method_by_name($method);
+
+    # no method, so no tags to inherit
+    return {} if not $method_meta;
+
+    my $super_test_class = $method_meta->package_name();
+    if ( exists $BY_METHOD{$method}{$super_test_class} ) {
+        # shallow copy the superclass method's tags, because it's possible to
+        # change add/remove items from the subclass's list later
+        my %tags = map { $_ => 1 } keys %{ $BY_METHOD{$method}{$super_test_class} };
+        return \%tags;
+    }
+
+    # nothing defined at this level, recurse
+    return $class->_superclass_tags($test_class, $method);
+}
+
+sub _augment_tags {
+    my ( $class, $test_class, $method, $tags ) = @_;
+
+    croak("no class specified")  if not defined $test_class;
+    croak("no method specified") if not defined $method;
+
+    # Get the base list from the superclass
+    my $tag_list = $class->_superclass_tags($test_class, $method);
+
+    for my $tag_definition (@{$tags}) {
+        my $direction = substr($tag_definition, 0, 1);
+        my $tag = substr($tag_definition, 1);
+        if ($direction eq '+') {
+            $tag_list->{$tag} = 1;
+        }
+        elsif ($direction eq '-') {
+            # die here if the tag wasn't inherited?
+            delete $tag_list->{$tag};
+        }
+        else {
+            die "$test_class->$method attempting to override and modify tags, did you forget a '+'?\n";
+        }
+    }
+
+    return keys %{$tag_list};
 }
 
 1;
@@ -95,17 +132,7 @@ __END__
  use Test::Class::Moose::TagRegistry;
 
  my @tags = Test::Class::Moose::TagRegistry->tags;
- foreach my $tag ( @tags ) {
-     my @classes = Test::Class::Moose::TagRegistry->classes_with_tag( $tag );
-
-     foreach my $class ( @classes ) {
-         my @methods = Test::Class::Moose::TagRegistry->methods_with_tag( $class, $tag );
-
-         foreach my $method ( @methods ) {
-             print Test::Class::Moose::TagRegistry->method_has_tag( $class, $method, $tag );
-         }
-     }
- }
+ print Test::Class::Moose::TagRegistry->method_has_tag( 'TestsFor::FooBar', 'test_baz', 'network' );
 
 =head1 DESCRIPTION
 
@@ -130,15 +157,6 @@ for it.
 =item tags
 
 Find all tags defined for all methods.  Returns a sorted list of tags.
-
-=item classes_with_tag( $tag )
-
-Find all classes that have the specified tag.  Returns a sorted list of classes.
-
-=item methods_with_tag( $class, $tag )
-
-Returns a sorted list of methods in the specified class that have the
-specified tag.
 
 =item method_has_tag( $class, $method, $tag )
 

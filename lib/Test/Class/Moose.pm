@@ -26,9 +26,11 @@ BEGIN {
         sub Tags : ATTR_SUB {
             my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
 
-            $data =~ s/^\s+//g;
-
-            my @tags = split /\s+/, $data;
+            my @tags;
+            if ($data) {
+                $data =~ s/^\s+//g;
+                @tags = split /\s+/, $data;
+            }
 
             if ( $symbol eq 'ANON' ) {
                 die "Cannot tag anonymous subs at file $file, line $line\n";
@@ -352,7 +354,6 @@ sub test_classes {
 my $FILTER_BY_TAG = sub {
     my ( $self, $methods ) = @_;
 
-    my @tags             = Test::Class::Moose::TagRegistry->tags;
     my $class            = $self->test_class;
     my @filtered_methods = @$methods;
     if ( my $include = $self->test_configuration->include_tags ) {

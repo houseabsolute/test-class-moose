@@ -22,4 +22,12 @@ sub test_a_method_with_no_tags {
     ok 1, 'this test method has no tags';
 }
 
+sub test_augment : Tags(first second) {
+    pass 'this test has a "first" and "second" tag but it they will be overridden';
+}
+
+sub test_clear_tags : Tags(first) {
+    pass 'this test has the "first" tag, but it\'s going to get cleared in the subtest';
+}
+
 1;
