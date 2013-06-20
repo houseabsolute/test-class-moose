@@ -1,5 +1,11 @@
 Revision history for Test-Class-Moose
 
+0.20
+        - Tag inheritance added by Paul Boyd (see
+          https://github.com/Ovid/test-class-moose/pull/10). This change is
+          slightly backwards-incompatible, but not many people were yet using
+          this module (or tags).
+
 0.12    May 27, 2013
         - Bugfix: test_classes attribute to constructor is allowed to be
           undef or an empty array ref.
