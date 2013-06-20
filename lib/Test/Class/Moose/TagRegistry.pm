@@ -6,6 +6,7 @@ use strict;
 use warnings;
 
 use Carp;
+use Class::MOP;
 
 my %BY_TAG;
 
@@ -74,9 +75,15 @@ sub method_has_tag {
 
     # avoid auto-vivication
     return if not exists $BY_TAG{$tag};
-    return if not exists $BY_TAG{$tag}{$test_class};
 
-    return exists $BY_TAG{$tag}{$test_class}{$method};
+    my $class_meta = Class::MOP::Class->initialize($test_class);
+    my $method_meta = $class_meta->find_method_by_name($method);
+    return if not $method_meta;
+
+    my $real_test_class = $method_meta->package_name();
+    return if not exists $BY_TAG{$tag}{$real_test_class};
+
+    return exists $BY_TAG{$tag}{$real_test_class}{$method};
 }
 
 1;
