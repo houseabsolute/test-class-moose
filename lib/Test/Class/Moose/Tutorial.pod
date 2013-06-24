@@ -148,6 +148,8 @@ Now we can choose which test class we want to run right on the command line.
 
 Tags are a way of organizing your test methods into groups. Later you can choose to only execute the test methods from one or more tags.
 
+XXX: Fill in more about tags.
+
 =head1 Boilerplate
 
 Here is the bare minimum you need to get started using Test::Class::Moose
