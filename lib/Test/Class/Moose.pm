@@ -508,9 +508,9 @@ If you prefer, you can declare a plan in a test method:
         ...
     }
 
-You may callcall C<plan()> multiple times for a given test method. Each call
-        to C<plan()> will add that number of tests to the plan.  For example,
-        with a method modifier:
+You may call C<plan()> multiple times for a given test method. Each call to
+C<plan()> will add that number of tests to the plan.  For example, with a
+method modifier:
 
     before 'test_something' => sub {
         my ( $test, $report ) = @_;
