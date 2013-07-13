@@ -59,13 +59,18 @@ loaded.
     # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load qw( catdir( $Bin, 'lib', 'TestsFor' ) );
+    use Test::Class::Moose::Load qw( catdir( $Bin, 't', 'lib' ) );
     Test::Class::Moose->new->runtests;
 
-This test script will load all of the modules inside C<t/lib/TestsFor/> and
-then run them. All your test modules get run by this one script, but since
-they're run as subtests, you will get a report on how many test classes
-failed.
+Or if you're not worried about the portability of that directory:
+
+    use Test::Class::Moose::Load 't/lib';
+    Test::Class::Moose->new->runtests;
+
+This test script will load all of the C<Test::Class::Moose> modules inside
+C<t/lib/> and then run them. All your test modules get run by this one script,
+but since they're run as subtests, you will get a report on how many test
+classes failed.
 
 We can run our test script using prove. I'll turn on verbose output (-v) to
 show you what the TAP output looks like
@@ -94,27 +99,32 @@ some actions: Reset a test database, create a temp file, or otherwise set up
 prerequisites for a test. C<Test::Class::Moose> provides some hooks that allow
 us to perform actions at these points.
 
-=head2 test_startup / test_finished
+=head2 test_startup / test_shutdown
 
-test_startup happens as the very first thing in our test class, and is run only
+C<test_startup> is run as the very first thing in our test class, and is run only
 once per test class. This allows us to set up some global things, like a
 database that will be used throughout the entire test.
 
-test_finished happens once as the very last thing in our test class, and is run
-only once per test class. This allows us to clean up things from test_startup,
-and also test to verify that anything from test_startup looks exactly as it
-should before we clean it up.
+C<test_shutdown> is run once as the very last thing in our test class, and is
+run only once per test class. This allows us to clean up things from
+C<test_startup>, and also test to verify that anything from C<test_startup>
+looks exactly as it should before we clean it up.
 
 =head2 test_setup / test_teardown
 
-What test_startup and test_finished are for the entire test class, test_setup
-and test_teardown are for every single C<test_*> method.
+What C<test_startup> and C<test_shutdonw> are for the entire test class,
+C<test_setup> and C<test_teardown> are for every single C<test_*> method.
 
-test_setup happens before every test. For canonical unit testing, this is where
-you can create the things you need for each test, such as a log file.
+C<test_setup> is run before every test method. For canonical unit testing,
+this is where you can create the things you need for each test, such as a log
+file, rebuilding fixtures, or starting a database transaction.
 
-test_teardown happens after every test, and is where you can clean up the
-things created in test_setup.
+C<test_teardown> happens after every test, and is where you can clean up the
+things created in C<test_setup>, such as ending the database transaction. Note
+that some developers actually prefer their cleanup to happen in their
+C<test_setup> method, prior to setting up the test. That sounds odd, but it
+means that if a test method fails, you haven't yet cleaned up and can easily
+inspect your test environment.
 
 =head1 Test Class Composition
 
@@ -123,16 +133,16 @@ only C<Test::More>) is class composition.
 
 =head2 Inheritance
 
-Since we're using Moose, inheritance is as easy as:
+Since we're using C<Moose>, inheritance is as easy as:
 
     package TestsFor::My::Test::Class;
-    use Test::Moose::Class;
+    use Test::Class::Moose;
     extends 'My::Test::Base';
 
 C<Test::Class::Moose> even provides a shortcut:
 
     package TestsFor::My::Text::Class;
-    use Test::Moose::Class => 'My::Test::Base';
+    use Test::Class::Moose => 'My::Test::Base';
 
 If C<My::Test::Base> will not be testing anything itself, we do not put it in
 C<t/lib/TestsFor>, instead we put it in C<lib> or C<t/lib> (depending on if we
@@ -143,10 +153,10 @@ concrete.
 =head2 Roles
 
 If your distribution uses roles, so should your tests. Like inheritance, roles
-are added in the regular Moose way:
+are added in the regular C<Moose> way:
 
     package TestsFor::My::Test::Class;
-    use Test::Moose::Class;
+    use Test::Class::Moose;
     with 'My::Test::Role';
 
 =head2 Organizing Your Tests
@@ -176,9 +186,9 @@ method:
         isa_ok My::Module->new, 'My::Module';
     }
 
-Using the plan() method, we can know exactly how many tests did not run if the
-test method ends prematurely. Without it, we would only get the message "No
-plan was seen", we would not know which tests were not run.
+Using the C<plan()> method, we can know exactly how many tests did not run if
+the test method ends prematurely. Without it, we would only get the message
+"No plan was seen", we would not know which tests were not run.
 
 =head2 skip
 
@@ -211,22 +221,22 @@ and the same C<test_skip> method with the reason we're skipping the test.
 =head2 Run Specific Test Classes
 
 One of the problems with having only one test script to run all the test
-classes is when we're working directly with one test class we still have to run
-all the other test classes.
+classes is when we're working directly with one test class we still have to
+run all the other test classes.
 
-To fix this problem, C<Test::Moose::Class> allows us to specify which specific
+To fix this problem, C<Test::Class::Moose> allows us to specify which specific
 classes we want to run in its constructor:
 
     # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load catdir( $Bin, 'lib', 'TestsFor' );
+    use Test::Class::Moose::Load catdir( $Bin, 't', 'lib' );
     Test::Class::Moose->new(
         classes => [ 'TestsFor::My::Test::Class' ],
     )->runtests;
 
 Now, we only run C<TestsFor::My::Test::Class> instead of all the tests found in
-TestsFor::.
+C<TestsFor::>.
 
 This isn't very elegant though, since we have to edit C<t/test_class_tests.t>
 every time we want to run a new test. So, C<Test::Class::Moose> can also
@@ -235,10 +245,8 @@ accept which test classes to run via C<@ARGV>:
     # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load catdir( $Bin, 'lib', 'TestsFor' );
-    Test::Class::Moose->new(
-        classes => \@ARGV,
-    )->runtests;
+    use Test::Class::Moose::Load catdir( $Bin, 't', 'lib' );
+    Test::Class::Moose->new( classes => \@ARGV )->runtests;
 
 If C<@ARGV> is empty, C<Test::Class::Moose> will run all classes. To give
 arguments while running C<prove>, we use the arisdottle C<::>:
@@ -266,7 +274,7 @@ C<t/test_class_tests.t> script:
     # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load catdir( $Bin, 'lib', 'TestsFor' );
+    use Test::Class::Moose::Load catdir( $Bin, 't', 'lib' );
     Test::Class::Moose->new(
         classes      => \@ARGV,
         exclude_tags => [qw( database )],
@@ -296,7 +304,11 @@ Here is the bare minimum you need to get started using C<Test::Class::Moose>
     # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load catdir( $Bin, 'lib', 'TestsFor' );
+    use Test::Class::Moose::Load catdir( $Bin, 't', 'lib' );
     Test::Class::Moose->new(
         classes => \@ARGV,
     )->runtests;
+
+=head1 AUTHOR
+
+Doug Bell: https://github.com/preaction
