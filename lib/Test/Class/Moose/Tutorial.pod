@@ -28,25 +28,26 @@ C<Test::Class::Moose> loads C<strict>, C<warnings>, C<Moose>, and
 C<Test::Most> (which includes C<Test::More>, C<Test::Deep>,
 C<Test::Exception>, and C<Test::Differences>).
 
-I put my test classes in the C<t/lib/TestsFor directory>, to keep the
+I put my test classes in the C<t/lib/TestsFor> directory, to keep the
 separated from my other classes that help testing (C<t/lib>) and my other test
 scripts. This is just a convention; the directory can be anything you want it
 to be, but it is a good idea to keep your test classes separate from your
 other test-related modules.
 
-Now, we need a subroutine that runs our test. C<Test::Class::Moose> test
+Now, we need a method that runs our test. C<Test::Class::Moose> test
 methods start with C<test_>. Any method that starts with C<test_> will be run
 as a test.
 
+    use My::Module;
+
     sub test_construction {
         my ( $test, $report ) = @_;
-        use My::Module;
         my $obj = My::Module->new;
         isa_ok $obj, 'My::Module';
     }
 
-Every C<test_> sub is run as a subtest, and no plan is required. We can have as
-many C<test_> subs as we want.
+Every C<test_> method is run as a subtest, and no plan is required. We can have as
+many C<test_> methods as we want.
 
 =head2 A Test Runner
 
@@ -107,7 +108,7 @@ should before we clean it up.
 =head2 test_setup / test_teardown
 
 What test_startup and test_finished are for the entire test class, test_setup
-and test_teardown are for every single test_ sub.
+and test_teardown are for every single C<test_*> method.
 
 test_setup happens before every test. For canonical unit testing, this is where
 you can create the things you need for each test, such as a log file.
@@ -184,7 +185,7 @@ plan was seen", we would not know which tests were not run.
 We can use the C<test_startup> and C<test_setup> methods to skip tests that we
 can't or don't want to run for whatever reason.
 
-If we don't want to run a single test sub, we can use the C<test_setup> method
+If we don't want to run a single test method, we can use the C<test_setup> method
 and call the C<test_skip> method with the reason we're skipping the test.
 
     sub test_will_fail {
@@ -254,7 +255,7 @@ tags like "online" for tests that require a network, or "database" for tests
 that require a database, and then include or exclude those tags when you
 execute your tests.
 
-You add tags to your test subs using attributes:
+You add tags to your test methods using attributes:
 
     sub test_database :Tags( database ) { ... }
     sub test_network :Tags( online ) { ... }
