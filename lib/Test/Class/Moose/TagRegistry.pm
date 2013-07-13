@@ -42,13 +42,13 @@ sub add {
 
 sub tags {
     my @tags;
-    for my $method (keys %BY_METHOD) {
-        for my $test_class (keys $BY_METHOD{$method}) {
-            push @tags, keys %{$BY_METHOD{$method}{$test_class}};
+    for my $method ( keys %BY_METHOD ) {
+        for my $test_class ( keys %{ $BY_METHOD{$method} } ) {
+            push @tags, keys %{ $BY_METHOD{$method}{$test_class} };
         }
     }
 
-    return sort(uniq(@tags));
+    return sort( uniq(@tags) );
 }
 
 sub method_has_tag {
