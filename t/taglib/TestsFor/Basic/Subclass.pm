@@ -24,4 +24,12 @@ sub test_this_should_be_run : Tags(second) {
     }
 }
 
+sub test_augment : Tags( +third -first ) {
+    pass 'this should run with tags "second" or "third", but not "first"';
+}
+
+sub test_clear_tags : Tags() {
+    fail 'this should not run, because it has no tags';
+}
+
 1;
