@@ -242,12 +242,33 @@ while running C<prove>, we use the arisdottle C<::>:
 
 Now we can choose which test class we want to run right on the command line.
 
-=head2 Test Tags
+=head1 Tags
 
 Tags are a way of organizing your test methods into groups. Later you can
-choose to only execute the test methods from one or more tags.
+choose to only execute the test methods from one or more tags. You can add
+tags like "online" for tests that require a network, or "database" for tests
+that require a database, and then include or exclude those tags when you
+execute your tests.
 
-XXX: Fill in more about tags.
+You add tags to your test subs using attributes:
+
+    sub test_database :Tags( database ) { ... }
+    sub test_network :Tags( online ) { ... }
+
+Then, if your database goes down, you can exclude those tests from the
+C<t/testlib.t> script:
+
+    # t/testlib.t
+    use File::Spec::Functions qw( catdir );
+    use FindBin qw( $Bin );
+    use Test::Class::Moose::Load catdir( $Bin, 'testlib' );
+    Test::Class::Moose->new(
+        classes => \@ARGV,
+        exclude_tags => [qw( database )],
+    )->runtests;
+
+By adding tags to your tests, you can run only those tests that you
+absolutely need to, increasing your productivity.
 
 =head1 Boilerplate
 
