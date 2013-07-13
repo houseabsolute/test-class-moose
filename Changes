@@ -1,6 +1,7 @@
 Revision history for Test-Class-Moose
 
 0.20
+        - Doc fix by Olaf Alders.
         - Tag inheritance added by Paul Boyd (see
           https://github.com/Ovid/test-class-moose/pull/10). This change is
           slightly backwards-incompatible, but not many people were yet using
