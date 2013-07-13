@@ -1,4 +1,3 @@
-
 =head1 Getting Started
 
 Automated testing is wonderful. Verifying your program's correctness in all
@@ -18,23 +17,26 @@ base class, and all the child classes can inherit those tests!
 
 =head2 A Test Class
 
-The first and most crucial part of using Test::Class::Moose is a class that
-runs some tests. Test::Class::Moose loads a few modules for you automatically,
-so the boilerplate is, at minimum:
+The first and most crucial part of using C<Test::Class::Moose> is a class that
+runs some tests. C<Test::Class::Moose> loads a few modules for you
+automatically, so the boilerplate is, at minimum:
 
-    package testlib::My::Test::Class;
+    package TestsFor::My::Test::Class;
     use Test::Class::Moose;
 
-Test::Class::Moose loads strict, warnings, Moose, and Test::Most (which
-includes Test::More, Test::Deep, Test::Exception, and Test::Differences).
+C<Test::Class::Moose> loads C<strict>, C<warnings>, C<Moose>, and
+C<Test::Most> (which includes C<Test::More>, C<Test::Deep>,
+C<Test::Exception>, and C<Test::Differences>).
 
-I put my test classes in the t/testlib directory, to keep the separated from my
-other classes that help testing (t/lib) and my other test scripts. This is just
-a convention; the directory can be anything you want it to be, but it is a good
-idea to keep your test classes separate from your other test-related modules.
+I put my test classes in the C<t/lib/TestsFor directory>, to keep the
+separated from my other classes that help testing (C<t/lib>) and my other test
+scripts. This is just a convention; the directory can be anything you want it
+to be, but it is a good idea to keep your test classes separate from your
+other test-related modules.
 
-Now, we need a subroutine that runs our test. Test::Class::Moose test methods
-start with "test_". Any method that starts with "test_" will be run as a test.
+Now, we need a subroutine that runs our test. C<Test::Class::Moose> test
+methods start with C<test_>. Any method that starts with C<test_> will be run
+as a test.
 
     sub test_construction {
         my ( $test, $report ) = @_;
@@ -43,41 +45,42 @@ start with "test_". Any method that starts with "test_" will be run as a test.
         isa_ok $obj, 'My::Module';
     }
 
-Every "test_" sub is run as a subtest, and no plan is required. We can have as
-many "test_" subs as we want.
+Every C<test_> sub is run as a subtest, and no plan is required. We can have as
+many C<test_> subs as we want.
 
 =head2 A Test Runner
 
 Now that we have a test class, we need a way for prove to load and run them.
-Test::Class::Moose can load our test modules from a given directory, and it has
-a runtests() method that will run any test modules that have already been
+C<Test::Class::Moose> can load our test modules from a given directory, and it
+has a runtests() method that will run any test modules that have already been
 loaded.
 
-    # t/testlib.t
+    # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load qw( catdir( $Bin, testlib ) );
+    use Test::Class::Moose::Load qw( catdir( $Bin, 'lib', 'TestsFor' ) );
     Test::Class::Moose->new->runtests;
 
-This test script will load all of the modules inside t/testlib/ and then run
-them. All your test modules get run by this one script, but since they're run
-as subtests, you will get a report on how many test classes failed.
+This test script will load all of the modules inside C<t/lib/TestsFor/> and
+then run them. All your test modules get run by this one script, but since
+they're run as subtests, you will get a report on how many test classes
+failed.
 
 We can run our test script using prove. I'll turn on verbose output (-v) to
 show you what the TAP output looks like
 
-    prove -v t/testlib.t
-    t/testlib.t ..
+    prove -v t/test_class_tests.t
+    t/test_class_tests.t ..
     1..1
     #
-    # Running tests for testlib::My::Class
+    # Running tests for TestsFor::My::Class
     #
         1..1
-        # testlib::My::Class->test_something()
+        # TestsFor::My::Class->test_something()
             ok 1 - I tested something!
             1..1
         ok 1 - test_something
-    ok 1 - testlib::My::Class
+    ok 1 - TestsFor::My::Class
     ok
     All tests successful.
     Files=1, Tests=1,  0 wallclock secs ( 0.03 usr  0.01 sys +  0.34 cusr  0.01 csys =  0.39 CPU)
@@ -85,10 +88,10 @@ show you what the TAP output looks like
 
 =head1 Event Hooks
 
-There are various points in the test script where we might want to perform some
-actions: Reset a test database, create a temp file, or otherwise set up
-prerequisites for a test. Test::Class::Moose provides some hooks that allow us
-to perform actions at these points.
+There are various points in the test script where we might want to perform
+some actions: Reset a test database, create a temp file, or otherwise set up
+prerequisites for a test. C<Test::Class::Moose> provides some hooks that allow
+us to perform actions at these points.
 
 =head2 test_startup / test_finished
 
@@ -115,32 +118,33 @@ things created in test_setup.
 =head1 Test Class Composition
 
 The most important reason to choose a class test over a procedural test (using
-only Test::More) is class composition. 
+only C<Test::More>) is class composition. 
 
 =head2 Inheritance
 
 Since we're using Moose, inheritance is as easy as:
 
-    package testlib::My::Test::Class;
+    package TestsFor::My::Test::Class;
     use Test::Moose::Class;
     extends 'My::Test::Base';
 
-Test::Class::Moose even provides a shortcut:
+C<Test::Class::Moose> even provides a shortcut:
 
-    package testlib::My::Text::Class;
+    package TestsFor::My::Text::Class;
     use Test::Moose::Class => 'My::Test::Base';
 
-If My::Test::Base will not be testing anything itself, we do not put it in
-t/testlib, instead we put it in lib or t/lib (depending on if we want it to be
-part of the public set of modules or not). This will make sure our test runner
-does not try to run our base class that doesn't test anything concrete.
+If C<My::Test::Base> will not be testing anything itself, we do not put it in
+C<t/lib/TestsFor>, instead we put it in C<lib> or C<t/lib> (depending on if we
+want it to be part of the public set of modules or not). This will make sure
+our test runner does not try to run our base class that doesn't test anything
+concrete.
 
 =head2 Roles
 
 If your distribution uses roles, so should your tests. Like inheritance, roles
 are added in the regular Moose way:
 
-    package testlib::My::Test::Class;
+    package TestsFor::My::Test::Class;
     use Test::Moose::Class;
     with 'My::Test::Role';
 
@@ -209,36 +213,36 @@ One of the problems with having only one test script to run all the test
 classes is when we're working directly with one test class we still have to run
 all the other test classes.
 
-To fix this problem, Test::Moose::Class allows us to specify which specific
+To fix this problem, C<Test::Moose::Class> allows us to specify which specific
 classes we want to run in its constructor:
 
-    # t/testlib.t
+    # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load catdir( $Bin, 'testlib' );
+    use Test::Class::Moose::Load catdir( $Bin, 'lib', 'TestsFor' );
     Test::Class::Moose->new(
-        classes => [ 'testlib::My::Test::Class' ],
+        classes => [ 'TestsFor::My::Test::Class' ],
     )->runtests;
 
-Now, we only run testlib::My::Test::Class instead of all the tests found in
-testlib::.
+Now, we only run C<TestsFor::My::Test::Class> instead of all the tests found in
+TestsFor::.
 
-This isn't very elegant though, since we have to edit t/testlib.t every time we
-want to run a new test. So, Test::Class::Moose can also accept which test
-classes to run via @ARGV:
+This isn't very elegant though, since we have to edit C<t/test_class_tests.t>
+every time we want to run a new test. So, C<Test::Class::Moose> can also
+accept which test classes to run via C<@ARGV>:
 
-    # t/testlib.t
+    # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load catdir( $Bin, 'testlib' );
+    use Test::Class::Moose::Load catdir( $Bin, 'lib', 'TestsFor' );
     Test::Class::Moose->new(
         classes => \@ARGV,
     )->runtests;
 
-If @ARGV is empty, Test::Class::Moose will run all classes. To give arguments
-while running C<prove>, we use the arisdottle C<::>:
+If C<@ARGV> is empty, C<Test::Class::Moose> will run all classes. To give
+arguments while running C<prove>, we use the arisdottle C<::>:
 
-    prove -lb t/testlib.t :: My::Test::Class
+    prove -lb t/test_class_tests.t :: My::Test::Class
 
 Now we can choose which test class we want to run right on the command line.
 
@@ -256,14 +260,14 @@ You add tags to your test subs using attributes:
     sub test_network :Tags( online ) { ... }
 
 Then, if your database goes down, you can exclude those tests from the
-C<t/testlib.t> script:
+C<t/test_class_tests.t> script:
 
-    # t/testlib.t
+    # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load catdir( $Bin, 'testlib' );
+    use Test::Class::Moose::Load catdir( $Bin, 'lib', 'TestsFor' );
     Test::Class::Moose->new(
-        classes => \@ARGV,
+        classes      => \@ARGV,
         exclude_tags => [qw( database )],
     )->runtests;
 
@@ -272,12 +276,12 @@ absolutely need to, increasing your productivity.
 
 =head1 Boilerplate
 
-Here is the bare minimum you need to get started using Test::Class::Moose
+Here is the bare minimum you need to get started using C<Test::Class::Moose>
 
 =head2 Test Class
 
-    # t/testlib/My/Class.pm
-    package testlib::My::Class;
+    # t/lib/TestsFor/My/Class.pm
+    package TestsFor::My::Class;
     use Test::Class::Moose;
 
     sub test_something {
@@ -288,10 +292,10 @@ Here is the bare minimum you need to get started using Test::Class::Moose
 
 =head2 Test Runner
 
-    # t/testlib.t
+    # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
     use FindBin qw( $Bin );
-    use Test::Class::Moose::Load catdir( $Bin, 'testlib' );
+    use Test::Class::Moose::Load catdir( $Bin, 'lib', 'TestsFor' );
     Test::Class::Moose->new(
         classes => \@ARGV,
     )->runtests;
