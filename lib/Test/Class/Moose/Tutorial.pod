@@ -130,7 +130,7 @@ Test::Class::Moose even provides a shortcut:
     package testlib::My::Text::Class;
     use Test::Moose::Class => 'My::Test::Base';
 
-Since My::Test::Base will not be testing anything itself, we do not put it in
+If My::Test::Base will not be testing anything itself, we do not put it in
 t/testlib, instead we put it in lib or t/lib (depending on if we want it to be
 part of the public set of modules or not). This will make sure our test runner
 does not try to run our base class that doesn't test anything concrete.
@@ -175,9 +175,33 @@ Using the plan() method, we can know exactly how many tests did not run if the
 test method ends prematurely. Without it, we would only get the message "No
 plan was seen", we would not know which tests were not run.
 
-=head2 skip / todo
+=head2 skip
 
-XXX: TODO ;)
+We can use the C<test_startup> and C<test_setup> methods to skip tests that we
+can't or don't want to run for whatever reason.
+
+If we don't want to run a single test sub, we can use the C<test_setup> method
+and call the C<test_skip> method with the reason we're skipping the test.
+
+    sub test_will_fail {
+        my ( $test ) = @_;
+        fail "This doesn't work!";
+    }
+    
+    sub test_setup {
+        my ( $test, $report ) = @_;
+        if ( $report->name eq 'test_will_fail' ) {
+            $test->test_skip( 'It doesn't work' );
+        }
+    }
+
+If we don't want to run an entire class, we can use the C<test_startup> method
+and the same C<test_skip> method with the reason we're skipping the test.
+
+    sub test_startup {
+        my ( $test, $report ) = @_;
+        $test->test_skip( "The entire class doesn't work" );
+    }
 
 =head2 Run Specific Test Classes
 
