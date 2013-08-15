@@ -1,3 +1,4 @@
+# PODNAME: Test::Class::Moose tutorial
 =head1 Getting Started
 
 Automated testing is wonderful. Verifying your program's correctness in all
