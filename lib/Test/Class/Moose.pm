@@ -353,7 +353,6 @@ sub test_classes {
 
 my $FILTER_BY_TAG = sub {
     my ( $self, $methods ) = @_;
-
     my $class            = $self->test_class;
     my @filtered_methods = @$methods;
     if ( my $include = $self->test_configuration->include_tags ) {
@@ -373,21 +372,21 @@ my $FILTER_BY_TAG = sub {
         @filtered_methods = @new_method_list;
     }
     if ( my $exclude = $self->test_configuration->exclude_tags ) {
-        my @new_method_list;
+        my @new_method_list = @filtered_methods;
         foreach my $method (@filtered_methods) {
             foreach my $tag (@$exclude) {
-                unless (
+                if (
                     Test::Class::Moose::TagRegistry->method_has_tag(
                         $class, $method, $tag
                     )
                   )
                 {
-                    push @new_method_list => $method;
+                  @new_method_list = grep { $_ ne $method } @new_method_list;
                 }
             }
-        }
+        };
         @filtered_methods = @new_method_list;
-    }
+    };
     return @filtered_methods;
 };
 
