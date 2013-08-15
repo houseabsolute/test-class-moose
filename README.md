@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.12
+version 0.20
 
 # SYNOPSIS
 
@@ -80,9 +80,9 @@ If you prefer, you can declare a plan in a test method:
         ...
     }
 
-You may callcall `plan()` multiple times for a given test method. Each call
-        to `plan()` will add that number of tests to the plan.  For example,
-        with a method modifier:
+You may call `plan()` multiple times for a given test method. Each call to
+`plan()` will add that number of tests to the plan.  For example, with a
+method modifier:
 
     before 'test_something' => sub {
         my ( $test, $report ) = @_;
@@ -335,7 +335,7 @@ them. For example, if your network is down:
 If you wish to skip a class, set the reason in the `test_startup` method.
 
     sub test_startup {
-        my ( $self, $report ) = @_;
+        my ( $test, $report ) = @_;
         $test->test_skip("I don't want to run this class");
     }
 
