@@ -1,6 +1,8 @@
 Revision history for Test-Class-Moose
 
-0.20
+0.20      August 15, 2013
+        - Fix bug #87801 where excluded tags were ANDed instead of ORed.
+          Stefan Corneliu Petrea.
         - The beginnings of a tutorial by Doug Bell (preaction)
         - Doc fix by Olaf Alders.
         - Tag inheritance added by Paul Boyd (see
