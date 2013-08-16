@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.20
+version 0.21
 
 # SYNOPSIS
 
@@ -553,7 +553,8 @@ for you, see [Test::Class::Moose::Role::AutoUse](http://search.cpan.org/perldoc?
 
 # TODO
 
-All TODO items have currently been implemented.
+- Callbacks for tags (for example, 'critical' tags could bailout)
+- New test phases - start and end suite, not just start and end class/method
 
 # BUGS
 
