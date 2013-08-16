@@ -1,5 +1,9 @@
 Revision history for Test-Class-Moose
 
+0.21      August 16, 2013
+        - Fold on .t test into t/tags.t. Cleaner and stops some CPAN testers
+          failures.
+
 0.20      August 15, 2013
         - Fix bug #87801 where excluded tags were ANDed instead of ORed.
           Stefan Corneliu Petrea.
