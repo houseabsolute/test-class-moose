@@ -990,7 +990,13 @@ for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 TODO
 
-All TODO items have currently been implemented.
+=over 4
+
+=item * Callbacks for tags (for example, 'critical' tags could bailout)
+
+=item *  New test phases - start and end suite, not just start and end class/method
+
+=back
 
 =head1 BUGS
 
