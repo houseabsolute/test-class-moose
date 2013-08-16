@@ -1,10 +1,10 @@
-Revision history for Test-Class-Moose
+Revision history for Perl distribution Test-Class-Moose
 
-0.21      August 16, 2013
+0.21 2013-08-15
         - Fold on .t test into t/tags.t. Cleaner and stops some CPAN testers
           failures.
 
-0.20      August 15, 2013
+0.20 2013-08-15
         - Fix bug #87801 where excluded tags were ANDed instead of ORed.
           Stefan Corneliu Petrea.
         - The beginnings of a tutorial by Doug Bell (preaction)
@@ -14,29 +14,29 @@ Revision history for Test-Class-Moose
           slightly backwards-incompatible, but not many people were yet using
           this module (or tags).
 
-0.12    May 27, 2013
+0.12 2013-05-27
         - Bugfix: test_classes attribute to constructor is allowed to be
           undef or an empty array ref.
         - add_to_plan() is now deprecated. Use plan() instead. This solves the
           problem where you might also have a before modifier wanting to alter
           the plan.
 
-0.11    May 19, 2013
+0.11 2013-05-19
         - Added the test_classes attribute to the contructor. Allows you to
           easily control which classes you wish to run.
 
-0.10    May 8, 2013
+0.10 2013-05-08
         - Sigh. Skip All tag tests if we can't define tags.
 
-0.09    May 7, 2013
+0.09 2013-05-07
         - Emergency bug fix: don't require Sub::Attribute if they cannot load
           it.
 
-0.08    May 6, 2013
+0.08 2013-05-06
         - Add tag support.
         - Clean up how start and end times for timing is handled.
 
-0.07    April 7, 2013
+0.07 2013-04-07
         - The $test_suite object now has the time() method.
         - Fully document report methods
         - Marked a bunch of "trusted" methods as effectively private.
@@ -48,22 +48,22 @@ Revision history for Test-Class-Moose
         - Convert to Dist::Zilla
         - Runtests returns $self.
 
-0.06    March 17, 2013
+0.06 2013-03-17
         - Fix the MANIFEST again. That's it. After this I'm switching to
           Dist::Zilla.
 
-0.05    March 17, 2013
+0.05 2013-03-17
         - Even if attributes start with test_, they cannot be test methods.
         - Add AutoUse to the MANIFEST :/
 
-0.04    March 17, 2013
+0.04 2013-03-17
         - Fix test inheritance bug.
 
-0.03    March 16, 2013
+0.03 2013-03-16
         - Add Test::Class::Moose::Role::AutoUse (automatically loads your
           actual classes)
 
-0.02    January 29, 2013
+0.02 2013-01-29
         - Add class/method skipping. 
         - Rename almost every overrideable method to /^test_/.
         - Add a time reporting class. You can now fetch real, user and system
@@ -78,5 +78,5 @@ Revision history for Test-Class-Moose
         - Most attributes pushed into Test::Class::Moose::Config
         - Added "randomize" attribute per Udo Oji.
 
-0.01    December 18, 2012
+0.01 2012-12-18
         - Test::Class + Moose
