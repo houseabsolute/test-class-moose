@@ -1,5 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
+0.22 2013-08-17
+        - Renamed tutorial from .pod to .pm to stop both cpan and metacpan
+          from replacing main documentation with the tutorial.
+
 0.21 2013-08-15
         - Fold on .t test into t/tags.t. Cleaner and stops some CPAN testers
           failures.
