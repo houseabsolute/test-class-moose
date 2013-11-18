@@ -110,9 +110,9 @@ subtest 'test_setup() has tests in it' => sub {
 };
 $builder->todo_end;
 
-eq_or_diff $tests[0], $expected[0],
-  'Our first test class should fail if tests are run in the test control methods';
 eq_or_diff $tests[1], $expected[1],
-  '... but its parent class should succeed because it does not have tests in the startup';
+  'Our subclass should fail if tests are run in the test control methods';
+eq_or_diff $tests[0], $expected[0],
+  '... but its parent class should succeed because it does not have tests in the setup';
 
 done_testing;
