@@ -51,6 +51,21 @@ sub tags {
     return sort( uniq(@tags) );
 }
 
+sub class_has_tag {
+    my ( $class, $test_class, $tag ) = @_;
+
+    croak("no class specified") if not defined $test_class;
+    croak("no tag specified")   if not defined $tag;
+
+    # XXX a naïve implementation, but it does the job for now.
+    my $test_class_meta = Class::MOP::Class->initialize($test_class);
+    foreach my $method ( $test_class_meta->get_all_method_names ) {
+        next unless $method =~ /test_/;
+        return 1 if $class->method_has_tag( $test_class, $method, $tag );
+    }
+    return;
+}
+
 sub method_has_tag {
     my ( $class, $test_class, $method, $tag ) = @_;
 
