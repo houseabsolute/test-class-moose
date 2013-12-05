@@ -43,7 +43,6 @@ around 'runtests' => sub {
     return $self->$orig if $jobs < 2;
 
     my ( $sequential, @jobs ) = $self->schedule;
-    use Parallel::ForkManager;
 
     my $fork = Parallel::ForkManager->new($jobs);
 
@@ -53,6 +52,8 @@ around 'runtests' => sub {
         $self->$orig;
         $fork->finish;
     }
+    $fork->wait_all_children;
+
     if ($sequential) {
         $self->_current_schedule($sequential);
         $self->$orig;
