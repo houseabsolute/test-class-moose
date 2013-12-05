@@ -3,6 +3,7 @@ use Test::Most 'bail';
 use lib 'lib';
 
 use Test::Class::Moose ();    # prevents us from inheriting from it
+sub registry () { 'Test::Class::Moose::TagRegistry' }
 
 BEGIN {
     plan skip_all => 'Sub::Attribute not available. Cannot test tags'
@@ -106,5 +107,24 @@ sub _run_tests {
           "$class should have the correct test methods";
     }
 }
+
+subtest 'Verify registry' => sub {
+    ok registry->method_has_tag(
+        'TestsFor::Basic::Subclass', 'test_augment',
+        'second'
+      ),
+      'The tag registry should report if a method has a particular tag';
+    ok !registry->method_has_tag(
+        'TestsFor::Basic::Subclass', 'test_augment',
+        'first'
+      ),
+      '... or if it does not';
+
+    ok registry->class_has_tag('TestsFor::Basic::Subclass', 'second'),
+        'The tag registry should report if a class has a method with a given tag';
+
+    ok !registry->class_has_tag('TestsFor::Basic::Subclass', 'no such tag'),
+        '... or if it does not';
+};
 
 done_testing;
