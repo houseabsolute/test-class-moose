@@ -185,7 +185,7 @@ my $RUN_TEST_METHOD = sub {
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_setup',
         $report
-    );
+    ) or fail "test_setup failed";
     my $num_tests;
 
     Test::Most::explain("$test_class->$test_method()");
@@ -222,7 +222,7 @@ my $RUN_TEST_METHOD = sub {
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
         $report
-    );
+    ) or fail "test_teardown failed";
     $self->test_report->current_class->add_test_method($report);
     if ( !$report->is_skipped ) {
         $report->num_tests_run($num_tests);
