@@ -6,7 +6,8 @@ use Test::Class::Moose::Load qw(t/parallellib);
 
 my $test_suite = MyParallelTests->new(
     show_timing => 0,
-    jobs        => 2,
+    jobs        => 4,
+    statistics  => 1,
 );
 
 TODO: {

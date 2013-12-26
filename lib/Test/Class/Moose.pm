@@ -236,8 +236,8 @@ my $RUN_TEST_METHOD = sub {
 my $RUN_TEST_CLASS = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CLASS';
     my ( $self, $test_class ) = @_;
-    my $builder   = $self->test_configuration->builder;
-    my $report = $self->test_report;
+    my $builder = $self->test_configuration->builder;
+    my $report  = $self->test_report;
 
     return sub {
 
@@ -249,6 +249,7 @@ my $RUN_TEST_CLASS = sub {
             }
         );
         $report->add_test_class($report_class);
+
         my @test_methods = $test_instance->test_methods;
         unless (@test_methods) {
             my $message = "Skipping '$test_class': no test methods found";
