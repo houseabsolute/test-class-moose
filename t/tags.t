@@ -11,7 +11,7 @@ BEGIN {
 }
 use Test::Class::Moose::Load qw(t/taglib);
 
-subtest 'Multiple inclued tags' => sub {
+subtest 'Multiple included tags' => sub {
 
     # For TestsFor::Basic::Subclass, the method modifier for 'test_this_baby'
     # effectively overrides the base class method.
