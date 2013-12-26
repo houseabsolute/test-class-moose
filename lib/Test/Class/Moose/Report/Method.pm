@@ -9,6 +9,13 @@ with qw(
   Test::Class::Moose::Role::Reporting
 );
 
+has 'report_class' => (
+    is       => 'ro',
+    isa      => 'Test::Class::Moose::Report::Class',
+    required => 1,
+    weak_ref => 1,
+);
+
 has 'num_tests_run' => (
     is      => 'rw',
     isa     => 'Int',
@@ -52,6 +59,10 @@ Should be considered experimental and B<read only>.
 L<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
+
+=head2 C<report_class>
+
+The C<Test::Class::Moose::Report::Class> for this method.
 
 =head2 C<num_tests_run>
 
