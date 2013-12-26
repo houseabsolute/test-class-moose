@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.22
+version 0.30
 
 # SYNOPSIS
 
@@ -37,14 +37,14 @@ improve it.
 
 This is a proof of concept for writing Test::Class-style tests with Moose.
 Better docs will come later. You should already know how to use Moose and
-[Test::Class](http://search.cpan.org/perldoc?Test::Class).
+[Test::Class](https://metacpan.org/pod/Test::Class).
 
 # BASICS
 
 ## Inheriting from Test::Class::Moose
 
-Just `use Test::Class::Moose`. That's all. You'll get all [Test::Most](http://search.cpan.org/perldoc?Test::Most) test
-functions, too, along with `strict` and `warnings`. You can use all [Moose](http://search.cpan.org/perldoc?Moose)
+Just `use Test::Class::Moose`. That's all. You'll get all [Test::Most](https://metacpan.org/pod/Test::Most) test
+functions, too, along with `strict` and `warnings`. You can use all [Moose](https://metacpan.org/pod/Moose)
 behavior, too.
 
 ## Declare a test method
@@ -135,61 +135,61 @@ fails, the class/method will fail and testing for that class should stop.
 
 __Every__ test control method will be passed two arguments. The first is the
 `$test` invocant. The second is an object implementing
-[Test::Class::Moose::Role::Reporting](http://search.cpan.org/perldoc?Test::Class::Moose::Role::Reporting). You may find that the `notes` hashref
+[Test::Class::Moose::Role::Reporting](https://metacpan.org/pod/Test::Class::Moose::Role::Reporting). You may find that the `notes` hashref
 is a handy way of recording information you later wish to use if you call `$test_suite->test_report`.
 
 These are:
 
 - `test_startup`
 
-    sub test_startup {
-       my ( $test, $report ) = @_;
-       $test->next::method;
-       # more startup
-    }
+        sub test_startup {
+           my ( $test, $report ) = @_;
+           $test->next::method;
+           # more startup
+        }
 
-Runs at the start of each test class. If you need to know the name of the
-class you're running this in (though usually you shouldn't), use
-`$test->test_class`, or the `name` method on the `$report` object.
+    Runs at the start of each test class. If you need to know the name of the
+    class you're running this in (though usually you shouldn't), use
+    `$test->test_class`, or the `name` method on the `$report` object.
 
-The `$report` object is a [Test::Class::Moose::Report::Class](http://search.cpan.org/perldoc?Test::Class::Moose::Report::Class) object.
+    The `$report` object is a [Test::Class::Moose::Report::Class](https://metacpan.org/pod/Test::Class::Moose::Report::Class) object.
 
 - `test_setup`
 
-    sub test_setup {
-       my ( $test, $report ) = @_;
-       $test->next::method;
-       # more setup
-    }
+        sub test_setup {
+           my ( $test, $report ) = @_;
+           $test->next::method;
+           # more setup
+        }
 
-Runs at the start of each test method. If you must know the name of the test
-you're about to run, you can call `$report->name`.
+    Runs at the start of each test method. If you must know the name of the test
+    you're about to run, you can call `$report->name`.
 
-The `$report` object is a [Test::Class::Moose::Report::Method](http://search.cpan.org/perldoc?Test::Class::Moose::Report::Method) object.
+    The `$report` object is a [Test::Class::Moose::Report::Method](https://metacpan.org/pod/Test::Class::Moose::Report::Method) object.
 
 - `test_teardown`
 
-    sub test_teardown {
-       my ( $test, $report ) = @_;
-       # more teardown
-       $test->next::method;
-    }
+        sub test_teardown {
+           my ( $test, $report ) = @_;
+           # more teardown
+           $test->next::method;
+        }
 
-Runs at the end of each test method. 
+    Runs at the end of each test method. 
 
-The `$report` object is a [Test::Class::Moose::Report::Method](http://search.cpan.org/perldoc?Test::Class::Moose::Report::Method) object.
+    The `$report` object is a [Test::Class::Moose::Report::Method](https://metacpan.org/pod/Test::Class::Moose::Report::Method) object.
 
 - `test_shutdown`
 
-    sub test_shutdown {
-        my ( $test, $report ) = @_;
-        # more teardown
-        $test->next::method;
-    }
+        sub test_shutdown {
+            my ( $test, $report ) = @_;
+            # more teardown
+            $test->next::method;
+        }
 
-Runs at the end of each test class. 
+    Runs at the end of each test class. 
 
-The `$report` object is a [Test::Class::Moose::Report::Class](http://search.cpan.org/perldoc?Test::Class::Moose::Report::Class) object.
+    The `$report` object is a [Test::Class::Moose::Report::Class](https://metacpan.org/pod/Test::Class::Moose::Report::Class) object.
 
 To override a test control method, just remember that this is OO:
 
@@ -201,7 +201,7 @@ To override a test control method, just remember that this is OO:
 
 # RUNNING THE TEST SUITE
 
-We _strongly_ recommend using [Test::Class::Moose::Load](http://search.cpan.org/perldoc?Test::Class::Moose::Load) as the driver for
+We _strongly_ recommend using [Test::Class::Moose::Load](https://metacpan.org/pod/Test::Class::Moose::Load) as the driver for
 your test suite. Simply point it at the directory or directories containing
 your test classes:
 
@@ -223,8 +223,8 @@ You can also pass arguments to `Test::Class::Moose`'s contructor.
     $test_suite->runtests;
 
 The attributes passed in the constructor are not directly available from the
-[Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose) instance. They're available in
-[Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config) and to avoid namespace pollution, we do _not_
+[Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moose) instance. They're available in
+[Test::Class::Moose::Config](https://metacpan.org/pod/Test::Class::Moose::Config) and to avoid namespace pollution, we do _not_
 delegate the attributes directly as a result. If you need them at runtime,
 you'll need to access the `test_configuration` attribute:
 
@@ -234,101 +234,101 @@ you'll need to access the `test_configuration` attribute:
 
 - `show_timing`
 
-Boolean. Will display verbose information on the amount of time it takes each
-test class/test method to run.
+    Boolean. Will display verbose information on the amount of time it takes each
+    test class/test method to run.
 
 - `statistics`
 
-Boolean. Will display number of classes, test methods and tests run.
+    Boolean. Will display number of classes, test methods and tests run.
 
 - `randomize`
 
-Boolean. Will run test methods in a random order.
+    Boolean. Will run test methods in a random order.
 
 - `builder`
 
-Defaults to `Test::Builder->new`. You can supply your own builder if you
-want, but it must conform to the [Test::Builder](http://search.cpan.org/perldoc?Test::Builder) interface. We make no
-guarantees about which part of the interface it needs.
+    Defaults to `Test::Builder->new`. You can supply your own builder if you
+    want, but it must conform to the [Test::Builder](https://metacpan.org/pod/Test::Builder) interface. We make no
+    guarantees about which part of the interface it needs.
 
 - `test_classes`
 
-Takes a class name or an array reference of class names. If it is present,
-only these test classes will be run. This is very useful if you wish to run an
-individual class as a test:
+    Takes a class name or an array reference of class names. If it is present,
+    only these test classes will be run. This is very useful if you wish to run an
+    individual class as a test:
 
-    Test::Class::Moose->new(
-        test_classes => $ENV{TEST_CLASS}, # ignored if undef
-    )->runtests;
+        Test::Class::Moose->new(
+            test_classes => $ENV{TEST_CLASS}, # ignored if undef
+        )->runtests;
 
-You can also achieve this effect by writing a subclass and overriding the
-`test_classes` method, but this makes it trivial to do this:
+    You can also achieve this effect by writing a subclass and overriding the
+    `test_classes` method, but this makes it trivial to do this:
 
-    TEST_CLASS=TestsFor::Our::Company::Invoice prove -lv t/test_classes.t
+        TEST_CLASS=TestsFor::Our::Company::Invoice prove -lv t/test_classes.t
 
-Alternatively:
+    Alternatively:
 
-    Test::Class::Moose->new(
-        test_classes => \@ARGV, # ignored if empty
-    )->runtests;
+        Test::Class::Moose->new(
+            test_classes => \@ARGV, # ignored if empty
+        )->runtests;
 
-That lets you use the arisdottle to provide arguments to your test driver
-script:
+    That lets you use the arisdottle to provide arguments to your test driver
+    script:
 
-    prove -lv t/test_classes.t :: TestsFor::Our::Company::Invoice TestsFor::Something::Else
+        prove -lv t/test_classes.t :: TestsFor::Our::Company::Invoice TestsFor::Something::Else
 
 - `include`
 
-Regex. If present, only test methods whose name matches `include` will be
-included. __However__, they must still start with `test_`.
+    Regex. If present, only test methods whose name matches `include` will be
+    included. __However__, they must still start with `test_`.
 
-For example:
+    For example:
 
-    my $test_suite = Test::Class::Moose->new({
-        include => qr/customer/,
-    });
+        my $test_suite = Test::Class::Moose->new({
+            include => qr/customer/,
+        });
 
-The above constructor will let you match test methods named `test_customer`
-and `test_customer_account`, but will not suddenly match a method named
-`default_customer`.
+    The above constructor will let you match test methods named `test_customer`
+    and `test_customer_account`, but will not suddenly match a method named
+    `default_customer`.
 
-By enforcing the leading `test_` behavior, we don't surprise developers who
-are trying to figure out why `default_customer` is being run as a test. This
-means an `include` such as `/^customer.*/` will never run any tests.
+    By enforcing the leading `test_` behavior, we don't surprise developers who
+    are trying to figure out why `default_customer` is being run as a test. This
+    means an `include` such as `/^customer.*/` will never run any tests.
 
 - `exclude`
 
-Regex. If present, only test methods whose names don't match `exclude` will be
-included. __However__, they must still start with `test_`. See `include`.
+    Regex. If present, only test methods whose names don't match `exclude` will be
+    included. __However__, they must still start with `test_`. See `include`.
 
 - `include_tags`
 
-Array ref of strings matching method tags (a single string is also ok). If
-present, only test methods whose tags match `include_tags` or whose tags
-don't match `exclude_tags` will be included. __However__, they must still
-start with `test_`.
+    Array ref of strings matching method tags (a single string is also ok). If
+    present, only test methods whose tags match `include_tags` or whose tags
+    don't match `exclude_tags` will be included. __However__, they must still
+    start with `test_`.
 
-For example:
+    For example:
 
-    my $test_suite = Test::Class::Moose->new({
-        include_tags => [qw/api database/],
-    });
+        my $test_suite = Test::Class::Moose->new({
+            include_tags => [qw/api database/],
+        });
 
-The above constructor will only run tests tagged with `api` or `database`.
+    The above constructor will only run tests tagged with `api` or `database`.
 
 - `exclude_tags`
 
-The same as `include_tags`, but will exclude the tests rather than include
-them. For example, if your network is down:
+    The same as `include_tags`, but will exclude the tests rather than include
+    them. For example, if your network is down:
 
-    my $test_suite = Test::Class::Moose->new({
-        exclude_tags => [ 'network' ],
-    });
+        my $test_suite = Test::Class::Moose->new({
+            exclude_tags => [ 'network' ],
+        });
 
-    # or
-    my $test_suite = Test::Class::Moose->new({
-        exclude_tags => 'network',
-    });
+        # or
+        my $test_suite = Test::Class::Moose->new({
+            exclude_tags => 'network',
+        });
 
 ## Skipping Classes and Methods
 
@@ -374,32 +374,39 @@ marked `deprecated`:
         exclude_tags => 'deprecated',
     )->runtests;
 
-Tagging support relies on [Sub::Attribute](http://search.cpan.org/perldoc?Sub::Attribute). If this module is not available,
+Tagging support relies on [Sub::Attribute](https://metacpan.org/pod/Sub::Attribute). If this module is not available,
 `include_tags` and `exclude_tags` will be ignored, but a warning will be
 issued if those are seen.
 
 Tagging support is relatively new and feature requests (and patches!) are
 welcome.
 
+# PARALLEL TESTING
+
+If you want to run the tests in parallel, see the experimental
+`Test::Class::Moose::Role::Parallel` role. Read the documentation carefully
+as it can take a while to understand. You only need to use the role and
+(optionally) provide a `schedule()` method.
+
 # THINGS YOU CAN OVERRIDE
 
 ... but probably shouldn't.
 
 As a general rule, methods beginning with `/^test_/` are reserved for
-[Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose). This makes it easier to remember what you can and
+[Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moose). This makes it easier to remember what you can and
 cannot override.
 
 ## `test_configuration`
 
     my $test_configuration = $test->test_configuration;
 
-Returns the [Test::Class::Moose::Config](http://search.cpan.org/perldoc?Test::Class::Moose::Config) object.
+Returns the [Test::Class::Moose::Config](https://metacpan.org/pod/Test::Class::Moose::Config) object.
 
 ## `test_report`
 
     my $report = $test->test_report;
 
-Returns the [Test::Class::Moose::Report](http://search.cpan.org/perldoc?Test::Class::Moose::Report) object. Useful if you want to do
+Returns the [Test::Class::Moose::Report](https://metacpan.org/pod/Test::Class::Moose::Report) object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 `statistics` boolean option.
 
@@ -414,7 +421,7 @@ applying a role at runtime) and don't want to lose the original class name.
 
 You may override this in a subclass. Currently returns a sorted list of all
 loaded classes that inherit directly or indirectly through
-[Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose)
+[Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moose)
 
 ## `test_methods`
 
@@ -430,12 +437,12 @@ yourself.
 If you really, really want to change how this module works, you can override
 the `runtests` method. We don't recommend it.
 
-Returns the [Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose) instance.
+Returns the [Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moose) instance.
 
 ## `import`
 
 Sadly, we have an `import` method. This is used to automatically provide you
-with all of the [Test::Most](http://search.cpan.org/perldoc?Test::Most) behavior.
+with all of the [Test::Most](https://metacpan.org/pod/Test::Most) behavior.
 
 # SAMPLE TAP OUTPUT
 
@@ -488,7 +495,7 @@ We use nested tests (subtests) at each level:
 
 # REPORTING
 
-See [Test::Class::Moose::Report](http://search.cpan.org/perldoc?Test::Class::Moose::Report) for more detailed information on reporting.
+See [Test::Class::Moose::Report](https://metacpan.org/pod/Test::Class::Moose::Report) for more detailed information on reporting.
 
 Reporting features are subject to change.
 
@@ -548,8 +555,8 @@ Or even shorter:
 
 # EXTRAS
 
-If you would like [Test::Class::Moose](http://search.cpan.org/perldoc?Test::Class::Moose) to take care of loading your classes
-for you, see [Test::Class::Moose::Role::AutoUse](http://search.cpan.org/perldoc?Test::Class::Moose::Role::AutoUse) in this distribution.
+If you would like [Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moose) to take care of loading your classes
+for you, see [Test::Class::Moose::Role::AutoUse](https://metacpan.org/pod/Test::Class::Moose::Role::AutoUse) in this distribution.
 
 # TODO
 
@@ -574,40 +581,40 @@ You can also look for information at:
 
 - RT: CPAN's request tracker (report bugs here)
 
-[http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose](http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose)
+    [http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose](http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose)
 
 - AnnoCPAN: Annotated CPAN documentation
 
-[http://annocpan.org/dist/Test-Class-Moose](http://annocpan.org/dist/Test-Class-Moose)
+    [http://annocpan.org/dist/Test-Class-Moose](http://annocpan.org/dist/Test-Class-Moose)
 
 - CPAN Ratings
 
-[http://cpanratings.perl.org/d/Test-Class-Moose](http://cpanratings.perl.org/d/Test-Class-Moose)
+    [http://cpanratings.perl.org/d/Test-Class-Moose](http://cpanratings.perl.org/d/Test-Class-Moose)
 
 - Search CPAN
 
-[http://search.cpan.org/dist/Test-Class-Moose/](http://search.cpan.org/dist/Test-Class-Moose/)
+    [http://search.cpan.org/dist/Test-Class-Moose/](http://search.cpan.org/dist/Test-Class-Moose/)
 
 # SEE ALSO
 
-- [Test::Routine](http://search.cpan.org/perldoc?Test::Routine)
+- [Test::Routine](https://metacpan.org/pod/Test::Routine)
 
-I always pointed people to this when they would ask about [Test::Class](http://search.cpan.org/perldoc?Test::Class) +
-[Moose](http://search.cpan.org/perldoc?Moose), but I would always hear "that's not quite what I'm looking for".
-I don't quite understand what the reasoning was, but I strongly encourage you
-to take a look at [Test::Routine](http://search.cpan.org/perldoc?Test::Routine).
+    I always pointed people to this when they would ask about [Test::Class](https://metacpan.org/pod/Test::Class) +
+    [Moose](https://metacpan.org/pod/Moose), but I would always hear "that's not quite what I'm looking for".
+    I don't quite understand what the reasoning was, but I strongly encourage you
+    to take a look at [Test::Routine](https://metacpan.org/pod/Test::Routine).
 
-- [Test::Roo](http://search.cpan.org/perldoc?Test::Roo)
+- [Test::Roo](https://metacpan.org/pod/Test::Roo)
 
-[Test::Routine](http://search.cpan.org/perldoc?Test::Routine), but with [Moo](http://search.cpan.org/perldoc?Moo) instead of [Moose](http://search.cpan.org/perldoc?Moose).
+    [Test::Routine](https://metacpan.org/pod/Test::Routine), but with [Moo](https://metacpan.org/pod/Moo) instead of [Moose](https://metacpan.org/pod/Moose).
 
-- [Test::Class](http://search.cpan.org/perldoc?Test::Class)
+- [Test::Class](https://metacpan.org/pod/Test::Class)
 
-xUnit-style testing in Perl.
+    xUnit-style testing in Perl.
 
-- [Test::Class::Most](http://search.cpan.org/perldoc?Test::Class::Most)
+- [Test::Class::Most](https://metacpan.org/pod/Test::Class::Most)
 
-[Test::Class](http://search.cpan.org/perldoc?Test::Class) + [Test::Most](http://search.cpan.org/perldoc?Test::Most).
+    [Test::Class](https://metacpan.org/pod/Test::Class) + [Test::Most](https://metacpan.org/pod/Test::Most).
 
 # ACKNOWLEDGEMENTS
 
@@ -616,7 +623,7 @@ test methods.
 
 Thanks to Judioo for adding the randomize attribute.
 
-Thanks to Adrian Howard for [Test::Class](http://search.cpan.org/perldoc?Test::Class).
+Thanks to Adrian Howard for [Test::Class](https://metacpan.org/pod/Test::Class).
 
 # AUTHOR
 
