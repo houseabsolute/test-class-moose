@@ -174,11 +174,11 @@ my $RUN_TEST_CONTROL_METHOD = sub {
 
 my $RUN_TEST_METHOD = sub {
     local *__ANON__ = 'ANON_RUN_TEST_METHOD';
-    my ( $self, $test_instance, $test_method ) = @_;
+    my ( $self, $test_instance, $test_method, $report_class ) = @_;
 
     my $test_class = $test_instance->test_class;
     my $report  = Test::Class::Moose::Report::Method->new(
-        { name => $test_method } );
+        { name => $test_method, report_class => $report_class } );
 
     my $builder = $self->test_configuration->builder;
     $test_instance->test_skip_clear;
@@ -284,7 +284,8 @@ my $RUN_TEST_CLASS = sub {
         foreach my $test_method (@test_methods) {
             my $report_method = $self->$RUN_TEST_METHOD(
                 $test_instance,
-                $test_method
+                $test_method,
+                $report_class,
             );
             $report->_inc_tests( $report_method->num_tests_run );
         }
