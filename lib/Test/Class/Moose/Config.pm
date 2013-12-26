@@ -89,6 +89,18 @@ has 'test_classes' => (
     coerce => 1,
 );
 
+has 'jobs' => (
+    is      => 'ro',
+    isa     => 'Int',
+    default => 1,
+);
+
+has '_current_schedule' => (
+    is        => 'rw',
+    isa       => 'HashRef',
+    predicate => '_has_schedule',
+);
+
 sub args {
     my $self = shift;
 
@@ -184,6 +196,13 @@ own if it conforms to the interface.
 =head2 C<randomize>
 
 Boolean. Will run tests in a random order.
+
+=head2 C<jobs>
+
+B<EXPERIMENTAL>: Returns the number of jobs running for the test suite.
+Default is 1.
+
+Only used by C<Test::Class::Moose::Role::Parallel>.
 
 =head1 METHODS
 

@@ -4,42 +4,28 @@ package Test::Class::Moose::Role::Parallel;
 
 use Moose::Role;
 use Parallel::ForkManager;
-use Test::Class::Moose::TagRegistry;
+use Test::Builder;
 
-has 'jobs' => (
-    is      => 'ro',
-    isa     => 'Int',
-    default => 1,
-);
+my $run_job = sub {
+    my ( $self, $orig ) = @_;
 
-has '_current_schedule' => (
-    is        => 'rw',
-    isa       => 'HashRef',
-    predicate => '_schedule_set',
-);
+    my $builder = Test::Builder->new;
 
-has '_need_orig_schedule' => (
-    is      => 'rw',
-    isa     => 'Bool',
-    default => 0,
-);
+    my $output;
+    $builder->output( \$output );
+    $builder->failure_output( \$output );
+    $builder->todo_output( \$output );
 
-around 'BUILDARGS' => sub {
-    my $orig    = shift;
-    my $self    = shift;
-    my %arg_for = ref $_[0] ? %{ $_[0] } : @_;
-    my $jobs    = delete $arg_for{jobs};
+    $self->$orig;
 
-    my $result = $self->$orig(%arg_for);
-    $result->{jobs} = $jobs if $jobs;
-    return $result;
+    return $output;
 };
 
 around 'runtests' => sub {
     my $orig = shift;
     my $self = shift;
 
-    my $jobs = $self->jobs;
+    my $jobs = $self->test_configuration->jobs;
     return $self->$orig if $jobs < 2;
 
     my ( $sequential, @jobs ) = $self->schedule;
@@ -48,8 +34,10 @@ around 'runtests' => sub {
 
     foreach my $schedule (@jobs) {
         my $pid = $fork->start and next;
-        $self->_current_schedule($schedule);
-        $self->$orig;
+        $self->test_configuration->_current_schedule($schedule);
+        my $output = $self->$run_job($orig);
+        #print STDERR Dumper($schedule, $output);
+        print $output;
         $fork->finish;
     }
     $fork->wait_all_children;
@@ -61,35 +49,39 @@ around 'runtests' => sub {
 };
 
 around 'test_classes' => sub {
-    my $orig = shift;
-    my $self = shift;
-    if ( $self->jobs < 2 or not $self->_schedule_set ) {
+    my $orig   = shift;
+    my $self   = shift;
+    my $config = $self->test_configuration;
+    if ( $config->jobs < 2 or not $config->_has_schedule ) {
         return $self->$orig;
     }
-    return sort keys %{ $self->_current_schedule };
+    return sort keys %{ $config->_current_schedule };
 };
 
 around 'test_methods' => sub {
     my $orig         = shift;
     my $self         = shift;
     my @test_methods = $self->$orig;
-    if ( $self->jobs < 2 or not $self->_schedule_set ) {
+    my $config       = $self->test_configuration;
+
+    if ( $config->jobs < 2 or not $config->_has_schedule ) {
         return @test_methods;
     }
-    my $methods_for_jobs = $self->_current_schedule->{ $self->test_class }
+    my $methods_for_jobs = $config->_current_schedule->{ $self->test_class }
       or return;
+    
     return grep { $methods_for_jobs->{$_} } @test_methods;
 };
 
 sub schedule {
-    my $self = shift;
-    my $jobs = $self->jobs;
+    my $self   = shift;
+    my $config = $self->test_configuration;
+    my $jobs   = $config->jobs;
     my @schedule;
 
     my $current_job = 0;
     foreach my $test_class ( $self->test_classes ) {
-        my $test_instance
-          = $test_class->new( $self->test_configuration->args );
+        my $test_instance = $test_class->new( $config->args );
         foreach my $method ( $test_instance->test_methods ) {
             $schedule[$current_job] ||= {};
             $schedule[$current_job]{$test_class}{$method} = 1;
@@ -97,14 +89,11 @@ sub schedule {
             $current_job = 0 if $current_job >= $jobs;
         }
     }
-    use Data::Dumper::Simple;
-    $Data::Dumper::Indent   = 1;
-    $Data::Dumper::Sortkeys = 1;
-    print STDERR Dumper(@schedule);
     return undef, @schedule;
 }
 
 1;
+
 __END__
 
 =head1 SYNOPSIS
