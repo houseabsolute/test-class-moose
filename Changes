@@ -1,5 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
+0.30 
+        - Experimental support for parallel testing. See
+          Test::Class::Moose::Role::Parallel.
+
 0.22 2013-08-17
         - Renamed tutorial from .pod to .pm to stop both cpan and metacpan
           from replacing main documentation with the tutorial.

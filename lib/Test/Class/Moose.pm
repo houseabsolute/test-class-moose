@@ -820,6 +820,13 @@ issued if those are seen.
 Tagging support is relatively new and feature requests (and patches!) are
 welcome.
 
+=head1 PARALLEL TESTING
+
+If you want to run the tests in parallel, see the experimental
+C<Test::Class::Moose::Role::Parallel> role. Read the documentation carefully
+as it can take a while to understand. You only need to use the role and
+(optionally) provide a C<schedule()> method.
+
 =head1 THINGS YOU CAN OVERRIDE
 
 ... but probably shouldn't.

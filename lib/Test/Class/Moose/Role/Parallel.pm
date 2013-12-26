@@ -1,10 +1,12 @@
 package Test::Class::Moose::Role::Parallel;
 
-# ABSTRACT: run tests in parallel
+# ABSTRACT: run tests in parallel (highly experimental)
 
 use Moose::Role;
 use Parallel::ForkManager;
 use Test::Builder;
+use TAP::Stream;
+use Carp;
 
 my $run_job = sub {
     my ( $self, $orig ) = @_;
@@ -30,22 +32,48 @@ around 'runtests' => sub {
 
     my ( $sequential, @jobs ) = $self->schedule;
 
-    my $fork = Parallel::ForkManager->new($jobs);
+    my $stream = TAP::Stream->new;
+    my $fork   = Parallel::ForkManager->new($jobs);
+    $fork->run_on_finish(
+        sub {
+            my ($pid, $exit_code, $ident, $exit_signal, $core_dump,
+                $result
+            ) = @_;
 
+            if ( defined($result) ) {
+                my ( $job_num, $tap ) = @$result;
+                $stream->add_to_stream(
+                    TAP::Stream::Text->new( text => $tap, name => "Job #$job_num (pid: $pid)" ) );
+            }
+            else
+            { # problems occuring during storage or retrieval will throw a warning
+                carp("No TAP received from child process $pid!");
+            }
+        }
+    );
+
+    my $job_num = 0;
     foreach my $schedule (@jobs) {
+        $job_num++;
         my $pid = $fork->start and next;
         $self->test_configuration->_current_schedule($schedule);
         my $output = $self->$run_job($orig);
-        #print STDERR Dumper($schedule, $output);
-        print $output;
-        $fork->finish;
+        $fork->finish( 0, [ $job_num, $output ] );
     }
     $fork->wait_all_children;
 
     if ($sequential) {
         $self->_current_schedule($sequential);
-        $self->$orig;
+        my $output = $self->$run_job($orig);
+        $stream->add_to_stream( TAP::Stream::Text->new(
+            text => $output,
+            name => 'Sequential tests run after parallel tests',
+        ) );
     }
+
+    # this is where we print the TAP results
+    my $fh = Test::Builder->new->output;
+    print $fh $stream->tap_to_string;
 };
 
 around 'test_classes' => sub {
@@ -89,7 +117,8 @@ sub schedule {
             $current_job = 0 if $current_job >= $jobs;
         }
     }
-    return undef, @schedule;
+    unshift @schedule => undef;
+    return @schedule;
 }
 
 1;
@@ -98,158 +127,211 @@ __END__
 
 =head1 SYNOPSIS
 
- package TestsFor::Some::Class;
- use Test::Class::Moose;
- with 'Test::Class::Moose::Role::Parallel';
+    package TestsFor::Some::Class;
+    use Test::Class::Moose;
+    with 'Test::Class::Moose::Role::Parallel';
 
- sub test_constructor {
-     my $test  = shift;
+    sub schedule {
+       ...
+       return \@schedule;
+    }
 
-     my $class = $test->class_name;             # Some::Class
-     can_ok $class, 'new';                      # Some::Class is already loaded
-     isa_ok my $object = $class->new, $class;   # and can be used as normal
- }
+And in your test driver:
+
+    my $test_suite = MyParallelTests->new(
+        show_timing => 0,
+        jobs        => $jobs,
+        statistics  => 1,
+    );
+    $test_suite->runtests;
 
 =head1 DESCRIPTION
 
-This role allows you to automatically C<use> the classes your test class is
-testing, providing the name of the class via the C<class_name> attribute.
-Thus, you don't need to hardcode your class names.
+This is a very experimental role to add parallel testing to
+C<Test::Class::Moose>. The interface is subject to change and it will I<not>
+magically make your tests run in parellel unless you're really lucky. If
+you've tried to parallelize your tests before, you understand why.
 
-=head1 PROVIDES
+B<Important>: At the present time, attempting to run jobs in parallel means
+that the C<Test::Class::Moose::test_report()> method will not return anything
+useful. Don't try to call it.
 
-=head2 C<class_name>
+To use this role, simply include:
 
-Returns the name of the class you're testing. As a side-effect, the first time
-it's called it will attempt to C<use> the class being tested.
+    with qw(
+        Test::Class::Moose::Role::Parallel
+    );
 
-=head2 C<get_class_name_to_use>
+And in your driver script, the constructor takes a new argument, C<jobs>.
 
-This method strips the leading section of the package name, up to and
-including the first C<::>, and returns the rest of the name as the name of the
-class being tested. For example, if your test class is named
-C<Tests::Some::Person>, the name C<Some::Person> is returned as the name of
-the class to use and test. If your test class is named
-C<IHateTestingThis::Person>, then C<Person> is the name of the class to be
-used and tested.
+    my $test_suite = MyParallelTests->new(
+        jobs => $jobs,
+    );
+    $test_suite->runtests;
 
-If you don't like how the name is calculated, you can override this method in
-your code.
+If the C<jobs> is set to 1, then it's as if you've run things like normal.
+However, if C<jobs> is greater than 1, we'll fork off numerous jobs and run
+the tests in parallel according to the schedule. A naive schedule looks like
+this:
 
-Warning: Don't use L<Test::> as a prefix. There are already plenty of modules
-in that namespace and you could accidentally cause a collision.
+    sub schedule {
+        my $self   = shift;
+        my $config = $self->test_configuration;
+        my $jobs   = $config->jobs;
+        my @schedule;
 
-=head1 RATIONALE
+        my $current_job = 0;
+        foreach my $test_class ( $self->test_classes ) {
+            my $test_instance = $test_class->new( $config->args );
+            foreach my $method ( $test_instance->test_methods ) {
+                $schedule[$current_job] ||= {};
 
-The example from our synopsis looks like this:
+                # assign a method for a class to a given job
+                $schedule[$current_job]{$test_class}{$method} = 1;
+                $current_job++;
+                $current_job = 0 if $current_job >= $jobs;
+            }
+        }
+        unshift @schedule => undef; # we have no sequential jobs
+        return @schedule;
+    }
 
- package TestsFor::Some::Class;
- use Test::Class::Moose;
- with 'Test::Class::Moose::Role::AutoUse';
+Each job in the schedule is a hashref. The keys are the names of classes for
+that job and the values are a hashref. The keys of the latter hashref are
+methods for that class for that job and their values B<must> be true. For
+example, a single job with two classes and six methods (3 per class) may look
+like this:
 
- sub test_constructor {
-     my $test  = shift;
+    {
+        'TestsFor::Person' => {
+            test_name => 1,
+            test_age  => 1,
+            test_ssn  => 1,
+        },
+        'TestsFor::Person::Employee' => {
+            test_employee_number => 1,
+            test_manager         => 1,
+            test_name            => 1,
+        },
+    }
 
-     my $class = $test->class_name;             # Some::Class
-     can_ok $class, 'new';                      # Some::Class is already loaded
-     isa_ok my $object = $class->new, $class;   # and can be used as normal
- }
+Note that a class may be spread over multiple jobs. That's perfectly fine.
+This is an example of a complete schedule from the test suite, spread across
+two jobs:
 
-Without this role, it would often look like this:
+    @schedule = (
+      undef,                              # no sequential tests
+      {                                   # first job
+        'TestsFor::Alpha' => {
+          test_alpha_first => 1
+        },
+        'TestsFor::Alpha::Subclass' => {
+          test_alpha_first => 1,
+          test_second      => 1
+        },
+        'TestsFor::Beta' => {
+          test_second => 1
+        }
+      },
+      {                                   # second job
+        'TestsFor::Alpha' => {
+          test_second => 1
+        },
+        'TestsFor::Alpha::Subclass' => {
+          test_another => 1
+        },
+        'TestsFor::Beta' => {
+          test_beta_first => 1
+        }
+      }
+    );
 
- package TestsFor::Some::Class;
- use Test::Class::Moose;
- use Some::Class;
+If the first "job" listed in the schedule it not undef, it will be considered
+to be tests that must be run sequentially after all other tests have finished
+running in parallel. This is for tests methods which, for whatever reason,
+cannot run in parallel.
 
- sub test_constructor {
-     my $test  = shift;
+In other words, the C<@schedule> returned looks like this if you request four
+jobs:
 
-     can_ok 'Some::Class', 'new';
-     isa_ok my $object = 'Some::Class'->new, 'Some::Class';
- }
+    my @schedule = (
+        \%jobs_to_run_sequentially_after_parallel_tests,
+        \%classes_and_their_methods_for_job_1,
+        \%classes_and_their_methods_for_job_2,
+        \%classes_and_their_methods_for_job_3,
+        \%classes_and_their_methods_for_job_4,
+    );
 
-That's OK, but there are a couple of issues here.
+=head1 CREATING YOUR OWN SCHEDULE
 
-First, if you need to rename your class, you must change this name repeatedly.
-With L<Test::Class::Moose::Role::AutoUse>, you only rename the test class name
-to correspond to the new class name and you're done.
+We suggest using the C<schedule()> method above as a guideline. It naively
+walks your classes and their methods and distributes them evenly across your
+jobs. That probably won't work for you. For example, it's possible that you'll
+wind up accidentally grouping long-running test methods in a single job when you want
+them in separate jobs. Use the C<< $test_suite->test_report >> I<without>
+running the tests in parallel to determine which classes and methods take
+longer to run, save this information and then use that to build an effective
+schedule.
 
-The first problem is not very serious, but the second problem is. Let's say
-you have a C<Person> class and then you create a C<Person::Employee> subclass.
-Your test subclass might look like this:
+Another reason the naive approach won't work is because you probably have
+tests that don't run in parallel (for example, they munge global state or
+they drop and recreate a database). You'll need to use your C<schedule()> to
+add them to the job listed in C<$schedule[0]>.
 
- package TestsFor::Person::Employee;
+Or it could be that some tests run in parellel with some tests, but not
+others. Again, your schedule needs to be written to take that into account.
 
- use Test::Class::Moose extends => "TestsFor::Person";
+To manage this information better, if you can use tags, you'll find that
+C<Test::Class::Moose::TagRegistry> can help:
 
- # insert tests here
+    use aliased 'Test::Class::Moose::TagRegistry';
 
-Object-oriented tests I<inherit> their parent class tests. Thus,
-C<TestsFor::Person::Employee> will inherit the
-C<TestsFor::Person->test_constructor()> method. Except as you can see in our
-example above, we've B<hardcoded> the class name, meaning that we won't be
-testing our code appropriately. The code using the
-L<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the classname (at
-least, it shouldn't), so when we call the inherited
-C<TestsFor::Person::Employee->test_constructor()> method, it constructs a
-C<TestsFor::Person::Employee> object, not a C<TestsFor::Person> object.
+    if ( TagRegistry->method_has_tag( $class, $method, $tag ) ) {
 
-Some might argue that this is a strawman and we should have done this:
+        # put the method in the appropriate job
+    }
 
- package TestsFor::Some::Class;
- use Test::Class::Moose;
- use Some::Class;
+=head1 INTERNALS
 
- sub class_name { 'Some::Class' }
+This is all subject to wild change, but surprisingly, we didn't have to do any
+monkey-patching of code. It works like this:
 
- sub test_constructor {
-     my $test  = shift;
+We use C<Parallel::ForkManager> to create our jobs.
 
-     my $class = $test->class_name;             # Some::Class
-     can_ok $class, 'new';                      # Some::Class is already loaded
-     isa_ok my $object = $class->new, $class;   # and can be used as normal
- }
+For each job, we grab the schedule for that job number and the C<test_classes>
+and C<test_methods> methods only return classes and methods in the current job
+schedule. Then we run only those tests, but capture the output like this:
 
-Yes, that's correct. We should have done this, except that now it's almost
-identical to the AutoUse code, except that the first time you forget to C<use>
-the class in question, you'll be unhappy. Why not automate this?
 
-=head1 BUGS
+    my $builder = Test::Builder->new;
 
-Please report any bugs or feature requests to C<bug-test-class-moose at rt.cpan.org>,
-or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose>.  I will be
-notified, and then you'll automatically be notified of progress on your bug as
-I make changes.
+    my $output;
+    $builder->output( \$output );
+    $builder->failure_output( \$output );
+    $builder->todo_output( \$output );
 
-=head1 SUPPORT
+    $self->runtests;
 
-You can find documentation for this module with the perldoc command.
+    # $output contains the TAP
 
-    perldoc Test::Class::Moose
+Afterwards, if there are any sequential tests, we run them using the above
+procedure.
 
-You can also look for information at:
+All output is assembled using the experimental L<TAP::Stream> module bundled
+with this one. If it works, we may break it into a separate distribution
+later. That module allows you to combine multiple TAP streams into a single
+stream using subtests.
 
-=over 4
+Then we simply print the resulting combined TAP to the current
+L<Test::Builder> output handle (defaults to STDOUT) and C<prove> can read the
+output as usual.
 
-=item * RT: CPAN's request tracker (report bugs here)
+Note that because we're merging the regular output, failure output, and TODO
+output into a single stream, there could be side effects if your failure
+output or TODO output resembles TAP (and doesn't have a leading '#' mark to
+indicate that it should be ignored).
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose>
+=head1 PERFORMANCE
 
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Test-Class-Moose>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Test-Class-Moose>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Test-Class-Moose/>
-
-=back
-
-=cut
-
-1;
+For our C<t/parallellib> test suite, we go from 11 seconds on a regular test
+run down to 2 seconds when running with 8 jobs.
