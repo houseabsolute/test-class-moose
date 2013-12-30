@@ -32,8 +32,12 @@ around 'runtests' => sub {
 
     my ( $sequential, @jobs ) = $self->schedule;
 
-    my $stream = TAP::Stream->new;
-    my $fork   = Parallel::ForkManager->new($jobs);
+    # XXX for some reason, we need to fetch this output handle before forking
+    # off jobs. Otherwise, we lose our test builder output if and only if we
+    # have a sequential job after the parallel jobs. Weird.
+    my $test_builder_output = Test::Builder->new->output;
+    my $stream              = TAP::Stream->new;
+    my $fork                = Parallel::ForkManager->new($jobs);
     $fork->run_on_finish(
         sub {
             my ($pid, $exit_code, $ident, $exit_signal, $core_dump,
@@ -62,7 +66,6 @@ around 'runtests' => sub {
         $fork->finish( 0, [ $job_num, $output ] );
     }
     $fork->wait_all_children;
-
     if ($sequential) {
         $config->_current_schedule($sequential);
         my $output = $self->$run_job($orig);
@@ -73,8 +76,7 @@ around 'runtests' => sub {
     }
 
     # this is where we print the TAP results
-    my $fh = Test::Builder->new->output;
-    print $fh $stream->tap_to_string;
+    print $test_builder_output $stream->tap_to_string;
 };
 
 around 'test_classes' => sub {
