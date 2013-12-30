@@ -1,6 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
-0.30 
+0.31
+        - Fix bug where sequential tests fail with parallel testing.
+
+0.30 [unrelease]
         - Experimental support for parallel testing. See
           Test::Class::Moose::Role::Parallel.
 
