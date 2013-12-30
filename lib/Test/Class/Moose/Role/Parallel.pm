@@ -53,17 +53,18 @@ around 'runtests' => sub {
     );
 
     my $job_num = 0;
+    my $config  = $self->test_configuration;
     foreach my $schedule (@jobs) {
         $job_num++;
         my $pid = $fork->start and next;
-        $self->test_configuration->_current_schedule($schedule);
+        $config->_current_schedule($schedule);
         my $output = $self->$run_job($orig);
         $fork->finish( 0, [ $job_num, $output ] );
     }
     $fork->wait_all_children;
 
     if ($sequential) {
-        $self->_current_schedule($sequential);
+        $config->_current_schedule($sequential);
         my $output = $self->$run_job($orig);
         $stream->add_to_stream( TAP::Stream::Text->new(
             text => $output,
