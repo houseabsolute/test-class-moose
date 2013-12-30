@@ -306,8 +306,27 @@ my $RUN_TEST_CLASS = sub {
     };
 };
 
+# XXX This is an experimental hack that allows prove -l t/path/to/test/class.pm to
+# work. I should figure out a better strategy
+my $runtests_called = sub {
+    state $was_called;
+    if (@_) {
+        $was_called = shift;
+    }
+    return $was_called;
+};
+
+END {
+    if (    not $runtests_called->()
+        and not $ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS} )
+    {
+        __PACKAGE__->new->runtests;
+    }
+}
+
 sub runtests {
     my $self = shift;
+    $runtests_called->(1);
 
     my $report = $self->test_report;
     $report->_start_benchmark;
