@@ -4,6 +4,8 @@ use Test::Most;
 use Scalar::Util 'looks_like_number';
 use Test::Class::Moose::Load qw(t/lib);
 
+$ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS} = 1;
+
 
 {
     my $test_suite = Test::Class::Moose->new;
@@ -50,9 +52,5 @@ use Test::Class::Moose::Load qw(t/lib);
     is ( $test_suite->test_configuration->show_timing, undef, 'show timing set to undef when harness is not verbose' );
     is ( $test_suite->test_configuration->statistics, undef, 'statistics set to undef when harness is not verbose' );
 }
-
-
-
-
 
 done_testing;
