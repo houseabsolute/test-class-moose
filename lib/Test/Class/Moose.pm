@@ -670,11 +670,18 @@ you'll need to access the C<test_configuration> attribute:
 =item * C<show_timing>
 
 Boolean. Will display verbose information on the amount of time it takes each
-test class/test method to run.
+test class/test method to run. Defaults to false, but see C<use_environment>.
 
 =item * C<statistics>
 
-Boolean. Will display number of classes, test methods and tests run.
+Boolean. Will display number of classes, test methods and tests run. Defaults
+to false, but see C<use_environment>.
+
+=item * C<use_environment>
+
+If this is true, then the default value for show_timing and statistics will be
+true if the C<HARNESS_IS_VERBOSE> environment variable is true. This is set
+when running C<prove -v ...>, for example.
 
 =item * C<randomize>
 
