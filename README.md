@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.31
+version 0.40
 
 # SYNOPSIS
 
@@ -14,8 +14,8 @@ version 0.31
 
     # methods that begin with test_ are test methods.
     sub test_constructor {
-        my ( $test, $report ) = @_;
-        $report->plan(3);    # strictly optional
+        my $test = shift;
+        $test->test_report->plan(3);    # strictly optional
 
         can_ok 'DateTime', 'new';
         my %args = (
@@ -75,8 +75,8 @@ Each test method relies on an implicit `done_testing` call.
 If you prefer, you can declare a plan in a test method:
 
     sub test_something {
-        my ( $test, $report ) = @_;
-        $report->plan($num_tests);
+        my $test = shift;
+        $test->test_report->plan($num_tests);
         ...
     }
 
@@ -85,8 +85,8 @@ You may call `plan()` multiple times for a given test method. Each call to
 method modifier:
 
     before 'test_something' => sub {
-        my ( $test, $report ) = @_;
-        $report->plan($num_extra_tests);
+        my $test = shift;
+        $test->test_report->plan($num_extra_tests);
 
         # more tests
     };
@@ -143,58 +143,68 @@ These are:
 - `test_startup`
 
         sub test_startup {
-           my ( $test, $report ) = @_;
+           my $test = shift;
            $test->next::method;
            # more startup
         }
 
     Runs at the start of each test class. If you need to know the name of the
     class you're running this in (though usually you shouldn't), use
-    `$test->test_class`, or the `name` method on the `$report` object.
+    `$test->test_class`, or you can do this:
 
-    The `$report` object is a [Test::Class::Moose::Report::Class](https://metacpan.org/pod/Test::Class::Moose::Report::Class) object.
+        sub test_startup {
+            my $test                 = shift;
+            my $report               = $test->test_report;
+            my $class                = $report->current_class->name;
+            my $upcoming_test_method = $report->current_method->name;
+            ...
+        }
+
+    The `$test->test_report` object is a [Test::Class::Moose::Report::Class](https://metacpan.org/pod/Test::Class::Moose::Report::Class)
+    object.
 
 - `test_setup`
 
         sub test_setup {
-           my ( $test, $report ) = @_;
+           my $test = shift;
            $test->next::method;
            # more setup
         }
 
     Runs at the start of each test method. If you must know the name of the test
-    you're about to run, you can call `$report->name`.
+    you're about to run, you can do this:
 
-    The `$report` object is a [Test::Class::Moose::Report::Method](https://metacpan.org/pod/Test::Class::Moose::Report::Method) object.
+        sub test_setup {
+           my $test = shift;
+           $test->next::method;
+           my $test_method = $test->test_report->current_method->name;
+           # do something with it
+        }
 
 - `test_teardown`
 
         sub test_teardown {
-           my ( $test, $report ) = @_;
+           my $test = shift;
            # more teardown
            $test->next::method;
         }
 
     Runs at the end of each test method. 
 
-    The `$report` object is a [Test::Class::Moose::Report::Method](https://metacpan.org/pod/Test::Class::Moose::Report::Method) object.
-
 - `test_shutdown`
 
         sub test_shutdown {
-            my ( $test, $report ) = @_;
+            my $test = shift;
             # more teardown
             $test->next::method;
         }
 
     Runs at the end of each test class. 
 
-    The `$report` object is a [Test::Class::Moose::Report::Class](https://metacpan.org/pod/Test::Class::Moose::Report::Class) object.
-
 To override a test control method, just remember that this is OO:
 
     sub test_setup {
-        my  ( $test, $report ) = @_;
+        my $test = shift;
         $test->next::method; # optional to call parent test_setup
         # more setup code here
     }
@@ -235,11 +245,18 @@ you'll need to access the `test_configuration` attribute:
 - `show_timing`
 
     Boolean. Will display verbose information on the amount of time it takes each
-    test class/test method to run.
+    test class/test method to run. Defaults to false, but see `use_environment`.
 
 - `statistics`
 
-    Boolean. Will display number of classes, test methods and tests run.
+    Boolean. Will display number of classes, test methods and tests run. Defaults
+    to false, but see `use_environment`.
+
+- `use_environment`
+
+    If this is true, then the default value for show\_timing and statistics will be
+    true if the `HARNESS_IS_VERBOSE` environment variable is true. This is set
+    when running `prove -v ...`, for example.
 
 - `randomize`
 
@@ -335,16 +352,17 @@ you'll need to access the `test_configuration` attribute:
 If you wish to skip a class, set the reason in the `test_startup` method.
 
     sub test_startup {
-        my ( $test, $report ) = @_;
+        my $test = shift;
         $test->test_skip("I don't want to run this class");
     }
 
 If you wish to skip an individual method, do so in the `test_setup` method.
 
     sub test_setup {
-        my ( $test, $report ) = @_;
-
-        if ( 'test_time_travel' eq $report->name ) {
+        my $test = shift;
+        my $test_method = $test->test_report->current_method;
+    
+        if ( 'test_time_travel' eq $test_method->name ) {
             $test->test_skip("Time travel not yet available");
         }
     }
@@ -352,7 +370,8 @@ If you wish to skip an individual method, do so in the `test_setup` method.
 ## Tagging Methods
 
 Sometimes you want to be able to assign metadata to help you better manage
-your test suite. You can now do this with tags:
+your test suite. You can now do this with tags if you have [Sub::Attribute](https://metacpan.org/pod/Sub::Attribute)
+installed:
 
     sub test_save_poll_data : Tags(api network) {
         ...
@@ -374,19 +393,28 @@ marked `deprecated`:
         exclude_tags => 'deprecated',
     )->runtests;
 
+You can also inspect tags withing your test classes:
+
+    sub test_setup {
+        my $test          = shift;
+        my $method_to_run = $test->test_report->current_method;
+        if ( $method_to_run->has_tag('db') ) {
+            $test->load_database_fixtures;
+        }
+    }
+
 Tagging support relies on [Sub::Attribute](https://metacpan.org/pod/Sub::Attribute). If this module is not available,
 `include_tags` and `exclude_tags` will be ignored, but a warning will be
 issued if those are seen.
-
-Tagging support is relatively new and feature requests (and patches!) are
-welcome.
 
 # PARALLEL TESTING
 
 If you want to run the tests in parallel, see the experimental
 `Test::Class::Moose::Role::Parallel` role. Read the documentation carefully
 as it can take a while to understand. You only need to use the role and
-(optionally) provide a `schedule()` method.
+(optionally) provide a `schedule()` method. Any tests tagged with
+`noparallel` will be run sequentially after the parallel tests (unless you
+provide your own schedule, in which case you can do anything you want).
 
 # THINGS YOU CAN OVERRIDE
 
@@ -409,6 +437,23 @@ Returns the [Test::Class::Moose::Config](https://metacpan.org/pod/Test::Class::M
 Returns the [Test::Class::Moose::Report](https://metacpan.org/pod/Test::Class::Moose::Report) object. Useful if you want to do
 your own reporting and not rely on the default output provided with the
 `statistics` boolean option.
+
+You can also call it in test classes (most useful in the `test_setup()` method):
+
+    sub test_setup {
+        my $test = shift;
+        $self->next::method;
+        my $report= $test->test_report;
+        my $class = $test->current_class;
+        my $method = $test->current_method; # the test method we're about to run
+        if ( $method->name =~ /customer/ ) {
+            $test->load_customer_fixture;
+        }
+        # or better still
+        if ( $method->has_tag('customer') ) {
+            $test->load_customer_fixture;
+        }
+    }
 
 ## `test_class`
 
@@ -558,6 +603,50 @@ Or even shorter:
 If you would like [Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moose) to take care of loading your classes
 for you, see [Test::Class::Moose::Role::AutoUse](https://metacpan.org/pod/Test::Class::Moose::Role::AutoUse) in this distribution.
 
+# DEPRECATIONS
+
+- `test_reporting`
+
+    As of version .40, the long deprecated method `test_reporting` has now been
+    removed.
+
+- `$report` argument to methods deprecated
+
+    Prior to version .40, you used to have a second argument to all test methods
+    and test control methods:
+
+        sub test_something {
+            my ( $test, $report ) = @_;
+            ...
+        }
+
+    This was annoying. It was doubly annoying in test control methods in case you
+    forgot it:
+
+        sub test_setup {
+            my ( $test, $report ) = @_;
+            $test->next::method; # oops, needed $report
+            ...
+        }
+
+    That second argument is still passed, but it's deprecated. It's now
+    recommended that you call the `$test->test_report` method to get that.
+    Instead of this:
+
+        sub test_froblinator {
+            my ( $test, $report ) = @_;
+            $report->plan(7);
+            ...
+        }
+
+    You write this:
+
+        sub test_froblinator {
+            my $test = shift;
+            $test->test_report->plan(7);
+            ...
+        }
+
 # TODO
 
 - Callbacks for tags (for example, 'critical' tags could bailout)
@@ -631,7 +720,7 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Curtis "Ovid" Poe.
+This software is copyright (c) 2014 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
