@@ -6,6 +6,11 @@ sub test_me : Tags( first second ) {
     my $class = ref $test;
     ok 1, "test_me() ran ($class)";
     ok 2, "this is another test ($class)";
+    my $method = $test->test_report->current_method;
+    ok $method->has_tag('first'),
+      'has_tag() should tell us if we have a given tag';
+    ok !$method->has_tag('no_such_tag'),
+      'has_tag() should tell us if we do not have a given tag';
 }
 
 sub test_me_not_overridden : Tags(first) {
@@ -23,11 +28,13 @@ sub test_a_method_with_no_tags {
 }
 
 sub test_augment : Tags(first second) {
-    pass 'this test has a "first" and "second" tag but it they will be overridden';
+    pass
+      'this test has a "first" and "second" tag but it they will be overridden';
 }
 
 sub test_clear_tags : Tags(first) {
-    pass 'this test has the "first" tag, but it\'s going to get cleared in the subtest';
+    pass
+      'this test has the "first" tag, but it\'s going to get cleared in the subtest';
 }
 
 1;

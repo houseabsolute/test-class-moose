@@ -5,6 +5,8 @@ package Test::Class::Moose::Report::Method;
 use Moose;
 use Carp;
 use namespace::autoclean;
+use Test::Class::Moose::TagRegistry;
+
 with qw(
   Test::Class::Moose::Role::Reporting
 );
@@ -44,6 +46,14 @@ sub add_to_plan {
     return $self->plan($integer);
 }
 
+sub has_tag {
+    my ( $self, $tag ) = @_;
+    croak("has_tag(\$tag) requires a tag name") unless defined $tag;
+    my $report_class = $self->report_class->name;
+    my $method       = $self->name;
+    return Test::Class::Moose::TagRegistry->method_has_tag( $report_class, $method, $tag );
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -77,3 +87,12 @@ The number of tests run for this test method.
 The number of tests planned for this test method. If a plan has not been
 explicitly set with C<$report->test_plan>, then this number will always be
 equal to the number of tests run.
+
+=head1 C<has_tag>
+
+    my $method = $test->test_report->current_method;
+    if ( $method->has_tag('db') ) {
+        $test->load_database_fixtures;
+    }
+
+Returns true if the current test method has the tag in question.
