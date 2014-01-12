@@ -3,7 +3,7 @@ package TestsFor::Beta;
 use Test::Class::Moose extends => 'MyParallelTests';
 
 sub test_beta_first {
-    my ( $test, $report ) = @_;
+    my $test = shift;
     ok 1;
     sleep 1;
     ok 2;
@@ -11,7 +11,7 @@ sub test_beta_first {
 }
 
 sub test_second {
-    my ( $test, $report ) = @_;
+    my $test = shift;
     ok 1;
     sleep 1;
     ok 2;
