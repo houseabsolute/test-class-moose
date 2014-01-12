@@ -175,6 +175,7 @@ my $RUN_TEST_METHOD = sub {
     my $test_class = $test_instance->test_class;
     my $report  = Test::Class::Moose::Report::Method->new(
         { name => $test_method, report_class => $report_class } );
+    $self->test_report->current_class->add_test_method($report);
 
     my $builder = $self->test_configuration->builder;
     $test_instance->test_skip_clear;
@@ -215,7 +216,6 @@ my $RUN_TEST_METHOD = sub {
             }
         },
     );
-    $self->test_report->current_class->add_test_method($report);
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
         $report
