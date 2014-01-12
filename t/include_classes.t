@@ -9,7 +9,7 @@ my $test_suite = Test::Class::Moose->new(
 );
 
 my %methods_for = (
-    'TestsFor::Basic' => [qw/test_me test_this_baby/],
+    'TestsFor::Basic' => [qw/test_me test_reporting test_this_baby/],
 );
 my @test_classes = sort $test_suite->test_classes;
 eq_or_diff \@test_classes, [ sort keys %methods_for ],

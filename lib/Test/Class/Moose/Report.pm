@@ -57,6 +57,12 @@ sub current_class {
     return $self->test_classes->[-1];
 }
 
+sub current_method {
+    my $self = shift;
+    my $current_class = $self->current_class or return;
+    return $current_class->current_method;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

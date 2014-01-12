@@ -62,15 +62,11 @@ has 'test_configuration' => (
 );
 
 has 'test_report' => (
-    is      => 'ro',
+    is      => 'rw',
     isa     => 'Test::Class::Moose::Report',
+    writer  => '__set_test_report',
     default => sub { Test::Class::Moose::Report->new },
 );
-
-sub test_reporting {
-    carp "test_reporting() deprecated as of version 0.07. Use test_report().";
-    goto &test_report;
-}
 
 has 'test_class' => (
     is  => 'rw',
@@ -219,11 +215,11 @@ my $RUN_TEST_METHOD = sub {
             }
         },
     );
+    $self->test_report->current_class->add_test_method($report);
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
         $report
     );
-    $self->test_report->current_class->add_test_method($report);
     if ( !$report->is_skipped ) {
         $report->num_tests_run($num_tests);
         if ( !$report->has_plan ) {
@@ -242,13 +238,14 @@ my $RUN_TEST_CLASS = sub {
     return sub {
 
         # set up test class reporting
-        my $test_instance
-          = $test_class->new( $self->test_configuration->args );
         my $report_class = Test::Class::Moose::Report::Class->new(
             {   name => $test_class,
             }
         );
         $report->add_test_class($report_class);
+        my $test_instance
+          = $test_class->new( $self->test_configuration->args );
+        $test_instance->__set_test_report($report);
 
         my @test_methods = $test_instance->test_methods;
         unless (@test_methods) {
