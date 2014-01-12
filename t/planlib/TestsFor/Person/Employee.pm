@@ -10,8 +10,8 @@ sub extra_constructor_args {
 
 BEGIN {
     after 'test_person' => sub {
-        my ( $test, $report ) = @_;
-        $report->plan(1);
+        my $test = shift;
+        $test->test_report->plan(1);
         is $test->test_fixture->employee_number, 666,
           '... and we should get the correct employee number';
     };
