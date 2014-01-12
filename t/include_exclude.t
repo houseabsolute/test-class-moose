@@ -50,10 +50,11 @@ $test_suite = Test::Class::Moose->new(
 );
 
 %methods_for = (
-    'TestsFor::Basic'           => [qw/test_me/],
+    'TestsFor::Basic'           => [qw/test_me test_reporting/],
     'TestsFor::Basic::Subclass' => [
         qw/
           test_me
+          test_reporting
           test_this_should_be_run
           /
     ],
@@ -76,8 +77,8 @@ isa_ok $report, 'Test::Class::Moose::Report',
   '... and the object it returns';
 is $report->num_test_classes, 2,
   '... and it should return the correct number of test classes';
-is $report->num_test_methods, 3,
+is $report->num_test_methods, 5,
   '... and the correct number of test methods';
-is $report->num_tests_run, 8, '... and the correct number of tests';
+is $report->num_tests_run, 12, '... and the correct number of tests';
 
 done_testing;

@@ -2,6 +2,7 @@ Revision history for Perl distribution Test-Class-Moose
 
 0.31
         - Fix bug where sequential tests fail with parallel testing.
+        - Remove long-deprecated test_reporting() method.
 
 0.30 [unrelease]
         - Experimental support for parallel testing. See

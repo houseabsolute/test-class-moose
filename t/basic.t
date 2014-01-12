@@ -6,10 +6,11 @@ use Test::Class::Moose::Load qw(t/lib);
 my $test_suite = Test::Class::Moose->new( show_timing => 0 );
 
 my %methods_for = (
-    'TestsFor::Basic'           => [qw/test_me test_this_baby/],
+    'TestsFor::Basic'           => [qw/test_me test_reporting test_this_baby/],
     'TestsFor::Basic::Subclass' => [
         qw/
           test_me
+          test_reporting
           test_this_baby
           test_this_should_be_run
           /

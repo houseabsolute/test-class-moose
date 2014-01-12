@@ -28,6 +28,11 @@ has 'error' => (
     predicate => 'has_error',
 );
 
+sub current_method {
+    my $self = shift;
+    return $self->test_methods->[-1];
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
