@@ -52,7 +52,7 @@ as a test.
     use My::Module;
 
     sub test_construction {
-        my ( $test, $report ) = @_;
+        my $test = shift;
         my $obj = My::Module->new;
         isa_ok $obj, 'My::Module';
     }
@@ -192,7 +192,7 @@ If you need to prepare a plan for your tests, you can do so using the plan()
 method:
 
     sub test_constructor {
-        my ( $test, $report ) = @_;
+        my $test = shift;
         $test->plan( 1 ); # 1 test in this sub
         isa_ok My::Module->new, 'My::Module';
     }
@@ -215,8 +215,8 @@ and call the C<test_skip> method with the reason we're skipping the test.
     }
     
     sub test_setup {
-        my ( $test, $report ) = @_;
-        if ( $report->name eq 'test_will_fail' ) {
+        my $test = shift;
+        if ( $test->test_report->current_method->name eq 'test_will_fail' ) {
             $test->test_skip( 'It doesn't work' );
         }
     }
@@ -225,7 +225,7 @@ If we don't want to run an entire class, we can use the C<test_startup> method
 and the same C<test_skip> method with the reason we're skipping the test.
 
     sub test_startup {
-        my ( $test, $report ) = @_;
+        my $test = shift;
         $test->test_skip( "The entire class doesn't work" );
     }
 
