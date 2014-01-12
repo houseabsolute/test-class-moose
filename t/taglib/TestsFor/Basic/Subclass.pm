@@ -25,7 +25,15 @@ sub test_this_should_be_run : Tags(second) {
 }
 
 sub test_augment : Tags( +third -first ) {
+    my $test = shift;
     pass 'this should run with tags "second" or "third", but not "first"';
+    my $method = $test->test_report->current_method;
+    ok $method->has_tag('second'),
+      'has_tag() should tell us if we have a given tag';
+    ok $method->has_tag('third'),
+      'has_tag() should tell us if we have a given tag';
+    ok !$method->has_tag('first'),
+      'has_tag() should tell us if we do not have a given tag';
 }
 
 sub test_clear_tags : Tags() {
