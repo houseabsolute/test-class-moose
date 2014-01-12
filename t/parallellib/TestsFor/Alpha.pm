@@ -3,7 +3,7 @@ package TestsFor::Alpha;
 use Test::Class::Moose extends => 'MyParallelTests';
 
 sub test_alpha_first {
-    my ( $test, $report ) = @_;
+    my $test = shift;
     ok 1;
     sleep 1;
     ok 2;
@@ -11,8 +11,8 @@ sub test_alpha_first {
 }
 
 sub test_second {
-    my ( $test, $report ) = @_;
-    $report->plan(1);
+    my $test = shift;
+    $test->test_report->plan(1);
     sleep 1;
     ok 1, 'make sure plans work';
 }
