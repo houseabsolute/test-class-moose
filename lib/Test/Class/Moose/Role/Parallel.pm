@@ -6,6 +6,7 @@ use Moose::Role;
 use Parallel::ForkManager;
 use Test::Builder;
 use TAP::Stream;
+use Test::Class::Moose::TagRegistry;
 use Carp;
 
 my $run_job = sub {
@@ -111,16 +112,22 @@ sub schedule {
     my @schedule;
 
     my $current_job = 0;
+    my %sequential;
     foreach my $test_class ( $self->test_classes ) {
         my $test_instance = $test_class->new( $config->args );
-        foreach my $method ( $test_instance->test_methods ) {
+        METHOD: foreach my $method ( $test_instance->test_methods ) {
+            if ( Test::Class::Moose::TagRegistry->method_has_tag( $test_class, $method, 'noparallel' ) ) {
+                $sequential{$test_class}{$method} = 1;
+                next METHOD;
+            }
+
             $schedule[$current_job] ||= {};
             $schedule[$current_job]{$test_class}{$method} = 1;
             $current_job++;
             $current_job = 0 if $current_job >= $jobs;
         }
     }
-    unshift @schedule => undef;
+    unshift @schedule => \%sequential;
     return @schedule;
 }
 
@@ -151,13 +158,16 @@ And in your test driver:
 =head1 DESCRIPTION
 
 This is a very experimental role to add parallel testing to
-C<Test::Class::Moose>. The interface is subject to change and it will I<not>
-magically make your tests run in parellel unless you're really lucky. If
-you've tried to parallelize your tests before, you understand why.
+C<Test::Class::Moose>. The interface is subject to change and it probably
+won't magically make your tests I<successfully> run in parallel unless you're
+really lucky. If you've tried to parallelize your tests before, you understand
+why: database tests don't use transactions, or some test munges global state,
+and so on.
 
 B<Important>: At the present time, attempting to run jobs in parallel means
 that the C<Test::Class::Moose::test_report()> method will not return anything
-useful. Don't try to call it.
+useful after the test suite is run, so don't try to call it afterwards. You
+may still call it inside of a test class or test method as normal.
 
 To use this role, simply include:
 
@@ -174,8 +184,17 @@ And in your driver script, the constructor takes a new argument, C<jobs>.
 
 If the C<jobs> is set to 1, then it's as if you've run things like normal.
 However, if C<jobs> is greater than 1, we'll fork off numerous jobs and run
-the tests in parallel according to the schedule. A naive schedule looks like
-this:
+the tests in parallel according to the schedule. If you have L<Sub::Attribute>
+installed, then all test methods tagged with C<noparallel> will run
+sequentially after the parallel tests:
+
+    sub test_destructive_code : Tags(noparallel) {
+        my $test = shift;
+        # run some tests here here that can't be run in parallel
+    }
+
+If you need to write your own schedule, you can use the following naive
+schedule as a template:
 
     sub schedule {
         my $self   = shift;
@@ -267,21 +286,31 @@ jobs:
 
 =head1 CREATING YOUR OWN SCHEDULE
 
-We suggest using the C<schedule()> method above as a guideline. It naively
-walks your classes and their methods and distributes them evenly across your
-jobs. That probably won't work for you. For example, it's possible that you'll
-wind up accidentally grouping long-running test methods in a single job when you want
-them in separate jobs. Use the C<< $test_suite->test_report >> I<without>
-running the tests in parallel to determine which classes and methods take
-longer to run, save this information and then use that to build an effective
-schedule.
+You may wish to create your own C<schedule()> method, using the above above as
+a guideline. It naively walks your classes and their methods and distributes
+them evenly across your jobs. That probably won't work for you. For example,
+it's possible that you'll wind up accidentally grouping long-running test
+methods in a single job when you want them in separate jobs. Use the C<<
+$test_suite->test_report >> I<without> running the tests in parallel to
+determine which classes and methods take longer to run, save this information
+and then use that to build an effective schedule.
 
 Another reason the naive approach won't work is because you probably have
 tests that don't run in parallel (for example, they munge global state or
 they drop and recreate a database). You'll need to use your C<schedule()> to
-add them to the job listed in C<$schedule[0]>.
+add them to the job listed in C<$schedule[0]>. However, if you have
+L<Sub::Attribute> installed, you can use the C<noparallel> tag to mark tests
+that must not be run in parallel:
 
-Or it could be that some tests run in parellel with some tests, but not
+    sub test_database_migrations : Tags(noparallel) {
+        my $test = shift;
+        # potentially destructive tests here
+    }
+
+Of course, if you provide your own schedule, you'll need to account for the
+C<noparallel> tag yourself, or use something else.
+
+Or it could be that some tests run in parallel with some tests, but not
 others. Again, your schedule needs to be written to take that into account.
 
 To manage this information better, if you can use tags, you'll find that
