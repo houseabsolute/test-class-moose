@@ -320,6 +320,7 @@ END {
     if (    not $runtests_called->()
         and not $ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS} )
     {
+        return unless $ENV{HARNESS_ACTIVE};
         __PACKAGE__->new->runtests;
     }
 }
