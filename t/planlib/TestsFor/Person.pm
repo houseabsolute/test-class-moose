@@ -8,7 +8,7 @@ has 'test_fixture' => ( is => 'rw' );
 sub extra_constructor_args {}
 
 sub test_setup {
-    my ( $test, $report ) = @_;
+    my $test = shift;
     $test->test_fixture($test->class_name->new(
         first_name => 'Bob',
         last_name  => 'Dobbs',
@@ -17,8 +17,8 @@ sub test_setup {
 }
 
 sub test_person {
-    my ( $test, $report ) = @_;
-    $report->plan(2);
+    my $test = shift;
+    $test->test_report->plan(2);
     is $test->test_fixture->full_name, 'Bob Dobbs',
         'Our full name should be correct';
 }

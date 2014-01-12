@@ -63,6 +63,13 @@ sub current_method {
     return $current_class->current_method;
 }
 
+sub plan {
+    my ( $self, $plan ) = @_;
+    my $current_method = $self->current_method
+        or croak("You tried to plan but we don't have a test method yet!");
+    $current_method->plan($plan);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
