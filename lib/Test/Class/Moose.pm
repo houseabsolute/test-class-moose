@@ -314,10 +314,14 @@ my $runtests_called = sub {
 };
 
 END {
-    if (    not $runtests_called->()
-        and not $ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS} )
+
+    # This is getting even dodgier :/
+    if (!$runtests_called->()    # run tests if ... haven't run the tests
+        && !$ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS}  # ... not asked to skip them
+        && $ENV{HARNESS_ACTIVE}                   # ... the harness is active
+        && !Test::Builder->new->{Skip_All}        # ... not used used skip_all
+      )
     {
-        return unless $ENV{HARNESS_ACTIVE};
         __PACKAGE__->new->runtests;
     }
 }

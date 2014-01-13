@@ -1,6 +1,10 @@
 Revision history for Perl distribution Test-Class-Moose
 
-0.40
+0.41 2013-01-13
+        - Fix bug where "skip_all" tests would report as failing if
+          Sub::Attribute wasn't installed.
+
+0.40 2013-01-12
         - Parallel tests now automatically ignore test methods tagged with
           'noparallel'.
         - Fix bug where sequential tests fail with parallel testing.
@@ -9,7 +13,7 @@ Revision history for Perl distribution Test-Class-Moose
           Call $test->test_report instead.
         - You can now call has_tag() on a method report object.
 
-0.30 [unrelease]
+0.30 [unreleased]
         - Experimental support for parallel testing. See
           Test::Class::Moose::Role::Parallel.
 
