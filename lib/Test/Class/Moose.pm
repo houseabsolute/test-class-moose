@@ -176,8 +176,9 @@ my $RUN_TEST_METHOD = sub {
     my $report  = Test::Class::Moose::Report::Method->new(
         { name => $test_method, report_class => $report_class } );
     $self->test_report->current_class->add_test_method($report);
+    my $config = $self->test_configuration;
 
-    my $builder = $self->test_configuration->builder;
+    my $builder = $config->builder;
     $test_instance->test_skip_clear;
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_setup',
@@ -209,9 +210,9 @@ my $RUN_TEST_METHOD = sub {
             $num_tests = $builder->current_test - $old_test_count;
 
             $report->_end_benchmark;
-            if ( $self->test_configuration->show_timing ) {
+            if ( $config->show_timing ) {
                 my $time = $report->time->duration;
-                $self->test_configuration->builder->diag(
+                $config->builder->diag(
                     $report->name . ": $time" );
             }
         },
