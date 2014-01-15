@@ -1,5 +1,11 @@
 Revision history for Perl distribution Test-Class-Moose
 
+0.42 2013-01-15
+        - Remove experimental END block causing issues for some test suites.
+        - Merge Dave Rolsky's MetaJSON request (thanks, Dave!)
+        - Add better github meta info
+        - Document recommended test suite instantiation.
+
 0.41 2013-01-13
         - Fix bug where "skip_all" tests would report as failing if
           Sub::Attribute wasn't installed.
