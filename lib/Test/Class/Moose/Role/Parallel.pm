@@ -76,6 +76,10 @@ around 'runtests' => sub {
         ) );
     }
 
+    # this prevents overwriting the line of dots output from
+    # $RUN_TEST_CONTROL_METHOD
+    print STDERR "\n";
+
     # this is where we print the TAP results
     print $test_builder_output $stream->tap_to_string;
 };

@@ -215,14 +215,23 @@ my $RUN_TEST_METHOD = sub {
                 $config->builder->diag(
                     $report->name . ": $time" );
             }
-            if ( $config->jobs > 1 && $config->_has_schedule ) {
-                # we're running under parallel testing, so rather than having
-                # the code look like it's stalled, we'll output a dot for
-                # every test method.
-                print STDERR '.';
-            }
         },
     );
+
+    # The set_color() method from Test::Formatter::Color is just ugly.
+    if ( $config->running_in_parallel ) {
+
+        # we're running under parallel testing, so rather than having
+        # the code look like it's stalled, we'll output a dot for
+        # every test method.
+        my $color = ( $builder->details )[-1]{ok} ? 'green' : 'red';
+        $config->_color->set_color(
+            sub { print STDERR shift, '.' },
+            $color,
+        );
+        $config->_color->set_color( sub { print STDERR shift }, 'reset' );
+    }
+
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',
         $report
@@ -239,7 +248,9 @@ my $RUN_TEST_METHOD = sub {
 my $RUN_TEST_CLASS = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CLASS';
     my ( $self, $test_class ) = @_;
-    my $builder = $self->test_configuration->builder;
+
+    my $config  = $self->test_configuration;
+    my $builder = $config->builder;
     my $report  = $self->test_report;
 
     return sub {
@@ -251,7 +262,7 @@ my $RUN_TEST_CLASS = sub {
         );
         $report->add_test_class($report_class);
         my $test_instance
-          = $test_class->new( $self->test_configuration->args );
+          = $test_class->new( $config->args );
         $test_instance->__set_test_report($report);
 
         my @test_methods = $test_instance->test_methods;
@@ -303,9 +314,9 @@ my $RUN_TEST_CLASS = sub {
 
         # finalize reporting
         $report_class->_end_benchmark;
-        if ( $self->test_configuration->show_timing ) {
+        if ( $config->show_timing ) {
             my $time = $report_class->time->duration;
-            $self->test_configuration->builder->diag("$test_class: $time");
+            $config->builder->diag("$test_class: $time");
         }
     };
 };
