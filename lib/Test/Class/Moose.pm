@@ -648,7 +648,7 @@ your test suite. Simply point it at the directory or directories containing
 your test classes:
 
  use Test::Class::Moose::Load 't/lib';
- Test::Class::Moose->new->runtests;
+ My::Base::Class->new->runtests;
 
 By running C<Test::Class::Moose> with a single driver script like this, all
 classes are loaded once and this can be a significant performance boost. This
@@ -656,7 +656,7 @@ does mean a global state will be shared, so keep this in mind.
 
 You can also pass arguments to C<Test::Class::Moose>'s contructor.
 
- my $test_suite = Test::Class::Moose->new({
+ my $test_suite = My::Base::Class->new({
      show_timing => 1,
      randomize   => 0,
      statistics  => 1,
@@ -671,6 +671,15 @@ delegate the attributes directly as a result. If you need them at runtime,
 you'll need to access the C<test_configuration> attribute:
 
  my $builder = $test_suite->test_configuration->builder;
+
+Note that you can call C<< Test::Class::Moose->new >> instead of 
+C<< My::Base::Class->new >>, but we recommend that you instantiate an instance
+of your base class instead of C<Test::Class::Moose>. There are times when you
+may apply a role to your base class and modify it, but running it in the
+context of C<Test::Class::Moose> will not always pick up those modifications.
+
+In other words, create an instance of your base class, not
+C<Test::Class::Moose>.
 
 =head2 Contructor Attributes
 
@@ -708,7 +717,7 @@ Takes a class name or an array reference of class names. If it is present,
 only these test classes will be run. This is very useful if you wish to run an
 individual class as a test:
 
-    Test::Class::Moose->new(
+    My::Base::Class->new(
         test_classes => $ENV{TEST_CLASS}, # ignored if undef
     )->runtests;
 
@@ -719,7 +728,7 @@ C<test_classes> method, but this makes it trivial to do this:
 
 Alternatively:
 
-    Test::Class::Moose->new(
+    My::Base::Class->new(
         test_classes => \@ARGV, # ignored if empty
     )->runtests;
 
@@ -819,12 +828,12 @@ tests suite, if desired. For example, if your network goes down and all tests
 which rely on a network are tagged with C<network>, you can skip those tests
 with this:
 
-    Test::Class::Moose->new( exclude_tags => 'network' )->runtests;
+    My::Base::Class->new( exclude_tags => 'network' )->runtests;
 
 Or maybe you want to run all C<api> and C<database> tests, but skip those
 marked C<deprecated>:
 
-    Test::Class::Moose->new(
+    My::Base::Class->new(
         include_tags => [qw/api database/],
         exclude_tags => 'deprecated',
     )->runtests;
@@ -989,7 +998,7 @@ wrong).
     use lib 'lib';
     use Test::Most;
     use Test::Class::Moose::Load qw(t/lib);
-    my $test_suite = Test::Class::Moose->new;
+    my $test_suite = My::Base::Class->new;
 
     subtest 'run the test suite' => sub {
         $test_suite->runtests;
@@ -1026,13 +1035,13 @@ wrong).
 If you just want to output reporting information, you do not need to run the
 test suite in a subtest:
 
-    my $test_suite = Test::Class::Moose->new->runtests;
+    my $test_suite = My::Base::Class->new->runtests;
     my $report     = $test_suite->test_report;
     ...
 
 Or even shorter:
 
-    my $report = Test::Class::Moose->new->runtests->test_report;
+    my $report = My::Base::Class->new->runtests->test_report;
 
 =head1 EXTRAS
 
