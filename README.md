@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.42
+version 0.43
 
 # SYNOPSIS
 
