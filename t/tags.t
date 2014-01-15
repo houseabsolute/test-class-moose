@@ -2,8 +2,6 @@
 use Test::Most 'bail';
 use lib 'lib';
 
-$ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS} = 1;
-
 use Test::Class::Moose ();    # prevents us from inheriting from it
 sub registry () { 'Test::Class::Moose::TagRegistry' }
 
