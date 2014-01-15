@@ -5,6 +5,7 @@ package Test::Class::Moose::Config;
 use 5.10.0;
 use Moose;
 use Moose::Util::TypeConstraints;
+use TAP::Formatter::Color;
 use namespace::autoclean;
 
 subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
@@ -101,6 +102,16 @@ has '_current_schedule' => (
     predicate => '_has_schedule',
 );
 
+has '_color' => (
+    is         => 'rw',
+    isa        => 'TAP::Formatter::Color',
+    lazy_build => 1,
+);
+
+sub _build__color {
+    return TAP::Formatter::Color->new;
+}
+
 sub args {
     my $self = shift;
 
@@ -108,6 +119,11 @@ sub args {
         map { defined $self->$_ ? ( $_ => $self->$_ ) : () }
         map { $_->name } $self->meta->get_all_attributes
     };
+}
+
+sub running_in_parallel {
+    my $self = shift;
+    return $self->jobs > 1 && $self->_has_schedule;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -203,6 +219,10 @@ B<EXPERIMENTAL>: Returns the number of jobs running for the test suite.
 Default is 1.
 
 Only used by C<Test::Class::Moose::Role::Parallel>.
+
+=head2 C<running_in_parallel>
+
+B<EXPERIMENTAL>: Returns true if it appears that we are running in parallel.
 
 =head1 METHODS
 
