@@ -67,7 +67,7 @@ around 'runtests' => sub {
         $fork->finish( 0, [ $job_num, $output ] );
     }
     $fork->wait_all_children;
-    if ($sequential) {
+    if ($sequential && keys %$sequential) {
         $config->_current_schedule($sequential);
         my $output = $self->$run_job($orig);
         $stream->add_to_stream( TAP::Stream::Text->new(
