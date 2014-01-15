@@ -215,6 +215,12 @@ my $RUN_TEST_METHOD = sub {
                 $config->builder->diag(
                     $report->name . ": $time" );
             }
+            if ( $config->jobs > 1 && $config->_has_schedule ) {
+                # we're running under parallel testing, so rather than having
+                # the code look like it's stalled, we'll output a dot for
+                # every test method.
+                print STDERR '.';
+            }
         },
     );
     $test_instance->$RUN_TEST_CONTROL_METHOD(
