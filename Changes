@@ -1,5 +1,11 @@
 Revision history for Perl distribution Test-Class-Moose
 
+0.43
+        - When running parallel tests, we now output a line of dots to the
+          screen to show that the test suite hasn't stalled. Further, the dots
+          are colored "green" and "red" (sorry color blind folk!) just like
+          Test::Harness, so you can see if tests have passed or failed.
+
 0.42 2013-01-15
         - Remove experimental END block causing issues for some test suites.
         - Merge Dave Rolsky's MetaJSON request (thanks, Dave!)
