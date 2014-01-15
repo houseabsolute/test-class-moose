@@ -5,6 +5,7 @@ Revision history for Perl distribution Test-Class-Moose
         - Merge Dave Rolsky's MetaJSON request (thanks, Dave!)
         - Add better github meta info
         - Document recommended test suite instantiation.
+        - Document what Test::Class::Moose::Role is for.
 
 0.41 2013-01-13
         - Fix bug where "skip_all" tests would report as failing if

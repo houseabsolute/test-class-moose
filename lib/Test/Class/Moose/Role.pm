@@ -1,6 +1,6 @@
 package Test::Class::Moose::Role;
 
-#ABSTRACT : Test::Class::Moose for roles
+# ABSTRACT: Test::Class::Moose for roles
 
 use 5.10.0;
 use Carp qw/carp croak cluck/;
@@ -42,7 +42,7 @@ BEGIN {
         }
 DECLARE_ATTRIBUTE
         $NO_CAN_HAZ_ATTRIBUTES = $@;
-    }    
+    }
 }
 
 
@@ -64,13 +64,60 @@ use Data::Dumper;
 END
 
     unless ($NO_CAN_HAZ_ATTRIBUTES) {
-        $preamble .= "use Sub::Attribute;\n";   
+        $preamble .= "use Sub::Attribute;\n";
     }
     eval $preamble;
     unless ($NO_CAN_HAZ_ATTRIBUTES) {
-        no strict "refs";	    
-    	*{"$caller\::Tags"} = \&Tags;
+        no strict "refs";
+        *{"$caller\::Tags"} = \&Tags;
     }
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+If you need the functionality of L<Test::Class::Moose> to be available inside
+of a role, this is the module to do that. This is how you can declare a TCM
+role:
+
+    package TestsFor::Basic::Role;
+
+    use Test::Class::Moose::Role;
+
+    sub test_in_a_role {
+        my $test = shift;
+
+        pass "This is picked up from role";
+    }
+
+
+    sub in_a_role_with_tags : Tags(first){
+        fail "We should never see this test";
+    }
+
+
+    sub test_in_a_role_with_tags : Tags(second){
+        pass "We should see this test";
+    }
+
+    1;
+
+And to consume it:
+
+    package TestsFor::Basic::WithRole;
+    use Test::Class::Moose;
+
+    with qw/TestsFor::Basic::Role/;
+
+    sub test_in_withrole {
+        pass "Got here";
+    }
+
+    1;
+
+Note that this cannot be consumed into classes and magically make them into
+test classes. You must still (at the present time) inherit from
+C<Test::Class::Moose> to create a test suite.
