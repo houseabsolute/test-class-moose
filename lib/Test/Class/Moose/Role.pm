@@ -67,6 +67,7 @@ END
         $preamble .= "use Sub::Attribute;\n";
     }
     eval $preamble;
+    croak($@) if $@;
     unless ($NO_CAN_HAZ_ATTRIBUTES) {
         no strict "refs";
         *{"$caller\::Tags"} = \&Tags;
