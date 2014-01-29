@@ -6,6 +6,7 @@ use 5.10.0;
 use Carp qw/carp croak cluck/;
 
 use Test::Class::Moose::TagRegistry;
+use Class::Load qw/try_load_class/;
 
 our $NO_CAN_HAZ_ATTRIBUTES;
 BEGIN {
@@ -50,10 +51,15 @@ sub import {
     my ( $class, %arg_for ) = @_;
     my $caller = caller;
 
+    my $role_class = delete $arg_for{parameterized} ?
+      'MooseX::Role::Parameterized' : 'Moose::Role';
+
+    try_load_class( $role_class )
+      or croak "Can't load base role class $role_class";
 
     my $preamble = <<"END";
 package $caller;
-use Moose::Role;
+use $role_class;
 use Test::Most;
 
 use strict;
@@ -117,6 +123,31 @@ And to consume it:
     }
 
     1;
+
+Or, if you want to use L<MooseX::Role::Parameterized> instead of
+L<Moose::Role>:
+
+    package TestsFor::Basic::Role;
+
+    use Test::Class::Moose::Role parameterized => 1;
+
+    parameter message => ( is => 'ro', default => "Picked up from role" );
+
+    role {
+        my $p = shift;
+        method test_in_a_role => sub {
+            pass $p->message;
+        }
+    }
+
+And to consume this:
+
+    package TestsFor::Basic::ParameterizedRole;
+    use Test::Class::Moose;
+
+    with 'TestsFor::Basic::Role' => {
+        message => "This is picked up from a parameterized role"
+    };
 
 Note that this cannot be consumed into classes and magically make them into
 test classes. You must still (at the present time) inherit from
