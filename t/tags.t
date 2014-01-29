@@ -36,11 +36,12 @@ subtest 'Multiple included tags' => sub {
                   /
             ],
             'TestsFor::MultipleExclude' => [],
-	    'TestsFor::Basic::WithRole' => [
-		qw/
-		test_in_a_role_with_tags
-	       /	
-	    ],
+      'TestsFor::Basic::WithRole' => [
+    qw/
+    test_in_a_role_with_tags
+         /
+      ],
+      'TestsFor::Basic::WithParameterizedRole' => [],
         }
     );
 };
@@ -70,13 +71,18 @@ subtest 'Simple exluded tag' => sub {
                   test_87801_3
                   /
             ],
-	    'TestsFor::Basic::WithRole' => [
-		    qw/
-		    test_in_a_role
-		    test_in_a_role_with_tags
-		    test_in_withrole
-		    /
-	    ],
+      'TestsFor::Basic::WithRole' => [
+        qw/
+        test_in_a_role
+        test_in_a_role_with_tags
+        test_in_withrole
+        /
+      ],
+      'TestsFor::Basic::WithParameterizedRole' => [
+        $TestsFor::Basic::ParameterizedRole::mrp_available ?
+          'test_in_a_parameterizedrole' : (),
+        qw/test_in_withparameterizedrole/,
+      ],
         }
     );
 };
@@ -87,7 +93,8 @@ subtest 'Simple included tag' => sub {
         {   'TestsFor::Basic'           => [],
             'TestsFor::Basic::Subclass' => [qw/ test_augment /],
             'TestsFor::MultipleExclude' => [],
-	    'TestsFor::Basic::WithRole' => [],
+      'TestsFor::Basic::WithRole' => [],
+      'TestsFor::Basic::WithParameterizedRole' => [],
         }
     );
 };
@@ -104,7 +111,8 @@ subtest
         {   'TestsFor::Basic'           => [],
             'TestsFor::Basic::Subclass' => [],
             'TestsFor::MultipleExclude' => [qw/test_87801_3/],
-	    'TestsFor::Basic::WithRole' => [],
+      'TestsFor::Basic::WithRole' => [],
+      'TestsFor::Basic::WithParameterizedRole' => [],
         }
     );
   };
