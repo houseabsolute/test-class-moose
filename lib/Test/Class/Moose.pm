@@ -666,7 +666,7 @@ your test suite. Simply point it at the directory or directories containing
 your test classes:
 
  use Test::Class::Moose::Load 't/lib';
- My::Base::Class->new->runtests;
+ Test::Class::Moose->new->runtests;
 
 By running C<Test::Class::Moose> with a single driver script like this, all
 classes are loaded once and this can be a significant performance boost. This
