@@ -1,5 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
+0.44
+        - Test::Class::Moose::Role - croak() if preamble doesn't load
+          (Sebastian Willert)
+
 0.43 2013-01-29
         - When running parallel tests, we now output a line of dots to the
           screen to show that the test suite hasn't stalled. Further, the dots

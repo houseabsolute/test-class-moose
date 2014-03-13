@@ -3,7 +3,7 @@ package Test::Class::Moose::Role;
 # ABSTRACT: Test::Class::Moose for roles
 
 use 5.10.0;
-use Carp qw/carp croak cluck/;
+use Carp;
 
 use Test::Class::Moose::TagRegistry;
 
@@ -67,6 +67,7 @@ END
         $preamble .= "use Sub::Attribute;\n";
     }
     eval $preamble;
+    croak($@) if $@;
     unless ($NO_CAN_HAZ_ATTRIBUTES) {
         no strict "refs";
         *{"$caller\::Tags"} = \&Tags;
