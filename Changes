@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 0.44
+        - TAP::Stream is now in its own distribution and thus removed from
+          this one.
         - Test::Class::Moose::Role - croak() if preamble doesn't load
           (Sebastian Willert)
 
