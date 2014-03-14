@@ -1,6 +1,6 @@
 Revision history for Perl distribution Test-Class-Moose
 
-0.50
+0.50 2013-03-14
         - :Test and :Tests attributes have been added.
         - TAP::Stream is now in its own distribution and thus removed from
           this one.
