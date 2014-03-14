@@ -30,6 +30,12 @@ use Carp::Always;
 
 use Test::Class::Moose::Load qw(t/planlib);
 
+BEGIN {
+    # some plans are set via attributes
+    plan skip_all => 'Sub::Attribute not available. Cannot test tags'
+      if Test::Class::Moose->__attributes_unavailable;
+}
+
 my $test_suite = Test::Class::Moose->new;
 subtest 'run the test suite' => sub {
     my $builder = Test::Builder->new;

@@ -58,6 +58,9 @@ sub __create_attributes {
         }
 
         my $method = *{$symbol}{NAME};
+        if ( $method =~ /^test_(?:startup|setup|teardown|shutdown)$/ ) {
+            croak("Test control method '$method' may not have a Test attribute");
+        }
 
         Test::Class::Moose::AttributeRegistry->add_plan(
             $class,
@@ -78,6 +81,9 @@ sub __create_attributes {
         }
 
         my $method = *{$symbol}{NAME};
+        if ( $method =~ /^test_(?:startup|setup|teardown|shutdown)$/ ) {
+            croak("Test control method '$method' may not have a Test attribute");
+        }
 
         Test::Class::Moose::AttributeRegistry->add_plan(
             $class,

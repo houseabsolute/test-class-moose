@@ -141,4 +141,20 @@ subtest 'Verify registry' => sub {
         '... or if it does not';
 };
 
+eval <<'END';
+    package TestsFor::Bad::Example;
+    use Test::Class::Moose;
+
+    sub test_setup : Test {
+        my $test = shift;
+        pass 'does not matter';
+    }
+
+    sub test_something { ok 1 }
+END
+
+my $error = $@;
+like $error, qr/Test control method 'test_setup' may not have a Test attribute/,
+    'Putting test attributes on a test control method should be a fatal error';
+
 done_testing;
