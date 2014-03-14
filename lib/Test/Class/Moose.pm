@@ -19,6 +19,39 @@ use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::TagRegistry;
 
+sub __create_attributes {
+    return <<'DECLARE_ATTRIBUTES';
+    sub Tags : ATTR_SUB {
+        my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
+
+        my @tags;
+        if ($data) {
+            $data =~ s/^\s+//g;
+            @tags = split /\s+/, $data;
+        }
+
+        if ( $symbol eq 'ANON' ) {
+            die "Cannot tag anonymous subs at file $file, line $line\n";
+        }
+
+        my $method = *{ $symbol }{ NAME };
+
+        {           # block for localising $@
+            local $@;
+
+            Test::Class::Moose::TagRegistry->add(
+                $class,
+                $method,
+                \@tags,
+            );
+            if ( $@ ) {
+                croak "Error in adding tags: $@";
+            }
+        }
+    }
+DECLARE_ATTRIBUTES
+}
+
 BEGIN {
     class_has '__attributes_unavailable' => (
         is      => 'rw',
@@ -29,36 +62,7 @@ BEGIN {
     eval "use Sub::Attribute";
     __PACKAGE__->_set___attributes_unavailable($@);
     unless (__PACKAGE__->__attributes_unavailable) {
-        eval <<'DECLARE_ATTRIBUTE';
-        sub Tags : ATTR_SUB {
-            my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
-
-            my @tags;
-            if ($data) {
-                $data =~ s/^\s+//g;
-                @tags = split /\s+/, $data;
-            }
-
-            if ( $symbol eq 'ANON' ) {
-                die "Cannot tag anonymous subs at file $file, line $line\n";
-            }
-
-            my $method = *{ $symbol }{ NAME };
-
-            {           # block for localising $@
-                local $@;
-
-                Test::Class::Moose::TagRegistry->add(
-                    $class,
-                    $method,
-                    \@tags,
-                );
-                if ( $@ ) {
-                    croak "Error in adding tags: $@";
-                }
-            }
-        }
-DECLARE_ATTRIBUTE
+        eval __PACKAGE__->__create_attributes;
         __PACKAGE__->_set___attributes_unavailable($@);
     }
 }

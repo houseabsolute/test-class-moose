@@ -11,36 +11,7 @@ BEGIN {
     require Test::Class::Moose;
     eval "use Sub::Attribute";
     unless(Test::Class::Moose->__attributes_unavailable){
-        eval <<'DECLARE_ATTRIBUTE';
-        sub Tags : ATTR_SUB {
-            my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
-
-            my @tags;
-            if ($data) {
-                $data =~ s/^\s+//g;
-                @tags = split /\s+/, $data;
-            }
-
-            if ( $symbol eq 'ANON' ) {
-                die "Cannot tag anonymous subs at file $file, line $line\n";
-            }
-
-            my $method = *{ $symbol }{ NAME };
-
-            {           # block for localising $@
-                local $@;
-
-                Test::Class::Moose::TagRegistry->add(
-                    $class,
-                    $method,
-                    \@tags,
-                );
-                if ( $@ ) {
-                    croak "Error in adding tags: $@";
-                }
-            }
-        }
-DECLARE_ATTRIBUTE
+        eval Test::Class::Moose->__create_attributes;
     }
 }
 
