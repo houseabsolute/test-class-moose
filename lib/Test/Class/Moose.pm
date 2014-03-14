@@ -64,6 +64,10 @@ sub __create_attributes {
             $method,
             1,
         );
+        $class->meta->add_before_method_modifier($method, sub {
+            my $test = shift;
+            $test->test_report->plan(1);
+        });
     }
 
     sub Tests : ATTR_SUB {
@@ -80,6 +84,12 @@ sub __create_attributes {
             $method,
             $data,
         );
+        if ( defined $data ) {
+            $class->meta->add_before_method_modifier($method, sub {
+                my $test = shift;
+                $test->test_report->plan($data);
+            });
+        }
     }
 DECLARE_ATTRIBUTES
 }
@@ -241,13 +251,7 @@ sub _tcm_run_test_method {
             $report->_start_benchmark;
 
             my $old_test_count = $builder->current_test;
-            my $plan
-              = Test::Class::Moose::AttributeRegistry->get_plan( $test_class,
-                $test_method );
             try {
-                if ( defined $plan ) {
-                    $test_instance->test_report->plan($plan);
-                }
                 $test_instance->$test_method($report);
                 if ( $report->has_plan ) {
                     $builder->plan( tests => $report->tests_planned );
