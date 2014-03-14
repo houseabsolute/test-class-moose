@@ -28,6 +28,11 @@ sub get_plan {
     return $BY_METHOD{plans}{$method}{$test_class};
 }
 
+sub has_test_attribute {
+    my ( $class, $test_class, $method ) = @_;
+    return exists $BY_METHOD{plans}{$method}{$test_class};
+}
+
 sub add_tags {
     my ( $class, $test_class, $method, $tags ) = @_;
 

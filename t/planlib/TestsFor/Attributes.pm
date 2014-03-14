@@ -19,4 +19,8 @@ sub test_with_attribute_but_no_plan : Tests {
     pass "This is test number $_" for 1 .. 5;
 }
 
+sub this_is_a_test_method_because_of_the_attribute : Tests(3) {
+    pass "These tests work: $_" for 1 .. 3;
+}
+
 1;

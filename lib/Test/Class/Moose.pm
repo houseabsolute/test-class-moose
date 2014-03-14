@@ -450,8 +450,13 @@ sub test_methods {
 
         # attributes cannot be test methods
         next if $method->isa('Moose::Meta::Method::Accessor');
+
+        my $class = ref $self;
         my $name = $method->name;
-        next unless $name =~ /^test_/;
+        next
+          unless $name =~ /^test_/
+          || Test::Class::Moose::AttributeRegistry->has_test_attribute(
+            $class, $name );
 
         # don't use anything defined in this package
         next if __PACKAGE__->can($name);

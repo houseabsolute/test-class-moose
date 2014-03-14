@@ -48,6 +48,8 @@ my %expected_tests_planned = (
     'TestsFor::Attributes::test_just_one_test'              => 1,
     'TestsFor::Attributes::test_more_than_one_test'         => 2,
     'TestsFor::Attributes::test_with_attribute_but_no_plan' => 5,
+    'TestsFor::Attributes::this_is_a_test_method_because_of_the_attribute' =>
+      3,
 );
 my %expected_tests_run = (
     'TestsFor::Person::test_person'                         => 1,
@@ -55,6 +57,8 @@ my %expected_tests_run = (
     'TestsFor::Attributes::test_just_one_test'              => 1,
     'TestsFor::Attributes::test_more_than_one_test'         => 2,
     'TestsFor::Attributes::test_with_attribute_but_no_plan' => 5,
+    'TestsFor::Attributes::this_is_a_test_method_because_of_the_attribute' =>
+      3,
 );
 foreach my $class ( $report->all_test_classes ) {
     foreach my $method ( $class->all_test_methods ) {
