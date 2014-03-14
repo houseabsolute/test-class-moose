@@ -4,7 +4,7 @@ Test::Class::Moose - Test::Class + Moose
 
 # VERSION
 
-version 0.44
+version 0.50
 
 # SYNOPSIS
 
@@ -64,6 +64,22 @@ not are not test methods.
        # but you can, of course, call it like normal
     }
 
+As of 0.50, if you have [Sub::Attribute](https://metacpan.org/pod/Sub::Attribute) installed, you may specify `Test`
+and `Test` methods, just like in [Test::Class](https://metacpan.org/pod/Test::Class) and the method will
+automatically be a test method, even if does not start with `test_`:
+
+    sub this_is_a_test : Test {
+        pass 'we have a single test';
+    }
+
+    sub another_test_method : Tests { # like "no_plan"
+        # a bunch of tests
+    }
+
+    sub yet_another_test_method : Tests(7) { # sets plan to 7 tests
+        ...
+    }
+
 ## Plans
 
 No plans needed. The test suite declares a plan of the number of test classes.
@@ -77,6 +93,13 @@ If you prefer, you can declare a plan in a test method:
     sub test_something {
         my $test = shift;
         $test->test_report->plan($num_tests);
+        ...
+    }
+
+Or with a `Tests` attribute:
+
+    sub test_something : Tests(3) {
+        my $test = shift;
         ...
     }
 
@@ -376,6 +399,62 @@ If you wish to skip an individual method, do so in the `test_setup` method.
         }
     }
 
+## The "Tests" and "Test" Attributes
+
+If you're comfortable with [Test::Class](https://metacpan.org/pod/Test::Class), know test methods methods are
+declared in [Test::Class](https://metacpan.org/pod/Test::Class) with `Test` (for a method with a single test) or
+`Tests`, for a method with multiple tests. This also works for
+`Test::Class::Moose`. Test methods declared this way do not need to start
+with `test_`.
+
+    sub something_we_want_to_check : Test {
+        # this method may have only one test
+    }
+
+    sub something_else_to_check : Tests {
+        # this method may have multiple tests
+    }
+
+    sub another_test_method : Tests(3) {
+        # this method must have exactly 3 tests
+    }
+
+If a test method overrides a parent test method and calls it, their plans will
+be added together:
+
+    package TestsFor::Parent;
+
+    use Test::Class::Moose;
+
+    sub some_test : Tests(3) {
+        # three tests
+    }
+
+And later:
+
+    package TestsFor::Child;
+
+    use Test::Class::Moose extends => 'TestsFor::Parent';
+
+    sub some_test : Tests(2) {
+        my $test = shift;
+        $test->next::method;
+        # 2 tests here
+    }
+
+In the above example, `TestsFor::Parent::some_test` will run three tests, but
+`TestsFor::Child::some_test` will run _five_ tests (two tests, plus the
+three from the parent).
+
+Note that if a plan is explicitly declared, any modifiers or overriding
+methods calling the original method will also have to assert the number of
+tests to ensure the plan is correct. The above `TestsFor::Parent` and
+`TestsFor::Child` code would fail if the child's `some_test` method
+attribute was `Tests` without the number of tests asserted.
+
+Do not use `Test` or `Tests` with test control methods becase you don't run
+tests in those.
+
 ## Tagging Methods
 
 Sometimes you want to be able to assign metadata to help you better manage
@@ -431,7 +510,8 @@ provide your own schedule, in which case you can do anything you want).
 
 As a general rule, methods beginning with `/^test_/` are reserved for
 [Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moose). This makes it easier to remember what you can and
-cannot override.
+cannot override. However, any test with `Test` or `Tests` are test methods
+regardless of their names.
 
 ## `test_configuration`
 
