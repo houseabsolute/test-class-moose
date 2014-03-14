@@ -186,16 +186,32 @@ __END__
 
 =head1 DESCRIPTION
 
-This class permits addition and querying of the tags defined on methods. It's
-been gleefully stolen from L<Attribute::Method::Tags> and is for internal use
-only. Don't rely on this code.
+This class permits addition and querying of the tags and plans defined on
+methods via attributes. It's been gleefully stolen from
+L<Attribute::Method::Tags> and is for internal use only. Don't rely on this
+code.
 
 =head1 METHODS
 
-All the following are class methods, as the tag registry is shared globally.
-Note that all parameters for any of the methods below are required.
+All the following are class methods, as the attribute registry is shared
+globally. Note that all parameters for any of the methods below are required.
 
 =over 4
+  
+=item add_plan( $class, $method, plan )
+
+Add a numeric (or undef) plan to a method.
+
+=item get_plan( $class, $method )
+
+Returns the numeric (or undef) plan for a method if that was set via the
+C<Test> or C<Tests> attributes.
+
+=item has_test_attribute( $class, $method )
+
+Returns true if either C<Test> or C<Tests> was declared for a method. Used to
+identify something as a test method even if the method name doesn't begin with
+C<test_>.
 
 =item add_tags( $class, $method, $tags_ref )
 
