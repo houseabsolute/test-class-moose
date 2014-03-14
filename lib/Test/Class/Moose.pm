@@ -181,7 +181,6 @@ my $RUN_TEST_CONTROL_METHOD = sub {
 };
 
 sub _tcm_run_test_method {
-    local *__ANON__ = 'ANON_RUN_TEST_METHOD';
     my ( $self, $test_instance, $test_method, $report_class ) = @_;
 
     my $test_class = $test_instance->test_class;
@@ -229,20 +228,6 @@ sub _tcm_run_test_method {
             }
         },
     );
-
-    # The set_color() method from Test::Formatter::Color is just ugly.
-    if ( $config->running_in_parallel ) {
-
-        # we're running under parallel testing, so rather than having
-        # the code look like it's stalled, we'll output a dot for
-        # every test method.
-        my $color = ( $builder->details )[-1]{ok} ? 'green' : 'red';
-        $config->_color->set_color(
-            sub { print STDERR shift, '.' },
-            $color,
-        );
-        $config->_color->set_color( sub { print STDERR shift }, 'reset' );
-    }
 
     $test_instance->$RUN_TEST_CONTROL_METHOD(
         'test_teardown',

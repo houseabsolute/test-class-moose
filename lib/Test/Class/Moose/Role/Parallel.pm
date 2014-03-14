@@ -9,6 +9,12 @@ use TAP::Stream;
 use Test::Class::Moose::TagRegistry;
 use Carp;
 
+has 'color_output' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 1,
+);
+
 my $run_job = sub {
     my ( $self, $orig ) = @_;
 
@@ -81,7 +87,7 @@ around 'runtests' => sub {
     print STDERR "\n";
 
     # this is where we print the TAP results
-    print $test_builder_output $stream->tap_to_string;
+    print $test_builder_output $stream->to_string;
 };
 
 around 'test_classes' => sub {
@@ -107,6 +113,32 @@ around 'test_methods' => sub {
       or return;
     
     return grep { $methods_for_jobs->{$_} } @test_methods;
+};
+
+after '_tcm_run_test_method' => sub {
+    my $self    = shift;
+    my $config  = $self->test_configuration;
+    my $builder = $config->builder;
+
+    # we're running under parallel testing, so rather than having
+    # the code look like it's stalled, we'll output a dot for
+    # every test method.
+    my ( $color, $text )
+      = ( $builder->details )[-1]{ok}
+      ? ( 'green', '.' )
+      : ( 'red', 'X' );
+
+    # The set_color() method from Test::Formatter::Color is just ugly.
+    if ( $self->color_output ) {
+        $config->_color->set_color(
+            sub { print STDERR shift, $text },
+            $color,
+        );
+        $config->_color->set_color( sub { print STDERR shift }, 'reset' );
+    }
+    else {
+        print STDERR $text;
+    }
 };
 
 sub schedule {
