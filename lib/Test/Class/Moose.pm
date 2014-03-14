@@ -4,6 +4,7 @@ package Test::Class::Moose;
 
 use 5.10.0;
 use Moose 2.0000;
+use MooseX::ClassAttribute;
 use Carp;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
@@ -18,10 +19,16 @@ use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::TagRegistry;
 
-our $NO_CAN_HAZ_ATTRIBUTES;
 BEGIN {
+    class_has '__attributes_unavailable' => (
+        is      => 'rw',
+        isa     => 'Str',
+        default => '',
+        writer  => '_set___attributes_unavailable',
+    );
     eval "use Sub::Attribute";
-    unless ( $NO_CAN_HAZ_ATTRIBUTES = $@ ) {
+    __PACKAGE__->_set___attributes_unavailable($@);
+    unless (__PACKAGE__->__attributes_unavailable) {
         eval <<'DECLARE_ATTRIBUTE';
         sub Tags : ATTR_SUB {
             my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
@@ -52,7 +59,7 @@ BEGIN {
             }
         }
 DECLARE_ATTRIBUTE
-        $NO_CAN_HAZ_ATTRIBUTES = $@;
+        __PACKAGE__->_set___attributes_unavailable($@);
     }
 }
 
@@ -89,7 +96,7 @@ use Moose;
 use Test::Most;
 END
 
-    unless ($NO_CAN_HAZ_ATTRIBUTES) {
+    unless ($class->__attributes_unavailable) {
         $preamble .= "use Sub::Attribute;\n";
     }
     eval $preamble;
@@ -119,9 +126,10 @@ sub BUILD {
 
     my $config = $self->test_configuration;
     if ( ( $config->include_tags or $config->exclude_tags )
-        and $NO_CAN_HAZ_ATTRIBUTES )
+        and $self->__attributes_unavailable )
     {
-        carp("Attributes not available: $NO_CAN_HAZ_ATTRIBUTES");
+        my $reason = $self->__attributes_unavailable;
+        carp("Attributes not available: $reason");
         $config->clear_include_tags;
         $config->clear_exclude_tags;
     }

@@ -7,7 +7,7 @@ sub registry () { 'Test::Class::Moose::TagRegistry' }
 
 BEGIN {
     plan skip_all => 'Sub::Attribute not available. Cannot test tags'
-      if $Test::Class::Moose::NO_CAN_HAZ_ATTRIBUTES;
+      if Test::Class::Moose->__attributes_unavailable;
 }
 use Test::Class::Moose::Load qw(t/taglib);
 

@@ -7,10 +7,10 @@ use Carp;
 
 use Test::Class::Moose::TagRegistry;
 
-our $NO_CAN_HAZ_ATTRIBUTES;
 BEGIN {
+    require Test::Class::Moose;
     eval "use Sub::Attribute";
-    unless($NO_CAN_HAZ_ATTRIBUTES = $@){
+    unless(Test::Class::Moose->__attributes_unavailable){
         eval <<'DECLARE_ATTRIBUTE';
         sub Tags : ATTR_SUB {
             my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
@@ -41,7 +41,6 @@ BEGIN {
             }
         }
 DECLARE_ATTRIBUTE
-        $NO_CAN_HAZ_ATTRIBUTES = $@;
     }
 }
 
@@ -57,12 +56,12 @@ use Moose::Role;
 use Test::Most;
 END
 
-    unless ($NO_CAN_HAZ_ATTRIBUTES) {
+    unless (Test::Class::Moose->__attributes_unavailable) {
         $preamble .= "use Sub::Attribute;\n";
     }
     eval $preamble;
     croak($@) if $@;
-    unless ($NO_CAN_HAZ_ATTRIBUTES) {
+    unless (Test::Class::Moose->__attributes_unavailable) {
         no strict "refs";
         *{"$caller\::Tags"} = \&Tags;
     }
