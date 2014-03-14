@@ -55,12 +55,6 @@ sub import {
 package $caller;
 use Moose::Role;
 use Test::Most;
-
-use strict;
-use warnings;
-
-use Carp;
-use Data::Dumper;
 END
 
     unless ($NO_CAN_HAZ_ATTRIBUTES) {
