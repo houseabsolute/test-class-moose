@@ -410,7 +410,6 @@ my $FILTER_BY_TAG = sub {
     if ( my $include = $self->test_configuration->include_tags ) {
         my @new_method_list;
         foreach my $method (@filtered_methods) {
-            my $subref = $class->can($method);
             foreach my $tag (@$include) {
                 if (Test::Class::Moose::AttributeRegistry->method_has_tag(
                         $class, $method, $tag
