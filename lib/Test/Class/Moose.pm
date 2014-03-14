@@ -39,7 +39,7 @@ sub __create_attributes {
         {    # block for localising $@
             local $@;
 
-            Test::Class::Moose::TagRegistry->add(
+            Test::Class::Moose::TagRegistry->add_tags(
                 $class,
                 $method,
                 \@tags,

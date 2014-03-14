@@ -11,7 +11,7 @@ use List::MoreUtils qw( any uniq );
 
 my %BY_METHOD;
 
-sub add {
+sub add_tags {
     my ( $class, $test_class, $method, $tags ) = @_;
 
     my @tags_copy = @{$tags};
@@ -175,7 +175,7 @@ Note that all parameters for any of the methods below are required.
 
 =over 4
 
-=item add( $class, $method, $tags_ref )
+=item add_tags( $class, $method, $tags_ref )
 
 Adds the given list of tags (as an array-ref) for the specified class/method
 combination.  An exception will be raised if either the tags are
