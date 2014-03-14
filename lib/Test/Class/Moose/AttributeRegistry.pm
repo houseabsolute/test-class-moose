@@ -1,4 +1,4 @@
-package Test::Class::Moose::TagRegistry;
+package Test::Class::Moose::AttributeRegistry;
 
 ## ABSTRACT: Global registry of tags by class and method.
 
@@ -159,10 +159,10 @@ __END__
 
 =head1 SYNOPSIS
 
- use Test::Class::Moose::TagRegistry;
+ use Test::Class::Moose::AttributeRegistry;
 
- my @tags = Test::Class::Moose::TagRegistry->tags;
- print Test::Class::Moose::TagRegistry->method_has_tag( 'TestsFor::FooBar', 'test_baz', 'network' );
+ my @tags = Test::Class::Moose::AttributeRegistry->tags;
+ print Test::Class::Moose::AttributeRegistry->method_has_tag( 'TestsFor::FooBar', 'test_baz', 'network' );
 
 =head1 DESCRIPTION
 

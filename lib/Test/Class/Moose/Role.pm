@@ -5,7 +5,7 @@ package Test::Class::Moose::Role;
 use 5.10.0;
 use Carp;
 
-use Test::Class::Moose::TagRegistry;
+use Test::Class::Moose::AttributeRegistry;
 
 BEGIN {
     require Test::Class::Moose;

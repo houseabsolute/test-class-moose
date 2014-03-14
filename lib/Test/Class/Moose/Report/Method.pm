@@ -5,7 +5,7 @@ package Test::Class::Moose::Report::Method;
 use Moose;
 use Carp;
 use namespace::autoclean;
-use Test::Class::Moose::TagRegistry;
+use Test::Class::Moose::AttributeRegistry;
 
 with qw(
   Test::Class::Moose::Role::Reporting
@@ -51,7 +51,7 @@ sub has_tag {
     croak("has_tag(\$tag) requires a tag name") unless defined $tag;
     my $report_class = $self->report_class->name;
     my $method       = $self->name;
-    return Test::Class::Moose::TagRegistry->method_has_tag( $report_class, $method, $tag );
+    return Test::Class::Moose::AttributeRegistry->method_has_tag( $report_class, $method, $tag );
 }
 
 __PACKAGE__->meta->make_immutable;

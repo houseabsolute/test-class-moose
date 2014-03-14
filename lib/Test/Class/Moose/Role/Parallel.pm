@@ -6,7 +6,7 @@ use Moose::Role;
 use Parallel::ForkManager;
 use Test::Builder;
 use TAP::Stream;
-use Test::Class::Moose::TagRegistry;
+use Test::Class::Moose::AttributeRegistry;
 use Carp;
 
 has 'color_output' => (
@@ -152,7 +152,7 @@ sub schedule {
     foreach my $test_class ( $self->test_classes ) {
         my $test_instance = $test_class->new( $config->args );
         METHOD: foreach my $method ( $test_instance->test_methods ) {
-            if ( Test::Class::Moose::TagRegistry->method_has_tag( $test_class, $method, 'noparallel' ) ) {
+            if ( Test::Class::Moose::AttributeRegistry->method_has_tag( $test_class, $method, 'noparallel' ) ) {
                 $sequential{$test_class}{$method} = 1;
                 next METHOD;
             }
@@ -350,11 +350,11 @@ Or it could be that some tests run in parallel with some tests, but not
 others. Again, your schedule needs to be written to take that into account.
 
 To manage this information better, if you can use tags, you'll find that
-C<Test::Class::Moose::TagRegistry> can help:
+C<Test::Class::Moose::AttributeRegistry> can help:
 
-    use aliased 'Test::Class::Moose::TagRegistry';
+    use aliased 'Test::Class::Moose::AttributeRegistry';
 
-    if ( TagRegistry->method_has_tag( $class, $method, $tag ) ) {
+    if ( AttributeRegistry->method_has_tag( $class, $method, $tag ) ) {
 
         # put the method in the appropriate job
     }

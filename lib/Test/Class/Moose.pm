@@ -17,7 +17,7 @@ use Test::Class::Moose::Config;
 use Test::Class::Moose::Report;
 use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Method;
-use Test::Class::Moose::TagRegistry;
+use Test::Class::Moose::AttributeRegistry;
 
 sub __create_attributes {
     return <<'DECLARE_ATTRIBUTES';
@@ -39,7 +39,7 @@ sub __create_attributes {
         {    # block for localising $@
             local $@;
 
-            Test::Class::Moose::TagRegistry->add_tags(
+            Test::Class::Moose::AttributeRegistry->add_tags(
                 $class,
                 $method,
                 \@tags,
@@ -374,7 +374,7 @@ my $FILTER_BY_TAG = sub {
         foreach my $method (@filtered_methods) {
             my $subref = $class->can($method);
             foreach my $tag (@$include) {
-                if (Test::Class::Moose::TagRegistry->method_has_tag(
+                if (Test::Class::Moose::AttributeRegistry->method_has_tag(
                         $class, $method, $tag
                     )
                   )
@@ -390,7 +390,7 @@ my $FILTER_BY_TAG = sub {
         foreach my $method (@filtered_methods) {
             foreach my $tag (@$exclude) {
                 if (
-                    Test::Class::Moose::TagRegistry->method_has_tag(
+                    Test::Class::Moose::AttributeRegistry->method_has_tag(
                         $class, $method, $tag
                     )
                   )

@@ -3,7 +3,7 @@ use Test::Most 'bail';
 use lib 'lib';
 
 use Test::Class::Moose ();    # prevents us from inheriting from it
-sub registry () { 'Test::Class::Moose::TagRegistry' }
+sub registry () { 'Test::Class::Moose::AttributeRegistry' }
 
 BEGIN {
     plan skip_all => 'Sub::Attribute not available. Cannot test tags'
