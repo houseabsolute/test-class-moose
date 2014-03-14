@@ -9,7 +9,9 @@ use Carp;
 use Class::MOP;
 use List::MoreUtils qw( any uniq );
 
-my %BY_METHOD;
+my %BY_METHOD = (
+    tags => {}, # {$method}{$test_class}
+);
 
 sub add_tags {
     my ( $class, $test_class, $method, $tags ) = @_;
@@ -30,12 +32,12 @@ sub add_tags {
     # dedupe tags
     my %tags = map { $_ => 1 } @tags_copy;
 
-    if (exists $BY_METHOD{$method} && exists $BY_METHOD{$method}{$test_class}) {
+    if (exists $BY_METHOD{tags}{$method} && exists $BY_METHOD{tags}{$method}{$test_class}) {
         die
           "tags for $test_class->$method already exists, method redefinition perhaps?\n";
     }
 
-    $BY_METHOD{$method}{$test_class} = \%tags;
+    $BY_METHOD{tags}{$method}{$test_class} = \%tags;
 
     return;
 }
@@ -43,8 +45,8 @@ sub add_tags {
 sub tags {
     my @tags;
     for my $method ( keys %BY_METHOD ) {
-        for my $test_class ( keys %{ $BY_METHOD{$method} } ) {
-            push @tags, keys %{ $BY_METHOD{$method}{$test_class} };
+        for my $test_class ( keys %{ $BY_METHOD{tags}{$method} } ) {
+            push @tags, keys %{ $BY_METHOD{tags}{$method}{$test_class} };
         }
     }
 
@@ -74,15 +76,15 @@ sub method_has_tag {
     croak("no tag specified")    if not defined $tag;
 
     # avoid auto-vivication
-    return if not exists $BY_METHOD{$method};
+    return if not exists $BY_METHOD{tags}{$method};
 
-    if (not exists $BY_METHOD{$method}{$test_class}) {
+    if (not exists $BY_METHOD{tags}{$method}{$test_class}) {
         # If this method has no tag data at all, then inherit the tags from
         # from the superclass
-        $BY_METHOD{$method}{$test_class} = $class->_superclass_tags($test_class, $method);
+        $BY_METHOD{tags}{$method}{$test_class} = $class->_superclass_tags($test_class, $method);
     }
 
-    return exists $BY_METHOD{$method}{$test_class}{$tag};
+    return exists $BY_METHOD{tags}{$method}{$test_class}{$tag};
 }
 
 sub _superclass_tags {
@@ -91,7 +93,7 @@ sub _superclass_tags {
     croak("no class specified")  if not defined $test_class;
     croak("no method specified") if not defined $method;
 
-    return {} if not exists $BY_METHOD{$method};
+    return {} if not exists $BY_METHOD{tags}{$method};
 
     my $test_class_meta = Class::MOP::Class->initialize($test_class);
     my $method_meta;
@@ -113,10 +115,10 @@ sub _superclass_tags {
     return {} if not $method_meta;
 
     my $super_test_class = $method_meta->package_name();
-    if ( exists $BY_METHOD{$method}{$super_test_class} ) {
+    if ( exists $BY_METHOD{tags}{$method}{$super_test_class} ) {
         # shallow copy the superclass method's tags, because it's possible to
         # change add/remove items from the subclass's list later
-        my %tags = map { $_ => 1 } keys %{ $BY_METHOD{$method}{$super_test_class} };
+        my %tags = map { $_ => 1 } keys %{ $BY_METHOD{tags}{$method}{$super_test_class} };
         return \%tags;
     }
 
