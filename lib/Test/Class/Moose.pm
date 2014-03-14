@@ -34,9 +34,9 @@ sub __create_attributes {
             die "Cannot tag anonymous subs at file $file, line $line\n";
         }
 
-        my $method = *{ $symbol }{ NAME };
+        my $method = *{$symbol}{NAME};
 
-        {           # block for localising $@
+        {    # block for localising $@
             local $@;
 
             Test::Class::Moose::TagRegistry->add(
@@ -44,7 +44,7 @@ sub __create_attributes {
                 $method,
                 \@tags,
             );
-            if ( $@ ) {
+            if ($@) {
                 croak "Error in adding tags: $@";
             }
         }

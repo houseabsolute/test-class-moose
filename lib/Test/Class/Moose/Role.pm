@@ -20,7 +20,6 @@ sub import {
     my ( $class, %arg_for ) = @_;
     my $caller = caller;
 
-
     my $preamble = <<"END";
 package $caller;
 use Moose::Role;
