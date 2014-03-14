@@ -49,6 +49,38 @@ sub __create_attributes {
             }
         }
     }
+
+    sub Test : ATTR_SUB {
+        my ( $class, $symbol, undef, undef, undef, undef, $file, $line ) = @_;
+
+        if ( $symbol eq 'ANON' ) {
+            die "Cannot add plans to anonymous subs at file $file, line $line\n";
+        }
+
+        my $method = *{$symbol}{NAME};
+
+        Test::Class::Moose::AttributeRegistry->add_plan(
+            $class,
+            $method,
+            1,
+        );
+    }
+
+    sub Tests : ATTR_SUB {
+        my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
+
+        if ( $symbol eq 'ANON' ) {
+            die "Cannot add plans to anonymous subs at file $file, line $line\n";
+        }
+
+        my $method = *{$symbol}{NAME};
+
+        Test::Class::Moose::AttributeRegistry->add_plan(
+            $class,
+            $method,
+            $data,
+        );
+    }
 DECLARE_ATTRIBUTES
 }
 
@@ -209,7 +241,13 @@ sub _tcm_run_test_method {
             $report->_start_benchmark;
 
             my $old_test_count = $builder->current_test;
+            my $plan
+              = Test::Class::Moose::AttributeRegistry->get_plan( $test_class,
+                $test_method );
             try {
+                if ( defined $plan ) {
+                    $test_instance->test_report->plan($plan);
+                }
                 $test_instance->$test_method($report);
                 if ( $report->has_plan ) {
                     $builder->plan( tests => $report->tests_planned );

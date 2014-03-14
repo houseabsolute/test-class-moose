@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-use Test::Most;
+use Test::Most 'bail';
 use lib 'lib';
 use Carp::Always;
 
@@ -39,13 +39,22 @@ subtest 'run the test suite' => sub {
 };
 
 my $report = $test_suite->test_report;
+
+# XXX test_with_attribute_but_no_plan didn't really report a plan of five, but
+# this value gets set after the test is run.
 my %expected_tests_planned = (
-    'TestsFor::Person::test_person'           => 2,
-    'TestsFor::Person::Employee::test_person' => 3,
+    'TestsFor::Person::test_person'                         => 2,
+    'TestsFor::Person::Employee::test_person'               => 3,
+    'TestsFor::Attributes::test_just_one_test'              => 1,
+    'TestsFor::Attributes::test_more_than_one_test'         => 2,
+    'TestsFor::Attributes::test_with_attribute_but_no_plan' => 5,
 );
 my %expected_tests_run = (
-    'TestsFor::Person::test_person'           => 1,
-    'TestsFor::Person::Employee::test_person' => 2,
+    'TestsFor::Person::test_person'                         => 1,
+    'TestsFor::Person::Employee::test_person'               => 2,
+    'TestsFor::Attributes::test_just_one_test'              => 1,
+    'TestsFor::Attributes::test_more_than_one_test'         => 2,
+    'TestsFor::Attributes::test_with_attribute_but_no_plan' => 5,
 );
 foreach my $class ( $report->all_test_classes ) {
     foreach my $method ( $class->all_test_methods ) {

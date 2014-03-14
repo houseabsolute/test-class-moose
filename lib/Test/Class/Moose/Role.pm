@@ -10,11 +10,10 @@ use Test::Class::Moose::AttributeRegistry;
 BEGIN {
     require Test::Class::Moose;
     eval "use Sub::Attribute";
-    unless(Test::Class::Moose->__attributes_unavailable){
+    unless ( Test::Class::Moose->__attributes_unavailable ) {
         eval Test::Class::Moose->__create_attributes;
     }
 }
-
 
 sub import {
     my ( $class, %arg_for ) = @_;
@@ -26,14 +25,16 @@ use Moose::Role;
 use Test::Most;
 END
 
-    unless (Test::Class::Moose->__attributes_unavailable) {
+    unless ( Test::Class::Moose->__attributes_unavailable ) {
         $preamble .= "use Sub::Attribute;\n";
     }
     eval $preamble;
     croak($@) if $@;
-    unless (Test::Class::Moose->__attributes_unavailable) {
+    unless ( Test::Class::Moose->__attributes_unavailable ) {
         no strict "refs";
-        *{"$caller\::Tags"} = \&Tags;
+        *{"$caller\::Tags"}  = \&Tags;
+        *{"$caller\::Test"}  = \&Test;
+        *{"$caller\::Tests"} = \&Tests;
     }
 }
 

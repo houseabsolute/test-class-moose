@@ -11,7 +11,22 @@ use List::MoreUtils qw( any uniq );
 
 my %BY_METHOD = (
     tags => {}, # {$method}{$test_class}
+    plans => {},
 );
+
+sub add_plan {
+    my ( $class, $test_class, $method, $plan ) = @_;
+    if ( defined $plan ) {
+        $plan =~ s/\D//g;
+        undef $plan unless $plan =~ /\d/; # no_plan
+    }
+    $BY_METHOD{plans}{$method}{$test_class} = $plan;
+}
+
+sub get_plan {
+    my ( $class, $test_class, $method ) = @_;
+    return $BY_METHOD{plans}{$method}{$test_class};
+}
 
 sub add_tags {
     my ( $class, $test_class, $method, $tags ) = @_;
