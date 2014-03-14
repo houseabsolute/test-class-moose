@@ -180,7 +180,7 @@ my $RUN_TEST_CONTROL_METHOD = sub {
     return $success;
 };
 
-my $RUN_TEST_METHOD = sub {
+sub _tcm_run_test_method {
     local *__ANON__ = 'ANON_RUN_TEST_METHOD';
     my ( $self, $test_instance, $test_method, $report_class ) = @_;
 
@@ -255,7 +255,7 @@ my $RUN_TEST_METHOD = sub {
         }
     }
     return $report;
-};
+}
 
 my $RUN_TEST_CLASS = sub {
     local *__ANON__ = 'ANON_RUN_TEST_CLASS';
@@ -310,7 +310,7 @@ my $RUN_TEST_CLASS = sub {
 
         # run test methods
         foreach my $test_method (@test_methods) {
-            my $report_method = $self->$RUN_TEST_METHOD(
+            my $report_method = $self->_tcm_run_test_method(
                 $test_instance,
                 $test_method,
                 $report_class,
