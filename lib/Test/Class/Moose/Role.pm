@@ -5,14 +5,13 @@ package Test::Class::Moose::Role;
 use 5.10.0;
 use Carp;
 
+use Sub::Attribute;
 use Test::Class::Moose::AttributeRegistry;
 
 BEGIN {
     require Test::Class::Moose;
-    eval "use Sub::Attribute";
-    unless ( Test::Class::Moose->__attributes_unavailable ) {
-        eval Test::Class::Moose->__create_attributes;
-    }
+    eval Test::Class::Moose->__create_attributes;
+    croak($@) if $@;
 }
 
 sub import {
@@ -23,19 +22,15 @@ sub import {
 package $caller;
 use Moose::Role;
 use Test::Most;
+use Sub::Attribute;
 END
 
-    unless ( Test::Class::Moose->__attributes_unavailable ) {
-        $preamble .= "use Sub::Attribute;\n";
-    }
     eval $preamble;
     croak($@) if $@;
-    unless ( Test::Class::Moose->__attributes_unavailable ) {
-        no strict "refs";
-        *{"$caller\::Tags"}  = \&Tags;
-        *{"$caller\::Test"}  = \&Test;
-        *{"$caller\::Tests"} = \&Tests;
-    }
+    no strict "refs";
+    *{"$caller\::Tags"}  = \&Tags;
+    *{"$caller\::Test"}  = \&Test;
+    *{"$caller\::Tests"} = \&Tests;
 }
 
 1;

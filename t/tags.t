@@ -1,14 +1,10 @@
 #!/usr/bin/env perl
-use Test::Most 'bail';
+use Test::Most;
 use lib 'lib';
 
 use Test::Class::Moose ();    # prevents us from inheriting from it
 sub registry () { 'Test::Class::Moose::AttributeRegistry' }
 
-BEGIN {
-    plan skip_all => 'Sub::Attribute not available. Cannot test tags'
-      if Test::Class::Moose->__attributes_unavailable;
-}
 use Test::Class::Moose::Load qw(t/taglib);
 
 subtest 'Multiple included tags' => sub {

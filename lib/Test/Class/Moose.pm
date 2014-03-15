@@ -9,6 +9,7 @@ use Carp;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
 use namespace::autoclean;
+use Sub::Attribute;
 
 use Test::Builder;
 use Test::Most;
@@ -20,6 +21,11 @@ use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::AttributeRegistry;
 
 sub __create_attributes {
+
+    # XXX sharing this behavior here because my first attempt at creating a
+    # role was a complete failure. MooseX::MethodAttributes can help here, but
+    # I have to parse the attributes manually (as far as I can tell) and I
+    # don't have the simple declarative style any more.
     return <<'DECLARE_ATTRIBUTES';
     sub Tags : ATTR_SUB {
         my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
@@ -54,7 +60,7 @@ sub __create_attributes {
         my ( $class, $symbol, undef, undef, undef, undef, $file, $line ) = @_;
 
         if ( $symbol eq 'ANON' ) {
-            die "Cannot add plans to anonymous subs at file $file, line $line\n";
+            croak("Cannot add plans to anonymous subs at file $file, line $line");
         }
 
         my $method = *{$symbol}{NAME};
@@ -77,7 +83,7 @@ sub __create_attributes {
         my ( $class, $symbol, undef, undef, $data, undef, $file, $line ) = @_;
 
         if ( $symbol eq 'ANON' ) {
-            die "Cannot add plans to anonymous subs at file $file, line $line\n";
+            croak("Cannot add plans to anonymous subs at file $file, line $line");
         }
 
         my $method = *{$symbol}{NAME};
@@ -101,18 +107,8 @@ DECLARE_ATTRIBUTES
 }
 
 BEGIN {
-    class_has '__attributes_unavailable' => (
-        is      => 'rw',
-        isa     => 'Str',
-        default => '',
-        writer  => '_set___attributes_unavailable',
-    );
-    eval "use Sub::Attribute";
-    __PACKAGE__->_set___attributes_unavailable($@);
-    unless (__PACKAGE__->__attributes_unavailable) {
-        eval __PACKAGE__->__create_attributes;
-        __PACKAGE__->_set___attributes_unavailable($@);
-    }
+    eval __PACKAGE__->__create_attributes;
+    croak($@) if $@;
 }
 
 has 'test_configuration' => (
@@ -146,11 +142,9 @@ sub import {
 package $caller;
 use Moose;
 use Test::Most;
+use Sub::Attribute;
 END
 
-    unless ($class->__attributes_unavailable) {
-        $preamble .= "use Sub::Attribute;\n";
-    }
     eval $preamble;
     croak($@) if $@;
     strict->import;
@@ -176,16 +170,6 @@ around 'BUILDARGS' => sub {
 sub BUILD {
     my $self = shift;
 
-    my $config = $self->test_configuration;
-    if ( ( $config->include_tags or $config->exclude_tags )
-        and $self->__attributes_unavailable )
-    {
-        my $reason = $self->__attributes_unavailable;
-        carp("Attributes not available: $reason");
-        $config->clear_include_tags;
-        $config->clear_exclude_tags;
-    }
-    
     # stash that name lest something change it later. Paranoid?
     $self->test_class( $self->meta->name );
 }
