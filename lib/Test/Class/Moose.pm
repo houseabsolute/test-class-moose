@@ -1301,14 +1301,37 @@ L<Test::Class> + L<Test::Most>.
 
 =back
 
-=head1 ACKNOWLEDGEMENTS
+=head1 CONTRIBUTORS
 
-Thanks to Tom Beresford (beresfordt) for spotting an issue when a class has no
-test methods.
+=over 4
 
-Thanks to Judioo for adding the randomize attribute.
+=item * Dave Rolsky <autarch@urth.org>
 
-Thanks to Adrian Howard for L<Test::Class>.
+=item * Doug Bell <doug.bell@baml.com>
+
+=item * Gregory Oschwald <goschwald@maxmind.com>
+
+=item * Jonathan C. Otsuka <djgoku@gmail.com>
+
+=item * Neil Bowers <neil@bowers.com>
+
+=item * Olaf Alders <olaf@wundersolutions.com>
+
+=item * Ovid <curtis\_ovid\_poe@yahoo.com>
+
+=item * Paul Boyd <pboyd@dev3l.net>
+
+=item * Petrea Corneliu Stefan <stefan@garage-coding.com>
+
+=item * Stuckdownawell <stuckdownawell@gmail.com>
+
+=item * Tom Beresford <tom.beresford@bskyb.com>
+
+=item * Tom Heady <tom@punch.net>
+
+=item * Udo Oji <Velti@signor.com>
+
+=back
 
 =cut
 
