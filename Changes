@@ -1,6 +1,6 @@
 Revision history for Perl distribution Test-Class-Moose
 
-0.52 2013-03-15
+0.53 2013-03-15
         - Loooong day. The ContributorsFromGit dist::zilla plugin did, indeed,
           add all git contributors to the POD, but it deleted all of my other
           POD. This might be my record for number of rereleases in a day.
