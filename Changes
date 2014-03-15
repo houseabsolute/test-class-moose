@@ -1,7 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
-0.51
+0.51 2013-03-15
         - Sub::Attribute is now required and not optional.
+        - Added a Makefile.PL to the dzil distro so people can more easily
+          contribute.
 
 0.50 2013-03-14
         - :Test and :Tests attributes have been added.
