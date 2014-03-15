@@ -1,6 +1,7 @@
 Revision history for Perl distribution Test-Class-Moose
 
-0.52
+0.52 2013-03-15
+        - Note in the docs the Sub::Attribute change from version 0.51
         - Oops. Remove all of the .bak files from the distro.
         - List contributors automatically in docs
 
