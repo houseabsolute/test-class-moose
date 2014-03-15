@@ -33,6 +33,7 @@ my %WriteMakefileArgs = (
     "Moose::Util::TypeConstraints" => 0,
     "MooseX::ClassAttribute" => 0,
     "Parallel::ForkManager" => 0,
+    "Sub::Attribute" => 0,
     "TAP::Formatter::Color" => 0,
     "TAP::Stream" => 0,
     "Test::Builder" => 0,
@@ -48,7 +49,7 @@ my %WriteMakefileArgs = (
     "Scalar::Util" => 0,
     "lib" => 0
   },
-  "VERSION" => "0.50",
+  "VERSION" => "0.51",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -71,6 +72,7 @@ my %FallbackPrereqs = (
   "MooseX::ClassAttribute" => 0,
   "Parallel::ForkManager" => 0,
   "Scalar::Util" => 0,
+  "Sub::Attribute" => 0,
   "TAP::Formatter::Color" => 0,
   "TAP::Stream" => 0,
   "Test::Builder" => 0,
