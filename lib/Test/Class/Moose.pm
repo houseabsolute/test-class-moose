@@ -542,9 +542,9 @@ not are not test methods.
     # but you can, of course, call it like normal
  }
 
-As of 0.50, if you have L<Sub::Attribute> installed, you may specify C<Test>
-and C<Test> methods, just like in L<Test::Class> and the method will
-automatically be a test method, even if does not start with C<test_>:
+You may specify C<Test> and C<Tests> method attributes, just like in
+L<Test::Class> and the method will automatically be a test method, even if
+does not start with C<test_>:
 
     sub this_is_a_test : Test {
         pass 'we have a single test';
@@ -557,6 +557,9 @@ automatically be a test method, even if does not start with C<test_>:
     sub yet_another_test_method : Tests(7) { # sets plan to 7 tests
         ...
     }
+
+B<Note>: Prior to version 0.51, this feature only worked if you had the
+optional C<Sub::Attribute> installed.
 
 =head2 Plans
 
@@ -945,8 +948,7 @@ tests in those.
 =head2 Tagging Methods
 
 Sometimes you want to be able to assign metadata to help you better manage
-your test suite. You can now do this with tags if you have L<Sub::Attribute>
-installed:
+your test suite. You can do this with tags:
 
     sub test_save_poll_data : Tags(api network) {
         ...
@@ -980,7 +982,8 @@ You can also inspect tags withing your test classes:
 
 Tagging support relies on L<Sub::Attribute>. If this module is not available,
 C<include_tags> and C<exclude_tags> will be ignored, but a warning will be
-issued if those are seen.
+issued if those are seen. Prior to version 0.51, C<Sub::Attribute> was
+optional. Now it's mandatory, so those features should always work.
 
 =head1 PARALLEL TESTING
 
