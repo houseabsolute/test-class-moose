@@ -1,6 +1,6 @@
 # NAME
 
-Test::Class::Moose - Test::Class + Moose
+Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
@@ -31,11 +31,21 @@ version 0.53
 
 # DESCRIPTION
 
-This is __BETA__ code. I encourage you to give it a shot if you want test
-classes based on Moose, along with reporting. Feedback welcome as we try to
-improve it.
+See [Test::Class::Moose hompage](http://ovid.github.io/test-class-moose/) for
+a summary.
 
-This is a proof of concept for writing Test::Class-style tests with Moose.
+\`Test::Class::Moose\` is a powerful testing framework for Perl. Out of the box
+you get:
+
+- Reporting
+- Extensibility
+- Tagging tests
+- Parallel testing
+- Test inheritance
+- Write your tests using Moose
+- All the testing functions and behavior from Test::Most
+- Event handlers for startup, setup, teardown, and shutdown of test classes
+
 Better docs will come later. You should already know how to use Moose and
 [Test::Class](https://metacpan.org/pod/Test::Class).
 
