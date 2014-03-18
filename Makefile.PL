@@ -10,7 +10,7 @@ use ExtUtils::MakeMaker 6.30;
 
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "Test::Class + Moose",
+  "ABSTRACT" => "Serious testing for serious Perl",
   "AUTHOR" => "Curtis \"Ovid\" Poe <ovid\@cpan.org>",
   "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
