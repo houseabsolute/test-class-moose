@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Test::Class::Moose : Serious testing for serious Perl" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Test::Class::Moose</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Ovid/test-class-moose">View on GitHub</a>
+
+          <h1 id="project_title">Test::Class::Moose</h1>
+          <h2 id="project_tagline">Serious testing for serious Perl</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Ovid/test-class-moose/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Ovid/test-class-moose/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="why-testclassmoose" class="anchor" href="#why-testclassmoose"><span class="octicon octicon-link"></span></a>Why Test::Class::Moose?</h1>
+
+<p>If you need to create a large application, such as a Web site, do you start writing a bunch of individual scripts, each designed to handle one URL and each handling their own database access and printing their output directly to <code>STDOUT</code>? Of course not. You'd reach for a Web framework.</p>
+
+<p>If your application is complicated enough to benefit from a framework, your test suite would probably benefit from one for the same reasons.</p>
+
+<p><code>Test::Class::Moose</code> isn't just for testing code written in Moose — it's for testing anything you would ordinarily write tests for. While it's fine for testing libraries, when you have a large application, <code>Test::Class::Moose</code> really shines.</p>
+
+<h1>
+<a name="testclassmoose-features" class="anchor" href="#testclassmoose-features"><span class="octicon octicon-link"></span></a>Test::Class::Moose Features</h1>
+
+<ul>
+<li>Reporting</li>
+<li>Extensibility</li>
+<li>Tagging tests</li>
+<li>Parallel testing</li>
+<li>Test inheritance</li>
+<li>Write your tests using Moose</li>
+<li>All the testing functions and behavior from <a href="https://github.com/Ovid/test--most">Test::Most</a>
+</li>
+<li>Event handlers for startup, setup, teardown, and shutdown of test classes</li>
+</ul><h1>
+<a name="the-zen-of-application-test-suites" class="anchor" href="#the-zen-of-application-test-suites"><span class="octicon octicon-link"></span></a>The Zen of Application Test Suites</h1>
+
+<p>If you're struggling with your company's test suite, you may wish to read <a href="https://github.com/Ovid/zen-of-test-suites">The Zen of Application Test Suites</a> to attain enlightenment.</p>
+
+<h1>
+<a name="dont-be-these-guys" class="anchor" href="#dont-be-these-guys"><span class="octicon octicon-link"></span></a>Don't Be These Guys</h1>
+
+<p><img src="http://i.imgur.com/JNfyxoo.png" alt="Perl's version of waiting for a compile"></p>
+
+<p><em>With apologies to <a href="http://xkcd.com/303/">XKCD</a></em></p>
+
+<h1>
+<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h1>
+
+<p><code>Test::Class::Moose</code> was designed and written by Curtis "Ovid" Poe <a href="mailto:ovid@allaroundtheworld.fr">ovid@allaroundtheworld.fr</a>.</p>
+
+<p>Ovid also wrote the well-reviewed book <a href="http://www.amazon.com/Beginning-Perl-Curtis-Poe/dp/1118013840/">Beginning Perl</a> and is one of the authors of <a href="http://www.amazon.com/Perl-Hacks-Programming-Debugging-Surviving/dp/0596526741/">Perl Hacks</a>, along with chromatic and Dr. Damian Conway. He also wrote the test harness that ships with Perl and has commit rights to much of the Perl testing toolchain.</p>
+
+<h1>
+<a name="contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors</h1>
+
+<ul>
+<li>Dave Rolsky <a href="mailto:autarch@urth.org">autarch@urth.org</a>
+</li>
+<li>Doug Bell <a href="mailto:doug.bell@baml.com">doug.bell@baml.com</a>
+</li>
+<li>Gregory Oschwald <a href="mailto:goschwald@maxmind.com">goschwald@maxmind.com</a>
+</li>
+<li>Jonathan C. Otsuka <a href="mailto:djgoku@gmail.com">djgoku@gmail.com</a>
+</li>
+<li>Neil Bowers <a href="mailto:neil@bowers.com">neil@bowers.com</a>
+</li>
+<li>Olaf Alders <a href="mailto:olaf@wundersolutions.com">olaf@wundersolutions.com</a>
+</li>
+<li>Paul Boyd <a href="mailto:pboyd@dev3l.net">pboyd@dev3l.net</a>
+</li>
+<li>Petrea Corneliu Stefan <a href="mailto:stefan@garage-coding.com">stefan@garage-coding.com</a>
+</li>
+<li>Stuckdownawell <a href="mailto:stuckdownawell@gmail.com">stuckdownawell@gmail.com</a>
+</li>
+<li>Tom Beresford <a href="mailto:tom.beresford@bskyb.com">tom.beresford@bskyb.com</a>
+</li>
+<li>Tom Heady <a href="mailto:tom@punch.net">tom@punch.net</a>
+</li>
+<li>Udo Oji <a href="mailto:Velti@signor.com">Velti@signor.com</a>
+</li>
+</ul><h1>
+<a name="hire-ovid" class="anchor" href="#hire-ovid"><span class="octicon octicon-link"></span></a>Hire Ovid</h1>
+
+<p>If you'd like to hire Ovid to fix your test suite or write software for you, drop him a line at
+<a href="mailto:ovid@allaroundtheworld.fr">ovid@allaroundtheworld.fr</a>.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Test::Class::Moose maintained by <a href="https://github.com/Ovid">Ovid</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
