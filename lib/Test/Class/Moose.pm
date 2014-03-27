@@ -187,31 +187,6 @@ my $TEST_CONTROL_METHODS = sub {
     };
 };
 
-my $RUN_TEST_CONTROL_METHOD = sub {
-    local *__ANON__ = 'ANON_RUN_TEST_CONTROL_METHOD';
-    my ( $self, $phase, $report_object ) = @_;
-
-    $TEST_CONTROL_METHODS->()->{$phase}
-      or croak("Unknown test control method ($phase)");
-
-    my $success;
-    my $builder = $self->test_configuration->builder;
-    try {
-        my $num_tests = $builder->current_test;
-        $self->$phase($report_object);
-        if ( $builder->current_test ne $num_tests ) {
-            croak("Tests may not be run in test control methods ($phase)");
-        }
-        $success = 1;
-    }
-    catch {
-        my $error = $_;
-        my $class = $self->test_class;
-        $builder->diag("$class->$phase() failed: $error");
-    };
-    return $success;
-};
-
 sub _tcm_run_test_method {
     my ( $self, $test_instance, $test_method, $report_class ) = @_;
 
@@ -223,7 +198,7 @@ sub _tcm_run_test_method {
 
     my $builder = $config->builder;
     $test_instance->test_skip_clear;
-    $test_instance->$RUN_TEST_CONTROL_METHOD(
+    $test_instance->_tcm_run_test_control_method(
         'test_setup',
         $report
     ) or fail "test_setup failed";
@@ -261,7 +236,7 @@ sub _tcm_run_test_method {
         },
     );
 
-    $test_instance->$RUN_TEST_CONTROL_METHOD(
+    $test_instance->_tcm_run_test_control_method(
         'test_teardown',
         $report
     ) or fail "test_teardown failed";
@@ -274,8 +249,58 @@ sub _tcm_run_test_method {
     return $report;
 }
 
-my $RUN_TEST_CLASS = sub {
-    local *__ANON__ = 'ANON_RUN_TEST_CLASS';
+sub _tcm_run_test_control_method {
+    my ( $self, $phase, $report_object ) = @_;
+
+    $TEST_CONTROL_METHODS->()->{$phase}
+      or croak("Unknown test control method ($phase)");
+
+    my $success;
+    my $builder = $self->test_configuration->builder;
+    try {
+        my $num_tests = $builder->current_test;
+        $self->$phase($report_object);
+        if ( $builder->current_test ne $num_tests ) {
+            croak("Tests may not be run in test control methods ($phase)");
+        }
+        $success = 1;
+    }
+    catch {
+        my $error = $_;
+        my $class = $self->test_class;
+        $builder->diag("$class->$phase() failed: $error");
+    };
+    return $success;
+}
+
+sub runtests {
+    my $self = shift;
+
+    my $report = $self->test_report;
+    $report->_start_benchmark;
+    my @test_classes = $self->test_classes;
+
+    my $builder = $self->test_configuration->builder;
+    $builder->plan( tests => scalar @test_classes );
+    foreach my $test_class (@test_classes) {
+        Test::Most::explain("\nRunning tests for $test_class\n\n");
+        $builder->subtest(
+            $test_class,
+            $self->_tcm_run_test_class($test_class),
+        );
+    }
+
+    $builder->diag(<<"END") if $self->test_configuration->statistics;
+Test classes:    @{[ $report->num_test_classes ]}
+Test methods:    @{[ $report->num_test_methods ]}
+Total tests run: @{[ $report->num_tests_run ]}
+END
+    $builder->done_testing;
+    $report->_end_benchmark;
+    return $self;
+}
+
+sub _tcm_run_test_class {
     my ( $self, $test_class ) = @_;
 
     my $config  = $self->test_configuration;
@@ -283,6 +308,7 @@ my $RUN_TEST_CLASS = sub {
     my $report  = $self->test_report;
 
     return sub {
+        local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
 
         # set up test class reporting
         my $report_class = Test::Class::Moose::Report::Class->new(
@@ -306,7 +332,7 @@ my $RUN_TEST_CLASS = sub {
         $report->_inc_test_methods( scalar @test_methods );
 
         # startup
-        if (!$test_instance->$RUN_TEST_CONTROL_METHOD(
+        if (!$test_instance->_tcm_run_test_control_method(
                 'test_startup', $report_class
             )
           )
@@ -336,7 +362,7 @@ my $RUN_TEST_CLASS = sub {
         }
 
         # shutdown
-        $test_instance->$RUN_TEST_CONTROL_METHOD(
+        $test_instance->_tcm_run_test_control_method(
             'test_shutdown',
             $report_class
         ) or fail("test_shutdown() failed");
@@ -348,33 +374,6 @@ my $RUN_TEST_CLASS = sub {
             $config->builder->diag("$test_class: $time");
         }
     };
-};
-
-sub runtests {
-    my $self = shift;
-
-    my $report = $self->test_report;
-    $report->_start_benchmark;
-    my @test_classes = $self->test_classes;
-
-    my $builder = $self->test_configuration->builder;
-    $builder->plan( tests => scalar @test_classes );
-    foreach my $test_class (@test_classes) {
-        Test::Most::explain("\nRunning tests for $test_class\n\n");
-        $builder->subtest(
-            $test_class,
-            $self->$RUN_TEST_CLASS($test_class),
-        );
-    }
-
-    $builder->diag(<<"END") if $self->test_configuration->statistics;
-Test classes:    @{[ $report->num_test_classes ]}
-Test methods:    @{[ $report->num_test_methods ]}
-Total tests run: @{[ $report->num_tests_run ]}
-END
-    $builder->done_testing;
-    $report->_end_benchmark;
-    return $self;
 }
 
 sub test_classes {
@@ -397,7 +396,44 @@ sub test_classes {
     return sort @classes;
 }
 
-my $FILTER_BY_TAG = sub {
+sub test_methods {
+    my $self = shift;
+
+    my @method_list;
+    foreach my $method ( $self->meta->get_all_methods ) {
+
+        # attributes cannot be test methods
+        next if $method->isa('Moose::Meta::Method::Accessor');
+
+        my $class = ref $self;
+        my $name = $method->name;
+        next
+          unless $name =~ /^test_/
+          || Test::Class::Moose::AttributeRegistry->has_test_attribute(
+            $class, $name );
+
+        # don't use anything defined in this package
+        next if __PACKAGE__->can($name);
+        push @method_list => $name;
+    }
+
+    if ( my $include = $self->test_configuration->include ) {
+        @method_list = grep {/$include/} @method_list;
+    }
+    if ( my $exclude = $self->test_configuration->exclude ) {
+        @method_list = grep { !/$exclude/ } @method_list;
+    }
+
+    @method_list = $self->_tcm_filter_by_tag(\@method_list);
+
+    return uniq(
+        $self->test_configuration->randomize
+        ? shuffle(@method_list)
+        : sort @method_list
+    );
+}
+
+sub _tcm_filter_by_tag {
     my ( $self, $methods ) = @_;
     my $class            = $self->test_class;
     my @filtered_methods = @$methods;
@@ -433,43 +469,6 @@ my $FILTER_BY_TAG = sub {
         @filtered_methods = @new_method_list;
     };
     return @filtered_methods;
-};
-
-sub test_methods {
-    my $self = shift;
-
-    my @method_list;
-    foreach my $method ( $self->meta->get_all_methods ) {
-
-        # attributes cannot be test methods
-        next if $method->isa('Moose::Meta::Method::Accessor');
-
-        my $class = ref $self;
-        my $name = $method->name;
-        next
-          unless $name =~ /^test_/
-          || Test::Class::Moose::AttributeRegistry->has_test_attribute(
-            $class, $name );
-
-        # don't use anything defined in this package
-        next if __PACKAGE__->can($name);
-        push @method_list => $name;
-    }
-
-    if ( my $include = $self->test_configuration->include ) {
-        @method_list = grep {/$include/} @method_list;
-    }
-    if ( my $exclude = $self->test_configuration->exclude ) {
-        @method_list = grep { !/$exclude/ } @method_list;
-    }
-
-    @method_list = $self->$FILTER_BY_TAG(\@method_list);
-
-    return uniq(
-        $self->test_configuration->randomize
-        ? shuffle(@method_list)
-        : sort @method_list
-    );
 }
 
 # empty stub methods guarantee that subclasses can always call these

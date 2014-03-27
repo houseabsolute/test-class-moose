@@ -1,5 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
+        - All private methods defined as lexically-scoped variables in
+          Test::Class::Moose have been made actual methods so that roles and
+          subclasses can affect them. (Dave Rolsky)
+
 0.54 2013-03-18
         - Update the tutorial for typos and to documents Tests()
         - Add the gitub.io homepage.
