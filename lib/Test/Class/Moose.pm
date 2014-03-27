@@ -303,77 +303,111 @@ END
 sub _tcm_run_test_class {
     my ( $self, $test_class ) = @_;
 
+    return sub {
+        local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
+
+        my @test_instances
+            = $self->_tcm_make_test_class_instances($test_class);
+
+        for my $test_instance (@test_instances) {
+            if ( @test_instances > 1 ) {
+                $self->test_configuration->builder->subtest(
+                    $test_instance->instance_name,
+                    sub {
+                        $self->_tcm_run_test_instance($test_instance);
+                    },
+                );
+            }
+            else {
+                $self->_tcm_run_test_instance($test_instance);
+            }
+        }
+    };
+}
+
+# By default, this will only be called once per class, so we don't need unique
+# per-instance names. If a class test class is designed to be run with
+# multiple instances then it should override this method.
+sub instance_name {
+    my $self = shift;
+
+    return $self->test_class;
+}
+
+sub _tcm_make_test_class_instances {
+    my ( $self, $test_class ) = @_;
+    return $test_class->new( $self->test_configuration->args );
+}
+
+sub _tcm_run_test_instance {
+    my ( $self, $test_instance ) = @_;
+
     my $config  = $self->test_configuration;
     my $builder = $config->builder;
     my $report  = $self->test_report;
 
-    return sub {
-        local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
+    $test_instance->__set_test_report($report);
 
-        # set up test class reporting
-        my $report_class = Test::Class::Moose::Report::Class->new(
-            {   name => $test_class,
-            }
+    my $instance_name = $test_instance->instance_name;
+    # set up test class reporting
+    my $report_class = Test::Class::Moose::Report::Class->new(
+        {   name => $instance_name,
+        }
+    );
+    $report->add_test_class($report_class);
+
+    my @test_methods = $test_instance->test_methods;
+    unless (@test_methods) {
+        my $message = "Skipping '$instance_name': no test methods found";
+        $report_class->skipped($message);
+        $builder->plan( skip_all => $message );
+        return;
+    }
+
+    $report->_inc_test_methods( scalar @test_methods );
+
+    # startup
+    if (!$test_instance->_tcm_run_test_control_method(
+            'test_startup', $report_class
+        )
+      )
+    {
+        fail "test_startup failed";
+        return;
+    }
+
+    if ( my $message = $test_instance->test_skip ) {
+
+        # test_startup skipped the class
+        $report_class->skipped($message);
+        $builder->plan( skip_all => $message );
+        return;
+    }
+
+    $builder->plan( tests => scalar @test_methods );
+
+    # run test methods
+    foreach my $test_method (@test_methods) {
+        my $report_method = $self->_tcm_run_test_method(
+            $test_instance,
+            $test_method,
+            $report_class,
         );
-        $report->add_test_class($report_class);
-        my $test_instance
-          = $test_class->new( $config->args );
-        $test_instance->__set_test_report($report);
+        $report->_inc_tests( $report_method->num_tests_run );
+    }
 
-        my @test_methods = $test_instance->test_methods;
-        unless (@test_methods) {
-            my $message = "Skipping '$test_class': no test methods found";
-            $report_class->skipped($message);
-            $builder->plan( skip_all => $message );
-            return;
-        }
-        $report_class->_start_benchmark;
+    # shutdown
+    $test_instance->_tcm_run_test_control_method(
+        'test_shutdown',
+        $report_class
+    ) or fail("test_shutdown() failed");
 
-        $report->_inc_test_methods( scalar @test_methods );
-
-        # startup
-        if (!$test_instance->_tcm_run_test_control_method(
-                'test_startup', $report_class
-            )
-          )
-        {
-            fail "test_startup failed";
-            return;
-        }
-
-        if ( my $message = $test_instance->test_skip ) {
-
-            # test_startup skipped the class
-            $report_class->skipped($message);
-            $builder->plan( skip_all => $message );
-            return;
-        }
-
-        $builder->plan( tests => scalar @test_methods );
-
-        # run test methods
-        foreach my $test_method (@test_methods) {
-            my $report_method = $self->_tcm_run_test_method(
-                $test_instance,
-                $test_method,
-                $report_class,
-            );
-            $report->_inc_tests( $report_method->num_tests_run );
-        }
-
-        # shutdown
-        $test_instance->_tcm_run_test_control_method(
-            'test_shutdown',
-            $report_class
-        ) or fail("test_shutdown() failed");
-
-        # finalize reporting
-        $report_class->_end_benchmark;
-        if ( $config->show_timing ) {
-            my $time = $report_class->time->duration;
-            $config->builder->diag("$test_class: $time");
-        }
-    };
+    # finalize reporting
+    $report_class->_end_benchmark;
+    if ( $config->show_timing ) {
+        my $time = $report_class->time->duration;
+        $builder->diag("$instance_name: $time");
+    }
 }
 
 sub test_classes {
