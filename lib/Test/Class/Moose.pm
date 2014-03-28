@@ -160,11 +160,21 @@ END
     }
 }
 
+my %config_attrs = map { $_->init_arg => 1}
+    Test::Class::Moose::Config->meta->get_all_attributes;
 around 'BUILDARGS' => sub {
     my $orig  = shift;
     my $class = shift;
-    return $class->$orig(
-        { test_configuration => Test::Class::Moose::Config->new(@_) } );
+
+    my $p = $class->$orig(@_);
+
+    my %config_p
+        = map { $_ => delete $p->{$_} } grep { $config_attrs{$_} } keys %{$p};
+
+    return {
+        %{$p},
+        test_configuration => Test::Class::Moose::Config->new(%config_p)
+    };
 };
 
 sub BUILD {
@@ -307,12 +317,13 @@ sub _tcm_run_test_class {
         local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
 
         my @test_instances
-            = $self->_tcm_make_test_class_instances($test_class);
+            = $test_class->_tcm_make_test_class_instances(
+            $self->test_configuration->args );
 
         for my $test_instance (@test_instances) {
             if ( @test_instances > 1 ) {
                 $self->test_configuration->builder->subtest(
-                    $test_instance->instance_name,
+                    $test_instance->tcm_instance_name,
                     sub {
                         $self->_tcm_run_test_instance($test_instance);
                     },
@@ -328,15 +339,18 @@ sub _tcm_run_test_class {
 # By default, this will only be called once per class, so we don't need unique
 # per-instance names. If a class test class is designed to be run with
 # multiple instances then it should override this method.
-sub instance_name {
+sub tcm_instance_name {
     my $self = shift;
 
     return $self->test_class;
 }
 
+# This should never be called on a bare Test::Class::Moose object, only on
+# test classes which subclass it.
 sub _tcm_make_test_class_instances {
-    my ( $self, $test_class ) = @_;
-    return $test_class->new( $self->test_configuration->args );
+    my ( $test_class, $args ) = @_;
+
+    return $test_class->new($args);
 }
 
 sub _tcm_run_test_instance {
@@ -348,7 +362,7 @@ sub _tcm_run_test_instance {
 
     $test_instance->__set_test_report($report);
 
-    my $instance_name = $test_instance->instance_name;
+    my $instance_name = $test_instance->tcm_instance_name;
     # set up test class reporting
     my $report_class = Test::Class::Moose::Report::Class->new(
         {   name => $instance_name,
