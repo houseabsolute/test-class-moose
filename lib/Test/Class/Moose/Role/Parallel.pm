@@ -34,6 +34,7 @@ around 'runtests' => sub {
     my $orig = shift;
     my $self = shift;
 
+    local $Test::Builder::Level = $Test::Builder::Level + 4;
     my $jobs = $self->test_configuration->jobs;
     return $self->$orig if $jobs < 2;
 
