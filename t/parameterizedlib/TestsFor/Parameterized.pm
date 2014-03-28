@@ -11,7 +11,7 @@ sub _tcm_constructor_parameter_sets {
     );
 }
 
-sub tcm_instance_name {
+sub _tcm_instance_name {
     my $self = shift;
     return $self->foo ? __PACKAGE__ . ' with foo' : __PACKAGE__ . ' with bar';
 }
