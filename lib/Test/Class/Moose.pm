@@ -323,7 +323,7 @@ sub _tcm_run_test_class {
         for my $test_instance (@test_instances) {
             if ( @test_instances > 1 ) {
                 $self->test_configuration->builder->subtest(
-                    $test_instance->tcm_instance_name,
+                    $test_instance->_tcm_instance_name,
                     sub {
                         $self->_tcm_run_test_instance($test_instance);
                     },
@@ -339,7 +339,7 @@ sub _tcm_run_test_class {
 # By default, this will only be called once per class, so we don't need unique
 # per-instance names. If a class test class is designed to be run with
 # multiple instances then it should override this method.
-sub tcm_instance_name {
+sub _tcm_instance_name {
     my $self = shift;
 
     return $self->test_class;
@@ -362,7 +362,7 @@ sub _tcm_run_test_instance {
 
     $test_instance->__set_test_report($report);
 
-    my $instance_name = $test_instance->tcm_instance_name;
+    my $instance_name = $test_instance->_tcm_instance_name;
     # set up test class reporting
     my $report_class = Test::Class::Moose::Report::Class->new(
         {   name => $instance_name,
