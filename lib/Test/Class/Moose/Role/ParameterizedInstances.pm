@@ -10,9 +10,10 @@ sub _tcm_make_test_class_instances {
     my ( $class, $args ) = @_;
 
     my %base_args = %{$args};
-    return
-        map { $class->new( %{$_}, %base_args ) }
-        $class->_tcm_constructor_parameter_sets;
+
+    my %sets = $class->_tcm_constructor_parameter_sets;
+    return map { $_ => $class->new( %{ $sets{$_} }, %base_args ) }
+        keys %sets;
 }
 
 1;
