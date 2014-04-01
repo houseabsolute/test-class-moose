@@ -315,6 +315,7 @@ sub _tcm_run_test_instance {
         $builder->plan( skip_all => $message );
         return;
     }
+    $report_class->_start_benchmark;
 
     $report->_inc_test_methods( scalar @test_methods );
 
