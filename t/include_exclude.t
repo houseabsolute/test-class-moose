@@ -36,8 +36,8 @@ ok my $report = $test_suite->test_report,
   'We should be able to fetch reporting information from the test suite';
 isa_ok $report, 'Test::Class::Moose::Report',
   '... and the object it returns';
-is $report->num_test_classes, 2,
-  '... and it should return the correct number of test classes';
+is $report->num_test_instances, 2,
+  '... and it should return the correct number of test class instances';
 is $report->num_test_methods, 2,
   '... and the correct number of test methods';
 is $report->num_tests_run, 7, '... and the correct number of tests';
@@ -75,8 +75,8 @@ ok $report = $test_suite->test_report,
   'We should be able to fetch reporting information from the test suite';
 isa_ok $report, 'Test::Class::Moose::Report',
   '... and the object it returns';
-is $report->num_test_classes, 2,
-  '... and it should return the correct number of test classes';
+is $report->num_test_instances, 2,
+  '... and it should return the correct number of test class instances';
 is $report->num_test_methods, 5,
   '... and the correct number of test methods';
 is $report->num_tests_run, 18, '... and the correct number of tests';
