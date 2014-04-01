@@ -40,9 +40,10 @@ around 'runtests' => sub {
 
     my ( $sequential, @jobs ) = $self->schedule;
 
-    # XXX for some reason, we need to fetch this output handle before forking
-    # off jobs. Otherwise, we lose our test builder output if and only if we
-    # have a sequential job after the parallel jobs. Weird.
+    # We need to fetch this output handle before forking off jobs. Otherwise,
+    # we lose our test builder output if we have a sequential job after the
+    # parallel jobs. This happens because we explicitly set the builder's
+    # output to a scalar ref in our $run_jobs sub above.
     my $test_builder_output = Test::Builder->new->output;
     my $stream              = TAP::Stream->new;
     my $fork                = Parallel::ForkManager->new($jobs);
