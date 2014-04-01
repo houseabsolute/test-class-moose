@@ -1,4 +1,4 @@
-package Test::Class::Moose::Report::Class;
+package Test::Class::Moose::Report::Instance;
 
 # ABSTRACT: Reporting on test classes
 
