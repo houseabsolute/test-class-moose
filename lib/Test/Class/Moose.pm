@@ -254,33 +254,32 @@ sub _tcm_run_test_class {
     return sub {
         local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
 
-        my @test_instances
+        my %test_instances
             = $test_class->_tcm_make_test_class_instances(
             $self->test_configuration->args );
 
-        for my $test_instance (@test_instances) {
-            if ( @test_instances > 1 ) {
+        for my $test_instance_name (sort keys %test_instances) {
+            my $test_instance = $test_instances{$test_instance_name};
+
+            if ( values %test_instances > 1 ) {
                 $self->test_configuration->builder->subtest(
-                    $test_instance->_tcm_instance_name,
+                    $test_instance_name,
                     sub {
-                        $self->_tcm_run_test_instance($test_instance);
+                        $self->_tcm_run_test_instance(
+                            $test_instance_name,
+                            $test_instance,
+                        );
                     },
                 );
             }
             else {
-                $self->_tcm_run_test_instance($test_instance);
+                $self->_tcm_run_test_instance(
+                    $test_instance_name,
+                    $test_instance,
+                );
             }
         }
     };
-}
-
-# By default, this will only be called once per class, so we don't need unique
-# per-instance names. If a class test class is designed to be run with
-# multiple instances then it should override this method.
-sub _tcm_instance_name {
-    my $self = shift;
-
-    return $self->test_class;
 }
 
 # This should never be called on a bare Test::Class::Moose object, only on
@@ -288,11 +287,11 @@ sub _tcm_instance_name {
 sub _tcm_make_test_class_instances {
     my ( $test_class, $args ) = @_;
 
-    return $test_class->new($args);
+    return ( $test_class => $test_class->new($args) );
 }
 
 sub _tcm_run_test_instance {
-    my ( $self, $test_instance ) = @_;
+    my ( $self, $test_instance_name, $test_instance ) = @_;
 
     my $config  = $self->test_configuration;
     my $builder = $config->builder;
@@ -300,17 +299,16 @@ sub _tcm_run_test_instance {
 
     $test_instance->__set_test_report($report);
 
-    my $instance_name = $test_instance->_tcm_instance_name;
     # set up test class reporting
     my $instance_report = Test::Class::Moose::Report::Instance->new(
-        {   name => $instance_name,
+        {   name => $test_instance_name,
         }
     );
     $report->add_test_instance($instance_report);
 
     my @test_methods = $test_instance->test_methods;
     unless (@test_methods) {
-        my $message = "Skipping '$instance_name': no test methods found";
+        my $message = "Skipping '$test_instance_name': no test methods found";
         $instance_report->skipped($message);
         $builder->plan( skip_all => $message );
         return;
@@ -359,7 +357,7 @@ sub _tcm_run_test_instance {
     $instance_report->_end_benchmark;
     if ( $config->show_timing ) {
         my $time = $instance_report->time->duration;
-        $builder->diag("$instance_name: $time");
+        $builder->diag("$test_instance_name: $time");
     }
 }
 

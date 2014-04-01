@@ -6,14 +6,9 @@ has [ 'foo', 'bar' ] => ( is => 'ro' );
 
 sub _tcm_constructor_parameter_sets {
     return (
-        { foo => 42 },
-        { bar => 42 },
+        __PACKAGE__ . ' with foo' => { foo => 42 },
+        __PACKAGE__ . ' with bar' => { bar => 42 },
     );
-}
-
-sub _tcm_instance_name {
-    my $self = shift;
-    return $self->foo ? __PACKAGE__ . ' with foo' : __PACKAGE__ . ' with bar';
 }
 
 sub test_one_set {
