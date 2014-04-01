@@ -197,68 +197,6 @@ my $TEST_CONTROL_METHODS = sub {
     };
 };
 
-sub _tcm_run_test_method {
-    my ( $self, $test_instance, $test_method, $report_class ) = @_;
-
-    my $test_class = $test_instance->test_class;
-    my $report  = Test::Class::Moose::Report::Method->new(
-        { name => $test_method, report_class => $report_class } );
-    $self->test_report->current_class->add_test_method($report);
-    my $config = $self->test_configuration;
-
-    my $builder = $config->builder;
-    $test_instance->test_skip_clear;
-    $test_instance->_tcm_run_test_control_method(
-        'test_setup',
-        $report
-    ) or fail "test_setup failed";
-    my $num_tests;
-
-    Test::Most::explain("$test_class->$test_method()");
-    $builder->subtest(
-        $test_method,
-        sub {
-            if ( my $message = $test_instance->test_skip ) {
-                $report->skipped($message);
-                $builder->plan( skip_all => $message );
-                return;
-            }
-            $report->_start_benchmark;
-
-            my $old_test_count = $builder->current_test;
-            try {
-                $test_instance->$test_method($report);
-                if ( $report->has_plan ) {
-                    $builder->plan( tests => $report->tests_planned );
-                }
-            }
-            catch {
-                fail "$test_method failed: $_";
-            };
-            $num_tests = $builder->current_test - $old_test_count;
-
-            $report->_end_benchmark;
-            if ( $config->show_timing ) {
-                my $time = $report->time->duration;
-                $config->builder->diag(
-                    $report->name . ": $time" );
-            }
-        },
-    );
-
-    $test_instance->_tcm_run_test_control_method(
-        'test_teardown',
-        $report
-    ) or fail "test_teardown failed";
-    if ( !$report->is_skipped ) {
-        $report->num_tests_run($num_tests);
-        if ( !$report->has_plan ) {
-            $report->tests_planned($num_tests);
-        }
-    }
-    return $report;
-}
-
 sub _tcm_run_test_control_method {
     my ( $self, $phase, $report_object ) = @_;
 
@@ -422,6 +360,68 @@ sub _tcm_run_test_instance {
         my $time = $report_class->time->duration;
         $builder->diag("$instance_name: $time");
     }
+}
+
+sub _tcm_run_test_method {
+    my ( $self, $test_instance, $test_method, $report_class ) = @_;
+
+    my $test_class = $test_instance->test_class;
+    my $report  = Test::Class::Moose::Report::Method->new(
+        { name => $test_method, report_class => $report_class } );
+    $self->test_report->current_class->add_test_method($report);
+    my $config = $self->test_configuration;
+
+    my $builder = $config->builder;
+    $test_instance->test_skip_clear;
+    $test_instance->_tcm_run_test_control_method(
+        'test_setup',
+        $report
+    ) or fail "test_setup failed";
+    my $num_tests;
+
+    Test::Most::explain("$test_class->$test_method()");
+    $builder->subtest(
+        $test_method,
+        sub {
+            if ( my $message = $test_instance->test_skip ) {
+                $report->skipped($message);
+                $builder->plan( skip_all => $message );
+                return;
+            }
+            $report->_start_benchmark;
+
+            my $old_test_count = $builder->current_test;
+            try {
+                $test_instance->$test_method($report);
+                if ( $report->has_plan ) {
+                    $builder->plan( tests => $report->tests_planned );
+                }
+            }
+            catch {
+                fail "$test_method failed: $_";
+            };
+            $num_tests = $builder->current_test - $old_test_count;
+
+            $report->_end_benchmark;
+            if ( $config->show_timing ) {
+                my $time = $report->time->duration;
+                $config->builder->diag(
+                    $report->name . ": $time" );
+            }
+        },
+    );
+
+    $test_instance->_tcm_run_test_control_method(
+        'test_teardown',
+        $report
+    ) or fail "test_teardown failed";
+    if ( !$report->is_skipped ) {
+        $report->num_tests_run($num_tests);
+        if ( !$report->has_plan ) {
+            $report->tests_planned($num_tests);
+        }
+    }
+    return $report;
 }
 
 sub test_classes {
