@@ -6,7 +6,7 @@ Revision history for Perl distribution Test-Class-Moose
 
 0.54 2013-03-18
         - Update the tutorial for typos and to documents Tests()
-        - Add the gitub.io homepage.
+        - Add the github.io homepage.
 
 0.53 2013-03-15
         - Loooong day. The ContributorsFromGit dist::zilla plugin did, indeed,
