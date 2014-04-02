@@ -1,3 +1,8 @@
+use strict;
+use warnings;
+
+use Test::Class::Moose::Runner;
+
 use lib 't/lib';
 {
     package TestsFor::PersonTest;
@@ -16,4 +21,4 @@ use lib 't/lib';
     }
 }
 
-Test::Class::Moose->new->runtests;
+Test::Class::Moose::Runner->new->runtests;

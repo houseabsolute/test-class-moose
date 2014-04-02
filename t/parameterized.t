@@ -2,16 +2,17 @@
 use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load qw(t/parameterizedlib);
+use Test::Class::Moose::Runner;
 
-my $test_suite = Test::Class::Moose->new;
+my $runner = Test::Class::Moose::Runner->new;
 
 my @tests;
 subtest 'parameterized tests' => sub {
-    $test_suite->runtests;
-    @tests = $test_suite->test_configuration->builder->details;
+    $runner->runtests;
+    @tests = $runner->test_configuration->builder->details;
 };
 
-my $report = $test_suite->test_report;
+my $report = $runner->test_report;
 
 my %expected_tests_planned = (
     'TestsFor::Parameterized with foo::test_one_set' => 1,

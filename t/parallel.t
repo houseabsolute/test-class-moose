@@ -3,6 +3,7 @@ use Test::Most;
 use lib 'lib';
 use Carp::Always;
 use Test::Class::Moose::Load qw(t/parallellib);
+
 eval "use Parallel::ForkManager";
 if ( my $error = $@ ) {
     plan skip_all => "Parallel::ForkManager not found: $@";
