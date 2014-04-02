@@ -1,1 +1,12 @@
 *.swp
+.\#*
+.build
+Makefile
+Makefile.PL
+Makefile.old
+Test-Class-Moose-*
+\#*\#
+_build
+blib*
+cover_db*
+pm_to_blib*
