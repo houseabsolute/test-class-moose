@@ -2,8 +2,9 @@
 use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load qw(t/lib);
+use Test::Class::Moose::Runner;
 
-my $test_suite = Test::Class::Moose->new( show_timing => 0 );
+my $runner = Test::Class::Moose::Runner->new( show_timing => 0 );
 
 my %methods_for = (
     'TestsFor::Basic'           => [qw/test_me test_reporting test_this_baby/],
@@ -16,29 +17,29 @@ my %methods_for = (
           /
     ],
 );
-my @test_classes = sort $test_suite->test_classes;
+my @test_classes = sort $runner->test_classes;
 eq_or_diff \@test_classes, [ sort keys %methods_for ],
   'test_classes() should return a sorted list of test classes';
 
 foreach my $class (@test_classes) {
-    eq_or_diff [ $class->new->test_methods ], $methods_for{$class},
+    eq_or_diff [ sort $class->new->test_methods ], $methods_for{$class},
       "$class should have the correct test methods";
 }
 
 subtest 'test suite' => sub {
-    $test_suite->runtests;
+    $runner->runtests;
 };
 
 TestsFor::Basic::Subclass->meta->add_method(
     'test_this_will_die' => sub { die 'forced die' },
 );
-my $builder = $test_suite->test_configuration->builder;
+my $builder = $runner->test_configuration->builder;
 $builder->todo_start('testing a dying test');
 my @tests;
-$test_suite = Test::Class::Moose->new;
+$runner = Test::Class::Moose::Runner->new;
 subtest 'test_this_will_die() dies' => sub {
-    $test_suite->runtests;
-    @tests = $test_suite->test_configuration->builder->details;
+    $runner->runtests;
+    @tests = $runner->test_configuration->builder->details;
 };
 $builder->todo_end;
 

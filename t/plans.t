@@ -2,6 +2,7 @@
 use Test::Most 'bail';
 use lib 'lib';
 use Carp::Always;
+use Test::Class::Moose::Runner;
 
 {
     BEGIN { $INC{'Person.pm'} = 1 }
@@ -30,15 +31,15 @@ use Carp::Always;
 
 use Test::Class::Moose::Load qw(t/planlib);
 
-my $test_suite = Test::Class::Moose->new;
+my $runner = Test::Class::Moose::Runner->new;
 subtest 'run the test suite' => sub {
     my $builder = Test::Builder->new;
     $builder->todo_start('deliberately bad plans');
-    $test_suite->runtests;
+    $runner->runtests;
     $builder->todo_end;
 };
 
-my $report = $test_suite->test_report;
+my $report = $runner->test_report;
 
 # XXX test_with_attribute_but_no_plan didn't really report a plan of five, but
 # this value gets set after the test is run.

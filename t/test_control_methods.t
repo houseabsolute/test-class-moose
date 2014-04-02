@@ -2,16 +2,17 @@
 use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load 't/lib';
+use Test::Class::Moose::Runner;
 
 # I find it annoying that the various testing modules for testing have failed
 # me completely here.
 
-my $tests = Test::Class::Moose->new(
+my $runner = Test::Class::Moose::Runner->new(
     {   show_timing => 0,
         statistics  => 1,
     }
 );
-my $builder = $tests->test_configuration->builder;
+my $builder = $runner->test_configuration->builder;
 
 #
 # exceptions in test control methods should cause the test classes to fail
@@ -22,8 +23,8 @@ TestsFor::Basic::Subclass->meta->add_method(
 $builder->todo_start('testing the startup() method');
 my @tests;
 subtest 'test_startup() dies' => sub {
-    $tests->runtests;
-    @tests = $tests->test_configuration->builder->details;
+    $runner->runtests;
+    @tests = $runner->test_configuration->builder->details;
 };
 $builder->todo_end;
 
@@ -67,10 +68,10 @@ TestsFor::Basic::Subclass->meta->remove_method('test_startup');
 TestsFor::Basic::Subclass->meta->add_method(
     'test_startup' => sub { my $test = shift },
 );
-$tests = Test::Class::Moose->new;
+$runner = Test::Class::Moose::Runner->new;
 subtest 'test_startup() has tests in it' => sub {
-    $tests->runtests;
-    @tests = $tests->test_configuration->builder->details;
+    $runner->runtests;
+    @tests = $runner->test_configuration->builder->details;
 };
 
 eq_or_diff \@tests, \@expected,
@@ -103,10 +104,10 @@ TestsFor::Basic::Subclass->meta->add_method(
     },
 ); 
 $builder->todo_start('fail?');
-$tests = Test::Class::Moose->new;
+$runner = Test::Class::Moose::Runner->new;
 subtest 'test_setup() has tests in it' => sub {
-    $tests->runtests;
-    @tests = $tests->test_configuration->builder->details;
+    $runner->runtests;
+    @tests = $runner->test_configuration->builder->details;
 };
 $builder->todo_end;
 
