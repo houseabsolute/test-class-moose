@@ -508,10 +508,10 @@ __END__
 
 =head1 DESCRIPTION
 
-See L<Test::Class::Moose hompage|http://ovid.github.io/test-class-moose/> for
+See the L<Test::Class::Moose home page|http://ovid.github.io/test-class-moose/> for
 a summary.
 
-`Test::Class::Moose` is a powerful testing framework for Perl. Out of the box
+C<Test::Class::Moose> is a powerful testing framework for Perl. Out of the box
 you get:
 
 =over 4
