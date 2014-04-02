@@ -1354,5 +1354,3 @@ L<Test::Class> + L<Test::Most>.
 =back
 
 =cut
-
-1;
