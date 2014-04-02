@@ -4,7 +4,6 @@ package Test::Class::Moose;
 
 use 5.10.0;
 use Moose 2.0000;
-use MooseX::ClassAttribute;
 use Carp;
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);

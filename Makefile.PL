@@ -31,7 +31,6 @@ my %WriteMakefileArgs = (
     "Moose" => "2.0000",
     "Moose::Role" => 0,
     "Moose::Util::TypeConstraints" => 0,
-    "MooseX::ClassAttribute" => 0,
     "Parallel::ForkManager" => 0,
     "Sub::Attribute" => 0,
     "TAP::Formatter::Color" => 0,
