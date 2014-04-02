@@ -5,7 +5,7 @@ package Test::Class::Moose::Role::Parallel;
 use Moose::Role;
 use Parallel::ForkManager;
 use Test::Builder;
-use TAP::Stream;
+use TAP::Stream 0.44;
 use Test::Class::Moose::AttributeRegistry;
 use Carp;
 
