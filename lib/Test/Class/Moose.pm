@@ -195,8 +195,6 @@ sub BUILD {
     $self->test_class( $self->meta->name );
 }
 
-# This should never be called on a bare Test::Class::Moose object, only on
-# test classes which subclass it.
 sub _tcm_make_test_class_instances {
     my ( $test_class, $args ) = @_;
 
