@@ -1,14 +1,14 @@
-package Test::Class::Moose::Runner;
+package Test::Class::Moose::Role::Runner;
 
-# ABSTRACT: Serious testing for serious Perl
+# ABSTRACT: Common code for Runner classes
 
 use 5.10.0;
-use Moose 2.0000;
+use Moose::Role 2.0000;
 use Carp;
 use namespace::autoclean;
+
 use List::Util qw(shuffle);
 use List::MoreUtils qw(uniq);
-
 use Test::Builder;
 use Test::Most;
 use Try::Tiny;
@@ -17,6 +17,8 @@ use Test::Class::Moose::Report;
 use Test::Class::Moose::Report::Instance;
 use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::AttributeRegistry;
+
+requires 'runtests';
 
 has 'test_configuration' => (
     is  => 'ro',
@@ -36,38 +38,17 @@ around BUILDARGS => sub {
     my $orig  = shift;
     my $class = shift;
 
+    my $p = $class->$orig(@_);
+
+    my %config_p = map { $config_attrs{$_} ? ( $_ => delete $p->{$_} ) : () }
+        keys %{$p};
+
     return {
+        %{$p},
         test_configuration =>
-            Test::Class::Moose::Config->new( $class->$orig(@_) ),
+            Test::Class::Moose::Config->new(%config_p),
     };
 };
-
-sub runtests {
-    my $self = shift;
-
-    my $report = $self->test_report;
-    $report->_start_benchmark;
-    my @test_classes = $self->test_classes;
-
-    my $builder = $self->test_configuration->builder;
-    $builder->plan( tests => scalar @test_classes );
-    foreach my $test_class (@test_classes) {
-        Test::Most::explain("\nRunning tests for $test_class\n\n");
-        $builder->subtest(
-            $test_class,
-            $self->_tcm_run_test_class($test_class),
-        );
-    }
-
-    $builder->diag(<<"END") if $self->test_configuration->statistics;
-Test instances:  @{[ $report->num_test_instances ]}
-Test methods:    @{[ $report->num_test_methods ]}
-Total tests run: @{[ $report->num_tests_run ]}
-END
-    $builder->done_testing;
-    $report->_end_benchmark;
-    return $self;
-}
 
 sub _tcm_run_test_class {
     my ( $self, $test_class ) = @_;
@@ -362,7 +343,5 @@ sub test_classes {
     # eventually we'll want to control the test class order
     return sort @classes;
 }
-
-__PACKAGE__->meta->make_immutable;
 
 1;
