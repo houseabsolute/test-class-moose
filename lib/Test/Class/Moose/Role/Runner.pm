@@ -43,11 +43,9 @@ around BUILDARGS => sub {
     my %config_p = map { $config_attrs{$_} ? ( $_ => delete $p->{$_} ) : () }
         keys %{$p};
 
-    return {
-        %{$p},
-        test_configuration =>
-            Test::Class::Moose::Config->new(%config_p),
-    };
+    $p->{test_configuration} ||= Test::Class::Moose::Config->new(%config_p);
+
+    return $p;
 };
 
 sub _tcm_run_test_class {
@@ -60,7 +58,7 @@ sub _tcm_run_test_class {
             = $test_class->_tcm_make_test_class_instances(
             $self->test_configuration->args );
 
-        for my $test_instance_name (sort keys %test_instances) {
+        foreach my $test_instance_name (sort keys %test_instances) {
             my $test_instance = $test_instances{$test_instance_name};
 
             if ( values %test_instances > 1 ) {
