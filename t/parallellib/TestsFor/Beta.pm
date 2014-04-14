@@ -1,6 +1,6 @@
 package TestsFor::Beta;
 
-use Test::Class::Moose extends => 'MyParallelTests';
+use Test::Class::Moose;
 
 sub test_beta_first {
     my $test = shift;

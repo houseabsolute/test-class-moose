@@ -4,7 +4,7 @@ use lib 'lib';
 use Carp::Always;
 use Test::Class::Moose::Load qw(t/parallellib);
 
-eval "use Parallel::ForkManager";
+eval "use Parallel::ForkManager;";
 if ( my $error = $@ ) {
     plan skip_all => "Parallel::ForkManager not found: $@";
 }
@@ -14,11 +14,12 @@ if ( 1 == $jobs ) {
     diag "set NUM_JOBS=\$num_jobs to test this with more than one job";
 }
 
-my $test_suite = MyParallelTests->new(
+require Test::Class::Moose::Runner::Parallel;
+
+my $test_runner = Test::Class::Moose::Runner::Parallel->new(
     show_timing => 0,
     jobs        => $jobs,
     statistics  => 0,
 );
 
-$test_suite->runtests;
-
+$test_runner->runtests;

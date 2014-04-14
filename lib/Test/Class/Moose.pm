@@ -9,7 +9,7 @@ use namespace::autoclean;
 use Sub::Attribute;
 
 use Test::Class::Moose::AttributeRegistry;
-use Test::Class::Moose::Runner;
+use Test::Class::Moose::Config;
 
 has 'test_report' => (
     is     => 'rw',
@@ -120,8 +120,8 @@ has 'test_skip' => (
 );
 
 has '_runner' => (
-    is  => 'ro',
-    isa => 'Test::Class::Moose::Runner',
+    is   => 'ro',
+    does => 'Test::Class::Moose::Role::Runner',
 );
 
 sub import {
@@ -164,14 +164,12 @@ around 'BUILDARGS' => sub {
     my %config_p
         = map { $_ => delete $p->{$_} } grep { $config_attrs{$_} } keys %{$p};
 
-    return {
-        %{$p},
-        (
-            $class eq __PACKAGE__
-            ? ( _runner => Test::Class::Moose::Runner->new(%config_p) )
-            : ()
-        )
-    };
+    if ( $class eq __PACKAGE__ ) {
+        require Test::Class::Moose::Runner::Sequential;
+        $p->{_runner} =  Test::Class::Moose::Runner::Sequential->new(%config_p);
+    }
+
+    return $p;
 };
 
 # XXX - also for backwards compat
