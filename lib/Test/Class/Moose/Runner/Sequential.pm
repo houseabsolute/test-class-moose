@@ -8,7 +8,7 @@ use Carp;
 use namespace::autoclean;
 with 'Test::Class::Moose::Role::Runner';
 
-use Test::Most ();
+use Test::Most 0.32 ();
 
 has 'test_configuration' => (
     is       => 'ro',
