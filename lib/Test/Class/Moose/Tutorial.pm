@@ -1,4 +1,4 @@
-package Test::Class::Moose::Tutorial
+package Test::Class::Moose::Tutorial;
 
 # ABSTRACT: A starting guide for Test::Class::Moose
 
