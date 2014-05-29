@@ -29,8 +29,19 @@ has 'test_report' => (
     is      => 'rw',
     isa     => 'Test::Class::Moose::Report',
     writer  => '__set_test_report',
-    default => sub { Test::Class::Moose::Report->new },
+    builder => '_build_test_report',
 );
+
+sub _build_test_report {
+    my $self = shift;
+
+    # XXX - This isn't very elegant and won't work well in the face of other
+    # types of Executors. However, the real fix is to make parallel reporting
+    # actually work so the report doesn't have to care about this.
+    return Test::Class::Moose::Report->new(
+        is_parallel => (ref $self) =~ /::Parallel$/ ? 1 : 0,
+    );
+}
 
 sub _tcm_run_test_class {
     my ( $self, $test_class ) = @_;

@@ -22,6 +22,12 @@ has 'num_tests_run' => (
     default => 0,
 );
 
+has 'is_parallel' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
+
 sub tests_run {
     carp "tests_run() deprecated as of version 0.07. Use num_tests_run().";
     goto &num_tests_run;
@@ -34,11 +40,18 @@ has test_instances => (
     isa     => 'ArrayRef[Test::Class::Moose::Report::Instance]',
     default => sub { [] },
     handles => {
-        all_test_instances => 'elements',
-        add_test_instance  => 'push',
-        num_test_instances => 'count',
+        _all_test_instances => 'elements',
+        add_test_instance   => 'push',
+        num_test_instances  => 'count',
     },
 );
+
+sub all_test_instances {
+    my $self = shift;
+    warn "When running tests in parallel we are unable to store test class instances\n"
+        if $self->is_parallel;
+    return $self->_all_test_instances;
+}
 
 sub all_test_classes {
     my $self = shift;
