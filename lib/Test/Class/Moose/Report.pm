@@ -40,6 +40,12 @@ has test_instances => (
     },
 );
 
+sub all_test_classes {
+    my $self = shift;
+    warn "The all_test_classes() method has been renamed to all_test_instances()\n";
+    return $self->all_test_instances;
+}
+
 sub _inc_test_methods {
     my ( $self, $test_methods ) = @_;
     $test_methods //= 1;
