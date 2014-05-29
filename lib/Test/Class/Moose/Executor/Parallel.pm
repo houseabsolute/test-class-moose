@@ -81,6 +81,8 @@ sub runtests {
 
     # this is where we print the TAP results
     print $test_builder_output $stream->to_string;
+
+    return $self;
 }
 
 sub _make_fork_manager {
