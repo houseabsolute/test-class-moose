@@ -7,16 +7,7 @@ use Moose 2.0000;
 use Carp;
 use namespace::autoclean;
 
-use List::Util qw(shuffle);
-use List::MoreUtils qw(uniq);
-use Test::Builder;
-use Test::Most;
-use Try::Tiny;
 use Test::Class::Moose::Config;
-use Test::Class::Moose::Report;
-use Test::Class::Moose::Report::Instance;
-use Test::Class::Moose::Report::Method;
-use Test::Class::Moose::AttributeRegistry;
 
 has 'test_configuration' => (
     is  => 'ro',
