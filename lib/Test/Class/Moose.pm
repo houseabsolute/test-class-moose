@@ -119,9 +119,9 @@ has 'test_skip' => (
     clearer => 'test_skip_clear',
 );
 
-has '_runner' => (
-    is   => 'ro',
-    does => 'Test::Class::Moose::Role::Runner',
+has '_config_p' => (
+    is  => 'ro',
+    isa => 'HashRef',
 );
 
 sub import {
@@ -163,11 +163,7 @@ around 'BUILDARGS' => sub {
 
     my %config_p
         = map { $_ => delete $p->{$_} } grep { $config_attrs{$_} } keys %{$p};
-
-    if ( $class eq __PACKAGE__ ) {
-        require Test::Class::Moose::Runner::Sequential;
-        $p->{_runner} =  Test::Class::Moose::Runner::Sequential->new(%config_p);
-    }
+    $p->{_config_p} = \%config_p;
 
     return $p;
 };
@@ -183,7 +179,11 @@ sub runtests {
     carp 'Calling runtests() on a Test::Class::Moose object is deprecated.'
         . ' Use Test::Class::Moose::Runner instead.';
 
-    return $self->_runner()->runtests();
+    require Test::Class::Moose::Runner::Sequential;
+    my $runner
+        = Test::Class::Moose::Runner::Sequential->new( $self->_config_p );
+
+    return $runner->runtests();
 }
 
 sub BUILD {
