@@ -2,7 +2,7 @@
 use Test::Most 'bail';
 use lib 'lib';
 use Carp::Always;
-use Test::Class::Moose::Runner::Sequential;
+use Test::Class::Moose::Runner;
 
 {
     BEGIN { $INC{'Person.pm'} = 1 }
@@ -31,7 +31,7 @@ use Test::Class::Moose::Runner::Sequential;
 
 use Test::Class::Moose::Load qw(t/planlib);
 
-my $runner = Test::Class::Moose::Runner::Sequential->new;
+my $runner =Test::Class::Moose::Runner->new;
 subtest 'run the test suite' => sub {
     my $builder = Test::Builder->new;
     $builder->todo_start('deliberately bad plans');

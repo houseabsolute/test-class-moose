@@ -2,12 +2,12 @@
 use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load 't/lib';
-use Test::Class::Moose::Runner::Sequential;
+use Test::Class::Moose::Runner;
 
 # I find it annoying that the various testing modules for testing have failed
 # me completely here.
 
-my $runner = Test::Class::Moose::Runner::Sequential->new(
+my $runner =Test::Class::Moose::Runner->new(
     {   show_timing => 0,
         statistics  => 1,
     }
@@ -68,7 +68,7 @@ TestsFor::Basic::Subclass->meta->remove_method('test_startup');
 TestsFor::Basic::Subclass->meta->add_method(
     'test_startup' => sub { my $test = shift },
 );
-$runner = Test::Class::Moose::Runner::Sequential->new;
+$runner =Test::Class::Moose::Runner->new;
 subtest 'test_startup() has tests in it' => sub {
     $runner->runtests;
     @tests = $runner->test_configuration->builder->details;
@@ -104,7 +104,7 @@ TestsFor::Basic::Subclass->meta->add_method(
     },
 ); 
 $builder->todo_start('fail?');
-$runner = Test::Class::Moose::Runner::Sequential->new;
+$runner =Test::Class::Moose::Runner->new;
 subtest 'test_setup() has tests in it' => sub {
     $runner->runtests;
     @tests = $runner->test_configuration->builder->details;

@@ -179,9 +179,9 @@ sub runtests {
     carp 'Calling runtests() on a Test::Class::Moose object is deprecated.'
         . ' Use Test::Class::Moose::Runner instead.';
 
-    require Test::Class::Moose::Runner::Sequential;
+    require Test::Class::Moose::Runner;
     my $runner
-        = Test::Class::Moose::Runner::Sequential->new( $self->_config_p );
+        = Test::Class::Moose::Runner->new( $self->_config_p );
 
     return $runner->runtests();
 }

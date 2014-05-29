@@ -2,9 +2,9 @@
 use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load qw(t/lib);
-use Test::Class::Moose::Runner::Sequential;
+use Test::Class::Moose::Runner;
 
-my $runner = Test::Class::Moose::Runner::Sequential->new(
+my $runner =Test::Class::Moose::Runner->new(
     show_timing  => 0,
     test_classes => 'TestsFor::Basic',
 );

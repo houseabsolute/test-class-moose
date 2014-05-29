@@ -2,9 +2,9 @@
 use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load qw(t/lib);
-use Test::Class::Moose::Runner::Sequential;
+use Test::Class::Moose::Runner;
 
-my $runner = Test::Class::Moose::Runner::Sequential->new(
+my $runner =Test::Class::Moose::Runner->new(
     {   show_timing => 0,
         statistics  => 0,
         include     => qr/baby/,
@@ -23,7 +23,7 @@ my @test_classes = sort $runner->test_classes;
 
 foreach my $class (@test_classes) {
     eq_or_diff
-      [ $runner->_tcm_test_methods_for_instance( $class->new ) ],
+      [ $runner->_executor->_tcm_test_methods_for_instance( $class->new ) ],
       $methods_for{$class},
       "$class should have the correct test methods";
 }
@@ -43,7 +43,7 @@ is $report->num_test_methods, 2,
   '... and the correct number of test methods';
 is $report->num_tests_run, 7, '... and the correct number of tests';
 
-$runner = Test::Class::Moose::Runner::Sequential->new(
+$runner =Test::Class::Moose::Runner->new(
     {   show_timing => 0,
         statistics  => 0,
         exclude     => qr/baby/,
@@ -63,7 +63,7 @@ $runner = Test::Class::Moose::Runner::Sequential->new(
 
 foreach my $class (@test_classes) {
     eq_or_diff
-        [ $runner->_tcm_test_methods_for_instance( $class->new ) ],
+        [ $runner->_executor->_tcm_test_methods_for_instance( $class->new ) ],
         $methods_for{$class},
         "$class should have the correct test methods";
 }

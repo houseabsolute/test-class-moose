@@ -6,7 +6,7 @@ use Test::Class::Moose ();    # prevents us from inheriting from it
 sub registry () { 'Test::Class::Moose::AttributeRegistry' }
 
 use Test::Class::Moose::Load qw(t/taglib);
-use Test::Class::Moose::Runner::Sequential;
+use Test::Class::Moose::Runner;
 
 subtest 'Multiple included tags' => sub {
 
@@ -108,12 +108,12 @@ subtest
 
 sub _run_tests {
     my ( $new, $methods_for ) = @_;
-    my $runner = Test::Class::Moose::Runner::Sequential->new($new);
+    my $runner =Test::Class::Moose::Runner->new($new);
     my @test_classes = sort $runner->test_classes;
 
     foreach my $class (@test_classes) {
         eq_or_diff
-          [ $runner->_tcm_test_methods_for_instance( $class->new ) ],
+          [ $runner->_executor->_tcm_test_methods_for_instance( $class->new ) ],
           $methods_for->{$class},
           "$class should have the correct test methods";
     }
