@@ -1,24 +1,17 @@
 #!/usr/bin/env perl
+use Test::Requires {
+    'Parallel::ForkManager' => 0,
+};
+
 use Test::Most;
 use lib 'lib';
 use Carp::Always;
 use Test::Class::Moose::Load qw(t/parallellib);
+use Test::Class::Moose::Runner;
 
-eval "use Parallel::ForkManager;";
-if ( my $error = $@ ) {
-    plan skip_all => "Parallel::ForkManager not found: $@";
-}
-my $jobs = $ENV{NUM_JOBS} || 0;
-$jobs = 1 if $jobs < 2;
-if ( 1 == $jobs ) {
-    diag "set NUM_JOBS=\$num_jobs to test this with more than one job";
-}
-
-require Test::Class::Moose::Runner::Parallel;
-
-my $test_runner = Test::Class::Moose::Runner::Parallel->new(
+my $test_runner = Test::Class::Moose::Runner->new(
     show_timing => 0,
-    jobs        => $jobs,
+    jobs        => 2,
     statistics  => 0,
 );
 

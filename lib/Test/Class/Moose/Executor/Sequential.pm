@@ -1,20 +1,14 @@
-package Test::Class::Moose::Runner::Sequential;
+package Test::Class::Moose::Executor::Sequential;
 
-# ABSTRACT: Run tests sequentially
+# ABSTRACT: Execute tests sequentially
 
 use 5.10.0;
 use Moose 2.0000;
 use Carp;
 use namespace::autoclean;
-with 'Test::Class::Moose::Role::Runner';
+with 'Test::Class::Moose::Role::Executor';
 
 use Test::Most 0.32 ();
-
-has 'test_configuration' => (
-    is       => 'ro',
-    isa      => 'Test::Class::Moose::Config',
-    required => 1,
-);
 
 sub runtests {
     my $self = shift;

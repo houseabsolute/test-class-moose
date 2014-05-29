@@ -1,12 +1,12 @@
-package Test::Class::Moose::Runner::Parallel;
+package Test::Class::Moose::Executor::Parallel;
 
-# ABSTRACT: Run tests in parallel (parallelized by instance)
+# ABSTRACT: Execute tests in parallel (parallelized by instance)
 
 use 5.10.0;
 use Moose 2.0000;
 use Carp;
 use namespace::autoclean;
-with 'Test::Class::Moose::Role::Runner';
+with 'Test::Class::Moose::Role::Executor';
 
 use List::MoreUtils qw(none);
 use Parallel::ForkManager;
@@ -17,15 +17,15 @@ use Test::Class::Moose::AttributeRegistry;
 use List::MoreUtils qw(uniq);
 
 has 'jobs' => (
-    is      => 'ro',
-    isa     => 'Int',
-    default => 1,
+    is       => 'ro',
+    isa      => 'Int',
+    required => 1,
 );
 
 has 'color_output' => (
-    is      => 'ro',
-    isa     => 'Bool',
-    default => 1,
+    is       => 'ro',
+    isa      => 'Bool',
+    required => 1,
 );
 
 has '_color' => (
@@ -54,13 +54,6 @@ sub runtests {
 
     local $Test::Builder::Level = $Test::Builder::Level + 4;
     my $jobs = $self->jobs;
-
-    if ( $jobs < 2 ) {
-        require Test::Class::Moose::Runner::Sequential;
-        Test::Class::Moose::Runner::Sequential->new(
-            test_configuration => $self->test_configuration )->runtests();
-        return;
-    }
 
     # We need to fetch this output handle before forking off jobs. Otherwise,
     # we lose our test builder output if we have a sequential job after the

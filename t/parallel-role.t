@@ -25,7 +25,7 @@ subtest 'warnings', sub {
 
 like(
     $warnings[0],
-    qr/\QThe Test::Class::Moose::Role::Parallel role is deprecated. Use the new Test::Class::Moose::Runner::Parallel class instead./,
+    qr/\QThe Test::Class::Moose::Role::Parallel role is deprecated. Use the new Test::Class::Moose::Runner class instead./,
     'got a deprecation warning when using Test::Class::Moose::Role::Parallel'
 );
 

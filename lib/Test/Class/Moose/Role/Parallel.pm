@@ -10,7 +10,7 @@ requires 'runtests';
 
 before runtests => sub {
     warn
-        "The Test::Class::Moose::Role::Parallel role is deprecated. Use the new Test::Class::Moose::Runner::Parallel class instead.";
+        "The Test::Class::Moose::Role::Parallel role is deprecated. Use the new Test::Class::Moose::Runner class instead.";
 };
 
 1;
@@ -20,11 +20,11 @@ __END__
 =head1 DESCRIPTION
 
 This role is now deprecated. To run tests in parallel, use the new
-L<Test::Class::Moose::Runner::Parallel> class:
+L<Test::Class::Moose::Runner> class:
 
-    use Test::Class::Moose::Runner::Parallel;
+    use Test::Class::Moose::Runner;
 
-    Test::Class::Moose::Runner::Parallel->new(
+    Test::Class::Moose::Runner->new(
         jobs => 4,
     )->runtests();
 

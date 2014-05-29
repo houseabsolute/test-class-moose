@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::Class::Moose::Runner::Sequential;
+use Test::Class::Moose::Runner;
 
 use lib 't/lib';
 {
@@ -21,4 +21,4 @@ use lib 't/lib';
     }
 }
 
-Test::Class::Moose::Runner::Sequential->new->runtests;
+Test::Class::Moose::Runner->new->runtests;

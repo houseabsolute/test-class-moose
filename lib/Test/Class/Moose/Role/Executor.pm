@@ -1,4 +1,4 @@
-package Test::Class::Moose::Role::Runner;
+package Test::Class::Moose::Role::Executor;
 
 # ABSTRACT: Common code for Runner classes
 
@@ -31,22 +31,6 @@ has 'test_report' => (
     writer  => '__set_test_report',
     default => sub { Test::Class::Moose::Report->new },
 );
-
-my %config_attrs = map { $_->init_arg => 1}
-    Test::Class::Moose::Config->meta->get_all_attributes;
-around BUILDARGS => sub {
-    my $orig  = shift;
-    my $class = shift;
-
-    my $p = $class->$orig(@_);
-
-    my %config_p = map { $config_attrs{$_} ? ( $_ => delete $p->{$_} ) : () }
-        keys %{$p};
-
-    $p->{test_configuration} ||= Test::Class::Moose::Config->new(%config_p);
-
-    return $p;
-};
 
 sub _tcm_run_test_class {
     my ( $self, $test_class ) = @_;
