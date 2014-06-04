@@ -4,50 +4,50 @@ Revision history for Perl distribution Test-Class-Moose
           Test::Class::Moose have been made actual methods so that roles and
           subclasses can affect them. (Dave Rolsky)
 
-0.54 2013-03-18
+0.54 2014-03-18
         - Update the tutorial for typos and to documents Tests()
         - Add the github.io homepage.
 
-0.53 2013-03-15
+0.53 2014-03-15
         - Loooong day. The ContributorsFromGit dist::zilla plugin did, indeed,
           add all git contributors to the POD, but it deleted all of my other
           POD. This might be my record for number of rereleases in a day.
 
-0.52 2013-03-15
+0.52 2014-03-15
         - Note in the docs the Sub::Attribute change from version 0.51
         - Oops. Remove all of the .bak files from the distro.
         - List contributors automatically in docs
 
-0.51 2013-03-15
+0.51 2014-03-15
         - Sub::Attribute is now required and not optional.
         - Added a Makefile.PL to the dzil distro so people can more easily
           contribute.
 
-0.50 2013-03-14
+0.50 2014-03-14
         - :Test and :Tests attributes have been added.
         - TAP::Stream is now in its own distribution and thus removed from
           this one.
         - Test::Class::Moose::Role - croak() if preamble doesn't load
           (Sebastian Willert)
 
-0.43 2013-01-29
+0.43 2014-01-29
         - When running parallel tests, we now output a line of dots to the
           screen to show that the test suite hasn't stalled. Further, the dots
           are colored "green" and "red" (sorry color blind folk!) just like
           Test::Harness, so you can see if tests have passed or failed.
 
-0.42 2013-01-15
+0.42 2014-01-15
         - Remove experimental END block causing issues for some test suites.
         - Merge Dave Rolsky's MetaJSON request (thanks, Dave!)
         - Add better github meta info
         - Document recommended test suite instantiation.
         - Document what Test::Class::Moose::Role is for.
 
-0.41 2013-01-13
+0.41 2014-01-13
         - Fix bug where "skip_all" tests would report as failing if
           Sub::Attribute wasn't installed.
 
-0.40 2013-01-12
+0.40 2014-01-12
         - Parallel tests now automatically ignore test methods tagged with
           'noparallel'.
         - Fix bug where sequential tests fail with parallel testing.
