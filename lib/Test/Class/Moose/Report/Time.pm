@@ -56,13 +56,13 @@ All times are in seconds.
     my $real = $time->real;
 
 Returns the "real" amount of time the class or method took to run.
-    
+
 =head2 C<user>
 
     my $user = $time->user;
 
 Returns the "user" amount of time the class or method took to run.
-    
+
 =head2 C<system>
 
     my $system = $time->system;

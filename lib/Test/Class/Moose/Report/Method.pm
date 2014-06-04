@@ -72,7 +72,7 @@ L<Test::Class::Moose::Role::Reporting>.
 
 =head2 C<instance_report>
 
-The C<Test::Class::Moose::Report::Instance> for this method.
+The L<Test::Class::Moose::Report::Instance> for this method.
 
 =head2 C<num_tests_run>
 

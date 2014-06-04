@@ -101,7 +101,7 @@ __END__
 =head1 DESCRIPTION
 
 When working with larger test suites, it's useful to have full reporting
-information avaiable about the test suite. The reporting features of
+information available about the test suite. The reporting features of
 L<Test::Class::Moose> allow you to report on the number of test class instances and
 methods run (and number of tests), along with timing information to help you
 track down which tests are running slowly. You can even run tests on your
