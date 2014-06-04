@@ -1,8 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 0.55 2014-03-18
-        * A number of deprecations and backwards incompatible changes in this
-          release!
+        * There are a number of deprecations and backwards incompatible
+          changes in this release!
         * Calling runtests() on Test::Class::Moose or a subclass of that class
           is now deprecated. Use the new Test::Class::Moose::Runner class
           instead.
