@@ -4,7 +4,7 @@ with 'Test::Class::Moose::Role::ParameterizedInstances';
 
 has [ 'foo', 'bar' ] => ( is => 'ro' );
 
-sub _tcm_constructor_parameter_sets {
+sub _constructor_parameter_sets {
     return (
         __PACKAGE__ . ' with foo' => { foo => 42 },
         __PACKAGE__ . ' with bar' => { bar => 42 },
