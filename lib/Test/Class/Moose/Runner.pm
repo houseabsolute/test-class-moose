@@ -234,6 +234,10 @@ itself for backwards compatibility.
 
 =head1 PARALLEL RUNNING
 
+Running tests in parallel requires you to have L<Parallel::ForkManager>
+installed. This is not a prereq of this distro so you will need to install
+manually.
+
 To run tests in parallel, simply pass a value greater than 1 for the C<jobs>
 parameter when creating a runner object:
 
