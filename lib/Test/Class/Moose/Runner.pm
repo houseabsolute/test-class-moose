@@ -246,7 +246,7 @@ parameter when creating a runner object:
 Your test classes will be run in parallel in separate child processes. Test
 classes are parallelized on a B<per instance basis>. This means that each
 child process constructs a single instance of a test class and runs all of
-that classes methods.
+the methods belonging to that class.
 
 If you are using parameterized test instances (see the L<Test::Class::Moose>
 docs for details) then the same class may have instances running in different
