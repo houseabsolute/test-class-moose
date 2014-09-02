@@ -1,5 +1,12 @@
 Revision history for Perl distribution Test-Class-Moose
 
+        * Skip parallel tests on Windows. This may be a bug in
+          Test::Class::Moose or Parallel::ForkManager, but for now we're
+          punting. Reported by Alexandr Ciornii. GitHub issue #36.
+        * Removed Sub::Attribute from the "recommends" list. This is required
+          now, and listing it as both required and recommends is confusing.
+        * Lots of doc fixes.
+
 0.55 2014-03-18
         * There are a number of deprecations and backwards incompatible
           changes in this release!
