@@ -1,6 +1,7 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Fix the homepage link in the meta info.
 
 0.56 2014-09-02
         * This is the first release to include the deprecations and backwards
