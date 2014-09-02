@@ -1,6 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * This is the first release to include the deprecations and backwards
+          incompatibilities from 0.55. Please see that release's notes as
+          well!
         * Skip parallel tests on Windows. This may be a bug in
           Test::Class::Moose or Parallel::ForkManager, but for now we're
           punting. Reported by Alexandr Ciornii. GitHub issue #36.
