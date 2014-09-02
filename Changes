@@ -1,5 +1,6 @@
 Revision history for Perl distribution Test-Class-Moose
 
+{{$NEXT}}
         * Skip parallel tests on Windows. This may be a bug in
           Test::Class::Moose or Parallel::ForkManager, but for now we're
           punting. Reported by Alexandr Ciornii. GitHub issue #36.
