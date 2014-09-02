@@ -1,9 +1,8 @@
 #!/usr/bin/env perl
+use Test::Most;
 use Test::Requires {
     'Test::Output' => '0.005',
 };
-
-use Test::Most;
 use Test::Warnings qw( warnings );
 
 {
