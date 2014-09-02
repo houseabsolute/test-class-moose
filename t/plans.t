@@ -2,6 +2,7 @@
 use Test::Most 'bail';
 use lib 'lib';
 use Carp::Always;
+use Test::Class::Moose::Runner;
 
 {
     BEGIN { $INC{'Person.pm'} = 1 }
@@ -30,15 +31,15 @@ use Carp::Always;
 
 use Test::Class::Moose::Load qw(t/planlib);
 
-my $test_suite = Test::Class::Moose->new;
+my $runner =Test::Class::Moose::Runner->new;
 subtest 'run the test suite' => sub {
     my $builder = Test::Builder->new;
     $builder->todo_start('deliberately bad plans');
-    $test_suite->runtests;
+    $runner->runtests;
     $builder->todo_end;
 };
 
-my $report = $test_suite->test_report;
+my $report = $runner->test_report;
 
 # XXX test_with_attribute_but_no_plan didn't really report a plan of five, but
 # this value gets set after the test is run.
@@ -72,9 +73,9 @@ my %expected_tests_run = (
       =>
       5,
 );
-foreach my $class ( $report->all_test_classes ) {
-    foreach my $method ( $class->all_test_methods ) {
-        my $fq_name = join '::' => $class->name, $method->name;
+foreach my $instance ( $report->all_test_instances ) {
+    foreach my $method ( $instance->all_test_methods ) {
+        my $fq_name = join '::' => $instance->name, $method->name;
         is $method->tests_planned, $expected_tests_planned{$fq_name},
             "$fq_name should have $expected_tests_planned{$fq_name} tests planned";
         is $method->num_tests_run, $expected_tests_run{$fq_name},

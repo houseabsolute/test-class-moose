@@ -80,13 +80,15 @@ Note: This helper module was blatantly stolen from L<Test::Class::Load>.
 However, since your author is the person who originally wrote that code, he
 doesn't feel too bad.
 
-L<Test::Class::Moose> typically uses a helper script to load the test classes.
-It often looks something like this:
+Without a loader, you would have to manually load each test class in your test
+file. This would look something like this:
 
  #!/usr/bin/perl -T
 
  use strict;
  use warnings;
+
+ use Test::Class::Moose::Runner;
 
  use lib 't/tests';
 
@@ -94,7 +96,7 @@ It often looks something like this:
  use MyTest::Foo::Bar;
  use MyTest::Foo::Baz;
 
- Test::Class::Moose->runtests;
+ Test::Class::Moose::Runner->runtests;
 
 This causes a problem, though.  When you're writing a test class, it's easy to
 forget to add it to the helper script.  Then you run your huge test suite and
@@ -114,10 +116,11 @@ Using L<Test::Class::Moose::Load> is as simple as this:
  use strict;
  use warnings;
 
+ use Test::Class::Moose::Runner;
  use Test::Class::Moose::Load 't/tests';
 
- Test::Class::Moose->new(\%args)->runtests;
- 
+ Test::Class::Moose::Runner->new(\%args)->runtests;
+
 That will search through all files in the C<t/tests> directory and
 automatically load anything which ends in C<.pm>. You should only put test
 classes in those directories.
@@ -130,7 +133,7 @@ of them in the import list.
    t/order
    t/inventory
  >;
- Test::Class::Moose->runtests;
+ Test::Class::Moose::Runner->runtests;
 
 =head1 ADVANCED USAGE
 
@@ -142,14 +145,14 @@ You can redefine the filtering criteria, that is, decide what classes are
 picked up and what others are not. You do this simply by subclassing
 L<Test::Class::Moose::Load> overriding the C<is_test_class()> method. You
 might want to do this to only load modules which inherit from
-L<Test::Class::Moose>, or anything else for that matter. 
+L<Test::Class::Moose>, or anything else for that matter.
 
 =over 4
 
 =item B<is_test_class>
 
   $is_test_class = $class->is_test_class( $file, $directory )
-  
+
 Returns true if C<$file> in C<$directory> should be considered a test class
 and be loaded by L<Test::Class::Moose::Load>. The default filter simply
 returns true if C<$file> ends with C<.pm>
@@ -171,7 +174,7 @@ For example:
 
       # return unless it's a .pm (the default)
       return unless $class->SUPER::is_test_class( $file, $dir );
-    
+
       # and only allow .pm files with "Good" in their filename
       return $file =~ m{Good};
   }
@@ -184,7 +187,7 @@ One problem with this style of testing is that you run I<all> of the tests
 every time you need to test something.  If you want to run only one test
 class, it's problematic.  The easy way to do this is to change your helper
 script by deleting the C<runtests> call:
- 
+
  #!/usr/bin/perl -T
 
  use strict;
@@ -196,13 +199,15 @@ Then, just make sure that all of your test classes inherit from your own base
 class which runs the tests for you.  It might looks something like this:
 
  package My::Test::Class::Moose;
- 
+
  use strict;
  use warnings;
 
+ use Test::Class::Moose::Runner;
+
  use base 'Test::Class::Moose';
 
- INIT { Test::Class::Moose->new->runtests } # here's the magic!
+ INIT { Test::Class::Moose::Runner->new->runtests } # here's the magic!
 
  1;
 
@@ -213,7 +218,7 @@ to run:
  prove -lv -It/tests Some::Test::Class::Moose
 
 You can even automate this by binding it to a key in C<vim>:
-    
+
  noremap ,t  :!prove -lv -It/tests %<CR>
 
 Then you can just type C<,t> ('comma', 'tee') and it will run the tests for

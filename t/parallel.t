@@ -1,23 +1,22 @@
 #!/usr/bin/env perl
+use Test::Requires {
+    'Parallel::ForkManager' => 0,
+};
+
 use Test::Most;
 use lib 'lib';
 use Carp::Always;
 use Test::Class::Moose::Load qw(t/parallellib);
-eval "use Parallel::ForkManager";
-if ( my $error = $@ ) {
-    plan skip_all => "Parallel::ForkManager not found: $@";
-}
-my $jobs = $ENV{NUM_JOBS} || 0;
-$jobs = 1 if $jobs < 2;
-if ( 1 == $jobs ) {
-    diag "set NUM_JOBS=\$num_jobs to test this with more than one job";
-}
+use Test::Class::Moose::Runner;
 
-my $test_suite = MyParallelTests->new(
+plan skip_all =>
+    'These tests currently fail on Windows for reasons we do not understand. Patches welcome.'
+    if $^O =~ /Win32/;
+
+my $test_runner = Test::Class::Moose::Runner->new(
     show_timing => 0,
-    jobs        => $jobs,
+    jobs        => 2,
     statistics  => 0,
 );
 
-$test_suite->runtests;
-
+$test_runner->runtests;

@@ -4,21 +4,18 @@ package Test::Class::Moose;
 
 use 5.10.0;
 use Moose 2.0000;
-use MooseX::ClassAttribute;
 use Carp;
-use List::Util qw(shuffle);
-use List::MoreUtils qw(uniq);
 use namespace::autoclean;
 use Sub::Attribute;
 
-use Test::Builder;
-use Test::Most;
-use Try::Tiny;
-use Test::Class::Moose::Config;
-use Test::Class::Moose::Report;
-use Test::Class::Moose::Report::Class;
-use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::AttributeRegistry;
+use Test::Class::Moose::Config;
+
+has 'test_report' => (
+    is     => 'rw',
+    isa    => 'Test::Class::Moose::Report',
+    writer => '__set_test_report',
+);
 
 sub __create_attributes {
 
@@ -111,18 +108,6 @@ BEGIN {
     croak($@) if $@;
 }
 
-has 'test_configuration' => (
-    is  => 'ro',
-    isa => 'Test::Class::Moose::Config',
-);
-
-has 'test_report' => (
-    is      => 'rw',
-    isa     => 'Test::Class::Moose::Report',
-    writer  => '__set_test_report',
-    default => sub { Test::Class::Moose::Report->new },
-);
-
 has 'test_class' => (
     is  => 'rw',
     isa => 'Str',
@@ -132,6 +117,11 @@ has 'test_skip' => (
     is      => 'rw',
     isa     => 'Str',
     clearer => 'test_skip_clear',
+);
+
+has '_config_p' => (
+    is  => 'ro',
+    isa => 'HashRef',
 );
 
 sub import {
@@ -160,12 +150,41 @@ END
     }
 }
 
+# XXX - this is only necessary for backwards compatibility, where people call
+# Test::Class::Moose->new(...)->runtests() instead of
+# Test::Class::Moose::Runner->new(...)->runtests()
+my %config_attrs = map { $_->init_arg => 1}
+    Test::Class::Moose::Config->meta->get_all_attributes;
 around 'BUILDARGS' => sub {
     my $orig  = shift;
     my $class = shift;
-    return $class->$orig(
-        { test_configuration => Test::Class::Moose::Config->new(@_) } );
+
+    my $p = $class->$orig(@_);
+
+    my %config_p
+        = map { $_ => delete $p->{$_} } grep { $config_attrs{$_} } keys %{$p};
+    $p->{_config_p} = \%config_p;
+
+    return $p;
 };
+
+# XXX - also for backwards compat
+sub runtests {
+    my $self = shift;
+
+    # The only way this object won't have a _runner set is if someone calls
+    # ->new() on their test class (which subclasses Test::Class::Moose) and
+    # then calls ->runtests() on it, which has never been documented as
+    # working.
+    carp 'Calling runtests() on a Test::Class::Moose object is deprecated.'
+        . ' Use Test::Class::Moose::Runner instead.';
+
+    require Test::Class::Moose::Runner;
+    my $runner
+        = Test::Class::Moose::Runner->new( $self->_config_p );
+
+    return $runner->runtests();
+}
 
 sub BUILD {
     my $self = shift;
@@ -174,226 +193,10 @@ sub BUILD {
     $self->test_class( $self->meta->name );
 }
 
-my $TEST_CONTROL_METHODS = sub {
-    local *__ANON__ = 'ANON_TEST_CONTROL_METHODS';
-    return {
-        map { $_ => 1 }
-          qw/
-          test_startup
-          test_setup
-          test_teardown
-          test_shutdown
-          /
-    };
-};
+sub _tcm_make_test_class_instances {
+    my ( $test_class, $args ) = @_;
 
-sub _tcm_run_test_method {
-    my ( $self, $test_instance, $test_method, $report_class ) = @_;
-
-    my $test_class = $test_instance->test_class;
-    my $report  = Test::Class::Moose::Report::Method->new(
-        { name => $test_method, report_class => $report_class } );
-    $self->test_report->current_class->add_test_method($report);
-    my $config = $self->test_configuration;
-
-    my $builder = $config->builder;
-    $test_instance->test_skip_clear;
-    $test_instance->_tcm_run_test_control_method(
-        'test_setup',
-        $report
-    ) or fail "test_setup failed";
-    my $num_tests;
-
-    Test::Most::explain("$test_class->$test_method()");
-    $builder->subtest(
-        $test_method,
-        sub {
-            if ( my $message = $test_instance->test_skip ) {
-                $report->skipped($message);
-                $builder->plan( skip_all => $message );
-                return;
-            }
-            $report->_start_benchmark;
-
-            my $old_test_count = $builder->current_test;
-            try {
-                $test_instance->$test_method($report);
-                if ( $report->has_plan ) {
-                    $builder->plan( tests => $report->tests_planned );
-                }
-            }
-            catch {
-                fail "$test_method failed: $_";
-            };
-            $num_tests = $builder->current_test - $old_test_count;
-
-            $report->_end_benchmark;
-            if ( $config->show_timing ) {
-                my $time = $report->time->duration;
-                $config->builder->diag(
-                    $report->name . ": $time" );
-            }
-        },
-    );
-
-    $test_instance->_tcm_run_test_control_method(
-        'test_teardown',
-        $report
-    ) or fail "test_teardown failed";
-    if ( !$report->is_skipped ) {
-        $report->num_tests_run($num_tests);
-        if ( !$report->has_plan ) {
-            $report->tests_planned($num_tests);
-        }
-    }
-    return $report;
-}
-
-sub _tcm_run_test_control_method {
-    my ( $self, $phase, $report_object ) = @_;
-
-    $TEST_CONTROL_METHODS->()->{$phase}
-      or croak("Unknown test control method ($phase)");
-
-    my $success;
-    my $builder = $self->test_configuration->builder;
-    try {
-        my $num_tests = $builder->current_test;
-        $self->$phase($report_object);
-        if ( $builder->current_test ne $num_tests ) {
-            croak("Tests may not be run in test control methods ($phase)");
-        }
-        $success = 1;
-    }
-    catch {
-        my $error = $_;
-        my $class = $self->test_class;
-        $builder->diag("$class->$phase() failed: $error");
-    };
-    return $success;
-}
-
-sub runtests {
-    my $self = shift;
-
-    my $report = $self->test_report;
-    $report->_start_benchmark;
-    my @test_classes = $self->test_classes;
-
-    my $builder = $self->test_configuration->builder;
-    $builder->plan( tests => scalar @test_classes );
-    foreach my $test_class (@test_classes) {
-        Test::Most::explain("\nRunning tests for $test_class\n\n");
-        $builder->subtest(
-            $test_class,
-            $self->_tcm_run_test_class($test_class),
-        );
-    }
-
-    $builder->diag(<<"END") if $self->test_configuration->statistics;
-Test classes:    @{[ $report->num_test_classes ]}
-Test methods:    @{[ $report->num_test_methods ]}
-Total tests run: @{[ $report->num_tests_run ]}
-END
-    $builder->done_testing;
-    $report->_end_benchmark;
-    return $self;
-}
-
-sub _tcm_run_test_class {
-    my ( $self, $test_class ) = @_;
-
-    my $config  = $self->test_configuration;
-    my $builder = $config->builder;
-    my $report  = $self->test_report;
-
-    return sub {
-        local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
-
-        # set up test class reporting
-        my $report_class = Test::Class::Moose::Report::Class->new(
-            {   name => $test_class,
-            }
-        );
-        $report->add_test_class($report_class);
-        my $test_instance
-          = $test_class->new( $config->args );
-        $test_instance->__set_test_report($report);
-
-        my @test_methods = $test_instance->test_methods;
-        unless (@test_methods) {
-            my $message = "Skipping '$test_class': no test methods found";
-            $report_class->skipped($message);
-            $builder->plan( skip_all => $message );
-            return;
-        }
-        $report_class->_start_benchmark;
-
-        $report->_inc_test_methods( scalar @test_methods );
-
-        # startup
-        if (!$test_instance->_tcm_run_test_control_method(
-                'test_startup', $report_class
-            )
-          )
-        {
-            fail "test_startup failed";
-            return;
-        }
-
-        if ( my $message = $test_instance->test_skip ) {
-
-            # test_startup skipped the class
-            $report_class->skipped($message);
-            $builder->plan( skip_all => $message );
-            return;
-        }
-
-        $builder->plan( tests => scalar @test_methods );
-
-        # run test methods
-        foreach my $test_method (@test_methods) {
-            my $report_method = $self->_tcm_run_test_method(
-                $test_instance,
-                $test_method,
-                $report_class,
-            );
-            $report->_inc_tests( $report_method->num_tests_run );
-        }
-
-        # shutdown
-        $test_instance->_tcm_run_test_control_method(
-            'test_shutdown',
-            $report_class
-        ) or fail("test_shutdown() failed");
-
-        # finalize reporting
-        $report_class->_end_benchmark;
-        if ( $config->show_timing ) {
-            my $time = $report_class->time->duration;
-            $config->builder->diag("$test_class: $time");
-        }
-    };
-}
-
-sub test_classes {
-    my $self        = shift;
-
-    if ( my $classes = $self->test_configuration->test_classes ) {
-        if (@$classes) {    # ignore it if the array is empty
-            return @$classes;
-        }
-    }
-
-    my %metaclasses = Class::MOP::get_all_metaclasses();
-    my @classes;
-    foreach my $class ( keys %metaclasses ) {
-        next if $class eq __PACKAGE__;
-        push @classes => $class if $class->isa(__PACKAGE__);
-    }
-
-    # eventually we'll want to control the test class order
-    return sort @classes;
+    return ( $test_class => $test_class->new($args) );
 }
 
 sub test_methods {
@@ -417,58 +220,7 @@ sub test_methods {
         push @method_list => $name;
     }
 
-    if ( my $include = $self->test_configuration->include ) {
-        @method_list = grep {/$include/} @method_list;
-    }
-    if ( my $exclude = $self->test_configuration->exclude ) {
-        @method_list = grep { !/$exclude/ } @method_list;
-    }
-
-    @method_list = $self->_tcm_filter_by_tag(\@method_list);
-
-    return uniq(
-        $self->test_configuration->randomize
-        ? shuffle(@method_list)
-        : sort @method_list
-    );
-}
-
-sub _tcm_filter_by_tag {
-    my ( $self, $methods ) = @_;
-    my $class            = $self->test_class;
-    my @filtered_methods = @$methods;
-    if ( my $include = $self->test_configuration->include_tags ) {
-        my @new_method_list;
-        foreach my $method (@filtered_methods) {
-            foreach my $tag (@$include) {
-                if (Test::Class::Moose::AttributeRegistry->method_has_tag(
-                        $class, $method, $tag
-                    )
-                  )
-                {
-                    push @new_method_list => $method;
-                }
-            }
-        }
-        @filtered_methods = @new_method_list;
-    }
-    if ( my $exclude = $self->test_configuration->exclude_tags ) {
-        my @new_method_list = @filtered_methods;
-        foreach my $method (@filtered_methods) {
-            foreach my $tag (@$exclude) {
-                if (
-                    Test::Class::Moose::AttributeRegistry->method_has_tag(
-                        $class, $method, $tag
-                    )
-                  )
-                {
-                  @new_method_list = grep { $_ ne $method } @new_method_list;
-                }
-            }
-        };
-        @filtered_methods = @new_method_list;
-    };
-    return @filtered_methods;
+    return @method_list;
 }
 
 # empty stub methods guarantee that subclasses can always call these
@@ -657,17 +409,12 @@ Do not run tests in test control methods. This will cause the test control
 method to fail (this is a feature, not a bug).  If a test control method
 fails, the class/method will fail and testing for that class should stop.
 
-B<Every> test control method will be passed two arguments. The first is the
-C<$test> invocant. The second is an object implementing
-L<Test::Class::Moose::Role::Reporting>. You may find that the C<notes> hashref
-is a handy way of recording information you later wish to use if you call C<<
-$test_suite->test_report >>.
+B<Every> test control method will be called as a method. The invocant is the
+instance of your test class
 
-These are:
+The available test control methods are:
 
-=over 4
-
-=item * C<test_startup>
+=head2 C<test_startup>
 
  sub test_startup {
     my $test = shift;
@@ -687,10 +434,10 @@ C<< $test->test_class >>, or you can do this:
         ...
     }
 
-The C<< $test->test_report >> object is a L<Test::Class::Moose::Report::Class>
+The C<< $test->test_report >> object is a L<Test::Class::Moose::Report::Instance>
 object.
 
-=item * C<test_setup>
+=head2 C<test_setup>
 
  sub test_setup {
     my $test = shift;
@@ -708,7 +455,7 @@ you're about to run, you can do this:
     # do something with it
  }
 
-=item * C<test_teardown>
+=head2 C<test_teardown>
 
  sub test_teardown {
     my $test = shift;
@@ -716,9 +463,9 @@ you're about to run, you can do this:
     $test->next::method;
  }
 
-Runs at the end of each test method. 
+Runs at the end of each test method.
 
-=item * C<test_shutdown>
+=head2 C<test_shutdown>
 
  sub test_shutdown {
      my $test = shift;
@@ -726,9 +473,9 @@ Runs at the end of each test method.
      $test->next::method;
  }
 
-Runs at the end of each test class. 
+Runs at the end of each test class.
 
-=back
+=head2 Overriding Test Control Methods
 
 To override a test control method, just remember that this is OO:
 
@@ -738,156 +485,61 @@ To override a test control method, just remember that this is OO:
      # more setup code here
  }
 
+=head1 TEST CLASS INSTANCES
+
+B<This feature is still considered experimental.>
+
+By default, each test class you create will be instantiated once. However, you
+can tell the L<Test::Class::Moose::Runner> to create multiple instances of a
+test class.
+
+To do this, simply consume the
+L<Test::Class::Moose::Role::ParameterizedInstances> role in your test
+class. This role requires you to implement a C<_constructor_parameter_sets>
+method in your test class. That method will be called as a I<class method>. It
+is expected to return a list of key/value pairs. The keys are the name of the
+instance and the values are hashrefs of attributes to be passed to your test
+class's constructor. Here's a really dumb example:
+
+ package TestsFor::PlainAndFancy;
+ use Test::Class::Moose;
+ with 'Test::Class::Moose::Role::ParameterizedInstances';
+
+ has is_fancy => (
+     is       => 'ro',
+     isa      => 'Bool',
+     required => 1,
+ );
+
+ sub _constructor_parameter_sets {
+     my $class = shift;
+     return (
+         "$class - plain" => { is_fancy => 0 },
+         "$class - fancy" => { is_fancy => 1 },
+     );
+ }
+
+ sub test_something { ... }
+
+The test runner will run all the test methods in your class I<once per
+instance>, and each instance will be run in its own subtest.
+
+Note that this feature has great potential for abuse, so use it
+cautiously. That said, there are cases where this feature can greatly simplify
+your test code.
+
 =head1 RUNNING THE TEST SUITE
 
-We I<strongly> recommend using L<Test::Class::Moose::Load> as the driver for
-your test suite. Simply point it at the directory or directories containing
-your test classes:
+See the docs for L<Test::Class::Moose::Runner> for details on running your
+test suite. If you'd like to get up and running quickly, here's a very simple
+test file you can use:
 
  use Test::Class::Moose::Load 't/lib';
- My::Base::Class->new->runtests;
+ use Test::Class::Moose::Runner;
+ Test::Class::Moose::Runner->new->runtests;
 
-By running C<Test::Class::Moose> with a single driver script like this, all
-classes are loaded once and this can be a significant performance boost. This
-does mean a global state will be shared, so keep this in mind.
-
-You can also pass arguments to C<Test::Class::Moose>'s contructor.
-
- my $test_suite = My::Base::Class->new({
-     show_timing => 1,
-     randomize   => 0,
-     statistics  => 1,
- });
- # do something
- $test_suite->runtests;
-
-The attributes passed in the constructor are not directly available from the
-L<Test::Class::Moose> instance. They're available in
-L<Test::Class::Moose::Config> and to avoid namespace pollution, we do I<not>
-delegate the attributes directly as a result. If you need them at runtime,
-you'll need to access the C<test_configuration> attribute:
-
- my $builder = $test_suite->test_configuration->builder;
-
-Note that you can call C<< Test::Class::Moose->new >> instead of 
-C<< My::Base::Class->new >>, but we recommend that you instantiate an instance
-of your base class instead of C<Test::Class::Moose>. There are times when you
-may apply a role to your base class and modify it, but running it in the
-context of C<Test::Class::Moose> will not always pick up those modifications.
-
-In other words, create an instance of your base class, not
-C<Test::Class::Moose>.
-
-=head2 Contructor Attributes
-
-=over 4
-
-=item * C<show_timing>
-
-Boolean. Will display verbose information on the amount of time it takes each
-test class/test method to run. Defaults to false, but see C<use_environment>.
-
-=item * C<statistics>
-
-Boolean. Will display number of classes, test methods and tests run. Defaults
-to false, but see C<use_environment>.
-
-=item * C<use_environment>
-
-If this is true, then the default value for show_timing and statistics will be
-true if the C<HARNESS_IS_VERBOSE> environment variable is true. This is set
-when running C<prove -v ...>, for example.
-
-=item * C<randomize>
-
-Boolean. Will run test methods in a random order.
-
-=item * C<builder>
-
-Defaults to C<< Test::Builder->new >>. You can supply your own builder if you
-want, but it must conform to the L<Test::Builder> interface. We make no
-guarantees about which part of the interface it needs.
-
-=item * C<test_classes>
-
-Takes a class name or an array reference of class names. If it is present,
-only these test classes will be run. This is very useful if you wish to run an
-individual class as a test:
-
-    My::Base::Class->new(
-        test_classes => $ENV{TEST_CLASS}, # ignored if undef
-    )->runtests;
-
-You can also achieve this effect by writing a subclass and overriding the
-C<test_classes> method, but this makes it trivial to do this:
-
-    TEST_CLASS=TestsFor::Our::Company::Invoice prove -lv t/test_classes.t
-
-Alternatively:
-
-    My::Base::Class->new(
-        test_classes => \@ARGV, # ignored if empty
-    )->runtests;
-
-That lets you use the arisdottle to provide arguments to your test driver
-script:
-
-    prove -lv t/test_classes.t :: TestsFor::Our::Company::Invoice TestsFor::Something::Else
-
-=item * C<include>
-
-Regex. If present, only test methods whose name matches C<include> will be
-included. B<However>, they must still start with C<test_>.
-
-For example:
-
- my $test_suite = Test::Class::Moose->new({
-     include => qr/customer/,
- });
-
-The above constructor will let you match test methods named C<test_customer>
-and C<test_customer_account>, but will not suddenly match a method named
-C<default_customer>.
-
-By enforcing the leading C<test_> behavior, we don't surprise developers who
-are trying to figure out why C<default_customer> is being run as a test. This
-means an C<include> such as C<< /^customer.*/ >> will never run any tests.
-
-=item * C<exclude>
-
-Regex. If present, only test methods whose names don't match C<exclude> will be
-included. B<However>, they must still start with C<test_>. See C<include>.
-
-=item * C<include_tags>
-
-Array ref of strings matching method tags (a single string is also ok). If
-present, only test methods whose tags match C<include_tags> or whose tags
-don't match C<exclude_tags> will be included. B<However>, they must still
-start with C<test_>.
-
-For example:
-
- my $test_suite = Test::Class::Moose->new({
-     include_tags => [qw/api database/],
- });
-
-The above constructor will only run tests tagged with C<api> or C<database>.
-
-=item * C<exclude_tags>
-
-The same as C<include_tags>, but will exclude the tests rather than include
-them. For example, if your network is down:
-
- my $test_suite = Test::Class::Moose->new({
-     exclude_tags => [ 'network' ],
- });
-
- # or
- my $test_suite = Test::Class::Moose->new({
-     exclude_tags => 'network',
- });
-
-=back
+Put this in a file like F<t/run-test-class.t>. When you run it with prove it
+will load all the test classes defined in F<t/lib> and run them sequentially.
 
 =head2 Skipping Classes and Methods
 
@@ -903,7 +555,7 @@ If you wish to skip an individual method, do so in the C<test_setup> method.
     sub test_setup {
         my $test = shift;
         my $test_method = $test->test_report->current_method;
-    
+
         if ( 'test_time_travel' eq $test_method->name ) {
             $test->test_skip("Time travel not yet available");
         }
@@ -911,7 +563,7 @@ If you wish to skip an individual method, do so in the C<test_setup> method.
 
 =head2 The "Tests" and "Test" Attributes
 
-If you're comfortable with L<Test::Class>, know test methods methods are
+If you're comfortable with L<Test::Class>, you know that test methods methods are
 declared in L<Test::Class> with C<Test> (for a method with a single test) or
 C<Tests>, for a method with multiple tests. This also works for
 C<Test::Class::Moose>. Test methods declared this way do not need to start
@@ -962,7 +614,7 @@ tests to ensure the plan is correct. The above C<TestsFor::Parent> and
 C<TestsFor::Child> code would fail if the child's C<some_test> method
 attribute was C<Tests> without the number of tests asserted.
 
-Do not use C<Test> or C<Tests> with test control methods becase you don't run
+Do not use C<Test> or C<Tests> with test control methods because you don't run
 tests in those.
 
 =head2 Tagging Methods
@@ -980,12 +632,12 @@ tests suite, if desired. For example, if your network goes down and all tests
 which rely on a network are tagged with C<network>, you can skip those tests
 with this:
 
-    My::Base::Class->new( exclude_tags => 'network' )->runtests;
+    Test::Class::Moose::Runner->new( exclude_tags => 'network' )->runtests;
 
 Or maybe you want to run all C<api> and C<database> tests, but skip those
 marked C<deprecated>:
 
-    My::Base::Class->new(
+    Test::Class::Moose::Runner->new(
         include_tags => [qw/api database/],
         exclude_tags => 'deprecated',
     )->runtests;
@@ -1005,15 +657,6 @@ C<include_tags> and C<exclude_tags> will be ignored, but a warning will be
 issued if those are seen. Prior to version 0.51, C<Sub::Attribute> was
 optional. Now it's mandatory, so those features should always work.
 
-=head1 PARALLEL TESTING
-
-If you want to run the tests in parallel, see the experimental
-C<Test::Class::Moose::Role::Parallel> role. Read the documentation carefully
-as it can take a while to understand. You only need to use the role and
-(optionally) provide a C<schedule()> method. Any tests tagged with
-C<noparallel> will be run sequentially after the parallel tests (unless you
-provide your own schedule, in which case you can do anything you want).
-
 =head1 THINGS YOU CAN OVERRIDE
 
 ... but probably shouldn't.
@@ -1022,12 +665,6 @@ As a general rule, methods beginning with C</^test_/> are reserved for
 L<Test::Class::Moose>. This makes it easier to remember what you can and
 cannot override. However, any test with C<Test> or C<Tests> are test methods
 regardless of their names.
-
-=head2 C<test_configuration>
-
- my $test_configuration = $test->test_configuration;
-
-Returns the L<Test::Class::Moose::Config> object.
 
 =head2 C<test_report>
 
@@ -1061,12 +698,6 @@ You can also call it in test classes (most useful in the C<test_setup()> method)
 Returns the name for this test class. Useful if you rebless an object (such as
 applying a role at runtime) and don't want to lose the original class name.
 
-=head2 C<test_classes>
-
-You may override this in a subclass. Currently returns a sorted list of all
-loaded classes that inherit directly or indirectly through
-L<Test::Class::Moose>
-
 =head2 C<test_methods>
 
 You may override this in a subclass. Currently returns all methods in a test
@@ -1075,13 +706,6 @@ class that start with C<test_> (except for the test control methods).
 Please note that the behavior for C<include> and C<exclude> is also contained
 in this method. If you override it, you will need to account for those
 yourself.
-
-=head2 C<runtests>
-
-If you really, really want to change how this module works, you can override
-the C<runtests> method. We don't recommend it.
-
-Returns the L<Test::Class::Moose> instance.
 
 =head2 C<import>
 
@@ -1093,9 +717,9 @@ with all of the L<Test::Most> behavior.
 We use nested tests (subtests) at each level:
 
     1..2
-    # 
+    #
     # Executing tests for TestsFor::Basic::Subclass
-    # 
+    #
         1..3
         # TestsFor::Basic::Subclass->test_me()
             ok 1 - I overrode my parent! (TestsFor::Basic::Subclass)
@@ -1115,9 +739,9 @@ We use nested tests (subtests) at each level:
             1..5
         ok 3 - test_this_should_be_run
     ok 1 - TestsFor::Basic::Subclass
-    # 
+    #
     # Executing tests for TestsFor::Basic
-    # 
+    #
         1..2
         # TestsFor::Basic->test_me()
             ok 1 - test_me() ran (TestsFor::Basic)
@@ -1152,14 +776,16 @@ wrong).
     use lib 'lib';
     use Test::Most;
     use Test::Class::Moose::Load qw(t/lib);
-    my $test_suite = My::Base::Class->new;
+    use Test::Class::Moose::Runner;
+
+    my $test_suite = Test::Class::Moose::Runner->new;
 
     subtest 'run the test suite' => sub {
         $test_suite->runtests;
     };
     my $report = $test_suite->test_report;
 
-    foreach my $class ( $report->all_test_classes ) {
+    foreach my $class ( $report->all_test_instances ) {
         my $class_name = $class->name;
         ok !$class->is_skipped, "$class_name was not skipped";
 
@@ -1180,22 +806,22 @@ wrong).
         my $system = $time->system;
         # do with these as you will
     }
-    diag "Number of test classes: " . $report->num_test_classes;
-    diag "Number of test methods: " . $report->num_test_methods;
-    diag "Number of tests:        " . $report->num_tests;
+    diag "Number of test instances: " . $report->num_test_instances;
+    diag "Number of test methods: "   . $report->num_test_methods;
+    diag "Number of tests:        "   . $report->num_tests;
 
     done_testing;
 
 If you just want to output reporting information, you do not need to run the
 test suite in a subtest:
 
-    my $test_suite = My::Base::Class->new->runtests;
+    my $test_suite = Test::Class::Moose::Runner->new->runtests;
     my $report     = $test_suite->test_report;
     ...
 
 Or even shorter:
 
-    my $report = My::Base::Class->new->runtests->test_report;
+    my $report = Test::Class::Moose::Runner->new->runtests->test_report;
 
 =head1 EXTRAS
 
@@ -1204,16 +830,58 @@ for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 DEPRECATIONS
 
+=head2 Version 0.55
+
+=over 4
+
+=item * Running tests with Test::Class::Moose is deprecated - use L<Test::Class::Moose::Runner>
+
+As of version 0.55, running tests and being a test class have been
+separated. Your test classes should continue to C<use Test::Class::Moose>, but
+your test runner script should use L<Test::Class::Moose::Runner>:
+
+ use Test::Class::Moose::Load 't/lib';
+ use Test::Class::Moose::Runner;
+ Test::Class::Moose::Runner->new->runtests;
+
+Calling C<< Test::Class::Moose->new->runtests >> still works, but is
+deprecated and will issue a warning.
+
+=item * Parallel testing is totally different
+
+The C<Test::Class::Moose::Role::Parallel> role won't do anything other than
+issue a warning. See the L<Test::Class::Moose::Runner> docs for details on
+running tests in parallel.
+
+=item * The L<Test::Class::Moose::Report> C<all_test_classes> method is deprecated
+
+This has been replaced with the C<all_test_instances> method. The
+C<all_test_classes> method is still present for backwards compatibility, but
+it simply calls C<all_test_instances> under the hood.
+
+=item * The C<Test::Class::Moose::Report::Class> class is gone
+
+It has been replaced by the C<Test::Class::Moose::Report::Instance> class,
+which has the same API.
+
+=item * The C<Test::Class::Moose::Report::Method> C<class_report> method has been renamed
+
+This is now called C<instance_report>.
+
+=back
+
+=head2 Version 0.40
+
 =over 4
 
 =item * C<test_reporting>
 
-As of version .40, the long deprecated method C<test_reporting> has now been
+As of version 0.40, the long deprecated method C<test_reporting> has now been
 removed.
 
 =item * C<$report> argument to methods deprecated
 
-Prior to version .40, you used to have a second argument to all test methods
+Prior to version 0.40, you used to have a second argument to all test methods
 and test control methods:
 
     sub test_something {

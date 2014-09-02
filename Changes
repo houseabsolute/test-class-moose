@@ -1,8 +1,26 @@
 Revision history for Perl distribution Test-Class-Moose
 
+0.55 2014-03-18
+        * There are a number of deprecations and backwards incompatible
+          changes in this release!
+        * Calling runtests() on Test::Class::Moose or a subclass of that class
+          is now deprecated. Use the new Test::Class::Moose::Runner class
+          instead.
+        * The Test::Class::Moose::Role::Parallel role no longer does
+          anything. You can use the Test::Class::Moose::Runner class to run
+          tests in parallel by passing a jobs parameter to its
+          constructor. See the docs for details.
+        * Parallel testing is now done _per test class instance_ rather than
+          per method. In other words, each subprocess instantiates a test
+          class and runs all of its test methods.
+        * You can now run multiple instances of a test class by using the
+          Test::Class::Moose::Role::ParameterizedInstances role. See the
+          Test::Class::Moose docs for details.
         - All private methods defined as lexically-scoped variables in
           Test::Class::Moose have been made actual methods so that roles and
-          subclasses can affect them. (Dave Rolsky)
+          subclasses can affect them.
+        - Removed MooseX::ClassAttribute from the list of prereqs in
+          Makefile.PL. Test::Class::Moose loaded this but never used it.
 
 0.54 2014-03-18
         - Update the tutorial for typos and to documents Tests()
