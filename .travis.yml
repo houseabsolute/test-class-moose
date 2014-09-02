@@ -23,6 +23,6 @@ before_install:
 install:
   - cpan-install ExtUtils::MakeMaker~6.68 --deps
 script:
-  - perl Build.PL
-  - ./Build
+  - perl Makefile.PL
+  - make
   - prove -br -j$(test-jobs) $(test-files)
