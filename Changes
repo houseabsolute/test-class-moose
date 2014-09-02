@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.56 2014-09-02
         * This is the first release to include the deprecations and backwards
           incompatibilities from 0.55. Please see that release's notes as
           well!
