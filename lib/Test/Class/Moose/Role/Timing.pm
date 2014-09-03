@@ -33,8 +33,16 @@ has '_end_benchmark' => (
 );
 
 has 'time' => (
-    is  => 'rw',
-    isa => 'Test::Class::Moose::Report::Time',
+    is      => 'rw',
+    isa     => 'Test::Class::Moose::Report::Time',
+    default => sub {
+
+        # return a "zero" if no time is set
+        my $self      = shift;
+        my $benchmark = Benchmark->new;
+        return Test::Class::Moose::Report::Time->new(
+            timediff( $benchmark, $benchmark ) );
+    },
 );
 
 1;
