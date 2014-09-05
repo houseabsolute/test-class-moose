@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.57
+version 0.58
 
 # SYNOPSIS
 
@@ -90,7 +90,7 @@ does not start with `test_`:
         ...
     }
 
-**Note**: Prior to version 0.51, this feature only worked if you had the
+__Note__: Prior to version 0.51, this feature only worked if you had the
 optional `Sub::Attribute` installed.
 
 ## Plans
@@ -169,7 +169,7 @@ Do not run tests in test control methods. This will cause the test control
 method to fail (this is a feature, not a bug).  If a test control method
 fails, the class/method will fail and testing for that class should stop.
 
-**Every** test control method will be called as a method. The invocant is the
+__Every__ test control method will be called as a method. The invocant is the
 instance of your test class
 
 The available test control methods are:
@@ -247,7 +247,7 @@ To override a test control method, just remember that this is OO:
 
 # TEST CLASS INSTANCES
 
-**This feature is still considered experimental.**
+__This feature is still considered experimental.__
 
 By default, each test class you create will be instantiated once. However, you
 can tell the [Test::Class::Moose::Runner](https://metacpan.org/pod/Test::Class::Moose::Runner) to create multiple instances of a
@@ -548,10 +548,13 @@ wrong).
     foreach my $class ( $report->all_test_instances ) {
         my $class_name = $class->name;
         ok !$class->is_skipped, "$class_name was not skipped";
+        ok $class->passed, "$class_name passed";
 
         subtest "$class_name methods" => sub {
             foreach my $method ( $class->all_test_methods ) {
                 my $method_name = $method->name;
+                ok $method->passed, "$method_name passed";
+
                 ok !$method->is_skipped, "$method_name was not skipped";
                 cmp_ok $method->num_tests, '>', 0,
                   '... and some tests should have been run';
