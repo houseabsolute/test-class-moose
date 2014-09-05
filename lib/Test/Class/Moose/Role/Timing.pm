@@ -64,4 +64,5 @@ None.
 =head2 C<time>
 
 Returns a L<Test::Class::Moose::Report::Time> object. This object
-represents the duration of this class or method.
+represents the duration of this class or method. The duration may be "0" if
+it's an abstract class with no tests run.
