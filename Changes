@@ -1,6 +1,10 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Add a passed() method class and method report objects (GitHub issue #30)
+        * If a test class did not run (such as an abstract class), the time()
+          method on reports now returns a zero duraction time instead of
+          undef (GitHub issue #34)
 
 0.57 2014-09-02
         * Fix the homepage link in the meta info.

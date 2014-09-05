@@ -98,6 +98,7 @@ sub _tcm_run_test_instance {
     unless (@test_methods) {
         my $message = "Skipping '$test_instance_name': no test methods found";
         $instance_report->skipped($message);
+        $instance_report->passed(1);
         $builder->plan( skip_all => $message );
         return;
     }
@@ -126,6 +127,8 @@ sub _tcm_run_test_instance {
     $builder->plan( tests => scalar @test_methods );
 
     # run test methods
+
+    my $all_passed = 1;
     foreach my $test_method (@test_methods) {
         my $report_method = $self->_tcm_run_test_method(
             $test_instance,
@@ -133,14 +136,16 @@ sub _tcm_run_test_instance {
             $instance_report,
         );
         $report->_inc_tests( $report_method->num_tests_run );
+        $all_passed = 0 if not $report_method->passed;
     }
+    $instance_report->passed($all_passed);
 
     # shutdown
     $self->_tcm_run_test_control_method(
         $test_instance,
         'test_shutdown',
         $instance_report,
-    ) or fail("test_shutdown() failed");
+    ) or $instance_report->passed( fail("test_shutdown() failed") );
 
     # finalize reporting
     $instance_report->_end_benchmark;
@@ -148,6 +153,7 @@ sub _tcm_run_test_instance {
         my $time = $instance_report->time->duration;
         $builder->diag("$test_instance_name: $time");
     }
+    return $instance_report;
 }
 
 sub _tcm_test_methods_for_instance {
@@ -258,6 +264,7 @@ sub _tcm_run_test_method {
 
     my $report  = Test::Class::Moose::Report::Method->new(
         { name => $test_method, instance_report => $instance_report } );
+
     $self->test_report->current_class->add_test_method($report);
     my $config = $self->test_configuration;
 
@@ -272,7 +279,7 @@ sub _tcm_run_test_method {
 
     my $test_class = $test_instance->test_class;
     Test::Most::explain("$test_class->$test_method()");
-    $builder->subtest(
+    my $passed = $builder->subtest(
         $test_method,
         sub {
             if ( my $message = $test_instance->test_skip ) {
@@ -291,6 +298,7 @@ sub _tcm_run_test_method {
             }
             catch {
                 fail "$test_method failed: $_";
+                $report->passed(0);
             };
             $num_tests = $builder->current_test - $old_test_count;
 
@@ -302,12 +310,13 @@ sub _tcm_run_test_method {
             }
         },
     );
+    $report->passed($passed);
 
     $self->_tcm_run_test_control_method(
         $test_instance,
         'test_teardown',
         $report,
-    ) or fail "test_teardown failed";
+    ) or $report->passed(fail "test_teardown failed");
     if ( !$report->is_skipped ) {
         $report->num_tests_run($num_tests);
         if ( !$report->has_plan ) {
