@@ -4,6 +4,8 @@
 Makefile
 Makefile.PL
 Makefile.old
+MYMETA.yml
+MYMETA.json
 Test-Class-Moose-*
 \#*\#
 _build
