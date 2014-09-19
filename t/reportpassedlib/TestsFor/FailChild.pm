@@ -1,5 +1,5 @@
 package TestsFor::FailChild;
-use Test::Class::Moose extends => 'Fail';
+use Test::Class::Moose extends => 'TestsFor::Fail';
 
 sub test_a_good {
     ok 1;
@@ -20,3 +20,4 @@ sub test_b_bad {
 sub test_another { ok 1 }
 
 1;
+
