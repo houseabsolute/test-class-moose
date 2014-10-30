@@ -1,4 +1,4 @@
-package Test::Class::Moose::TagRegistry;
+package Test::Class::Moose::AttributeRegistry;
 
 ## ABSTRACT: Global registry of tags by class and method.
 
@@ -9,9 +9,31 @@ use Carp;
 use Class::MOP;
 use List::MoreUtils qw( any uniq );
 
-my %BY_METHOD;
+my %BY_METHOD = (
+    tags => {}, # {$method}{$test_class}
+    plans => {},
+);
 
-sub add {
+sub add_plan {
+    my ( $class, $test_class, $method, $plan ) = @_;
+    if ( defined $plan ) {
+        $plan =~ s/\D//g;
+        undef $plan unless $plan =~ /\d/; # no_plan
+    }
+    $BY_METHOD{plans}{$method}{$test_class} = $plan;
+}
+
+sub get_plan {
+    my ( $class, $test_class, $method ) = @_;
+    return $BY_METHOD{plans}{$method}{$test_class};
+}
+
+sub has_test_attribute {
+    my ( $class, $test_class, $method ) = @_;
+    return exists $BY_METHOD{plans}{$method}{$test_class};
+}
+
+sub add_tags {
     my ( $class, $test_class, $method, $tags ) = @_;
 
     my @tags_copy = @{$tags};
@@ -30,12 +52,12 @@ sub add {
     # dedupe tags
     my %tags = map { $_ => 1 } @tags_copy;
 
-    if (exists $BY_METHOD{$method} && exists $BY_METHOD{$method}{$test_class}) {
+    if (exists $BY_METHOD{tags}{$method} && exists $BY_METHOD{tags}{$method}{$test_class}) {
         die
           "tags for $test_class->$method already exists, method redefinition perhaps?\n";
     }
 
-    $BY_METHOD{$method}{$test_class} = \%tags;
+    $BY_METHOD{tags}{$method}{$test_class} = \%tags;
 
     return;
 }
@@ -43,12 +65,27 @@ sub add {
 sub tags {
     my @tags;
     for my $method ( keys %BY_METHOD ) {
-        for my $test_class ( keys %{ $BY_METHOD{$method} } ) {
-            push @tags, keys %{ $BY_METHOD{$method}{$test_class} };
+        for my $test_class ( keys %{ $BY_METHOD{tags}{$method} } ) {
+            push @tags, keys %{ $BY_METHOD{tags}{$method}{$test_class} };
         }
     }
 
     return sort( uniq(@tags) );
+}
+
+sub class_has_tag {
+    my ( $class, $test_class, $tag ) = @_;
+
+    croak("no class specified") if not defined $test_class;
+    croak("no tag specified")   if not defined $tag;
+
+    # XXX a naïve implementation, but it does the job for now.
+    my $test_class_meta = Class::MOP::Class->initialize($test_class);
+    foreach my $method ( $test_class_meta->get_all_method_names ) {
+        next unless $method =~ /test_/;
+        return 1 if $class->method_has_tag( $test_class, $method, $tag );
+    }
+    return;
 }
 
 sub method_has_tag {
@@ -59,15 +96,15 @@ sub method_has_tag {
     croak("no tag specified")    if not defined $tag;
 
     # avoid auto-vivication
-    return if not exists $BY_METHOD{$method};
+    return if not exists $BY_METHOD{tags}{$method};
 
-    if (not exists $BY_METHOD{$method}{$test_class}) {
+    if (not exists $BY_METHOD{tags}{$method}{$test_class}) {
         # If this method has no tag data at all, then inherit the tags from
         # from the superclass
-        $BY_METHOD{$method}{$test_class} = $class->_superclass_tags($test_class, $method);
+        $BY_METHOD{tags}{$method}{$test_class} = $class->_superclass_tags($test_class, $method);
     }
 
-    return exists $BY_METHOD{$method}{$test_class}{$tag};
+    return exists $BY_METHOD{tags}{$method}{$test_class}{$tag};
 }
 
 sub _superclass_tags {
@@ -76,7 +113,7 @@ sub _superclass_tags {
     croak("no class specified")  if not defined $test_class;
     croak("no method specified") if not defined $method;
 
-    return {} if not exists $BY_METHOD{$method};
+    return {} if not exists $BY_METHOD{tags}{$method};
 
     my $test_class_meta = Class::MOP::Class->initialize($test_class);
     my $method_meta;
@@ -98,10 +135,10 @@ sub _superclass_tags {
     return {} if not $method_meta;
 
     my $super_test_class = $method_meta->package_name();
-    if ( exists $BY_METHOD{$method}{$super_test_class} ) {
+    if ( exists $BY_METHOD{tags}{$method}{$super_test_class} ) {
         # shallow copy the superclass method's tags, because it's possible to
         # change add/remove items from the subclass's list later
-        my %tags = map { $_ => 1 } keys %{ $BY_METHOD{$method}{$super_test_class} };
+        my %tags = map { $_ => 1 } keys %{ $BY_METHOD{tags}{$method}{$super_test_class} };
         return \%tags;
     }
 
@@ -142,25 +179,41 @@ __END__
 
 =head1 SYNOPSIS
 
- use Test::Class::Moose::TagRegistry;
+ use Test::Class::Moose::AttributeRegistry;
 
- my @tags = Test::Class::Moose::TagRegistry->tags;
- print Test::Class::Moose::TagRegistry->method_has_tag( 'TestsFor::FooBar', 'test_baz', 'network' );
+ my @tags = Test::Class::Moose::AttributeRegistry->tags;
+ print Test::Class::Moose::AttributeRegistry->method_has_tag( 'TestsFor::FooBar', 'test_baz', 'network' );
 
 =head1 DESCRIPTION
 
-This class permits addition and querying of the tags defined on methods. It's
-been gleefully stolen from L<Attribute::Method::Tags> and is for internal use
-only. Don't rely on this code.
+This class permits addition and querying of the tags and plans defined on
+methods via attributes. It's been gleefully stolen from
+L<Attribute::Method::Tags> and is for internal use only. Don't rely on this
+code.
 
 =head1 METHODS
 
-All the following are class methods, as the tag registry is shared globally.
-Note that all parameters for any of the methods below are required.
+All the following are class methods, as the attribute registry is shared
+globally. Note that all parameters for any of the methods below are required.
 
 =over 4
+  
+=item add_plan( $class, $method, plan )
 
-=item add( $class, $method, $tags_ref )
+Add a numeric (or undef) plan to a method.
+
+=item get_plan( $class, $method )
+
+Returns the numeric (or undef) plan for a method if that was set via the
+C<Test> or C<Tests> attributes.
+
+=item has_test_attribute( $class, $method )
+
+Returns true if either C<Test> or C<Tests> was declared for a method. Used to
+identify something as a test method even if the method name doesn't begin with
+C<test_>.
+
+=item add_tags( $class, $method, $tags_ref )
 
 Adds the given list of tags (as an array-ref) for the specified class/method
 combination.  An exception will be raised if either the tags are

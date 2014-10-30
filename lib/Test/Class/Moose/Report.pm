@@ -22,23 +22,42 @@ has 'num_tests_run' => (
     default => 0,
 );
 
+has 'is_parallel' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
+
 sub tests_run {
     carp "tests_run() deprecated as of version 0.07. Use num_tests_run().";
     goto &num_tests_run;
 }
 
 # see Moose::Meta::Attribute::Native::Trait::Array
-has test_classes => (
+has test_instances => (
     is      => 'ro',
     traits  => ['Array'],
-    isa     => 'ArrayRef[Test::Class::Moose::Report::Class]',
+    isa     => 'ArrayRef[Test::Class::Moose::Report::Instance]',
     default => sub { [] },
     handles => {
-        all_test_classes => 'elements',
-        add_test_class   => 'push',
-        num_test_classes => 'count',
+        _all_test_instances => 'elements',
+        add_test_instance   => 'push',
+        num_test_instances  => 'count',
     },
 );
+
+sub all_test_instances {
+    my $self = shift;
+    warn "When running tests in parallel we are unable to store test class instances\n"
+        if $self->is_parallel;
+    return $self->_all_test_instances;
+}
+
+sub all_test_classes {
+    my $self = shift;
+    warn "The all_test_classes() method has been renamed to all_test_instances()\n";
+    return $self->all_test_instances;
+}
 
 sub _inc_test_methods {
     my ( $self, $test_methods ) = @_;
@@ -54,7 +73,20 @@ sub _inc_tests {
 
 sub current_class {
     my $self = shift;
-    return $self->test_classes->[-1];
+    return $self->test_instances->[-1];
+}
+
+sub current_method {
+    my $self = shift;
+    my $current_class = $self->current_class or return;
+    return $current_class->current_method;
+}
+
+sub plan {
+    my ( $self, $plan ) = @_;
+    my $current_method = $self->current_method
+        or croak("You tried to plan but we don't have a test method yet!");
+    $current_method->plan($plan);
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -69,8 +101,8 @@ __END__
 =head1 DESCRIPTION
 
 When working with larger test suites, it's useful to have full reporting
-information avaiable about the test suite. The reporting features of
-L<Test::Class::Moose> allow you to report on the number of test classes and
+information available about the test suite. The reporting features of
+L<Test::Class::Moose> allow you to report on the number of test class instances and
 methods run (and number of tests), along with timing information to help you
 track down which tests are running slowly. You can even run tests on your
 report information:
@@ -88,7 +120,7 @@ report information:
     my $duration = $report->time->duration;
     diag "Test suite run time: $duration";
 
-    foreach my $class ( $report->all_test_classes ) {
+    foreach my $class ( $report->all_test_instances ) {
         my $class_name = $class->name;
         ok !$class->is_skipped, "$class_name was not skipped";
 
@@ -109,9 +141,9 @@ report information:
         my $system = $time->system;
         # do with these as you will
     }
-    diag "Number of test classes: " . $report->num_test_classes;
-    diag "Number of test methods: " . $report->num_test_methods;
-    diag "Number of tests:        " . $report->num_tests;
+    diag "Number of test instances: " . $report->num_test_instances;
+    diag "Number of test methods: "   . $report->num_test_methods;
+    diag "Number of tests:        "   . $report->num_tests;
 
     done_testing;
 
@@ -132,17 +164,17 @@ After the test suite is run, you can call the C<test_report> method to get the
 report. The test report is a L<Test::Class::Moose::Report> object. This object
 provides the following methods:
 
-=head3 C<test_classes>
+=head3 C<test_instances>
 
-Returns an array reference of L<Test::Class::Moose::Report::Class> instances.
+Returns an array reference of L<Test::Class::Moose::Report::Instance> instances.
 
-=head3 C<all_test_classes>
+=head3 C<all_test_instances>
 
-Returns an array of L<Test::Class::Moose::Report::Class> instances.
+Returns an array of L<Test::Class::Moose::Report::Instance> instances.
 
-=head3 C<num_test_classes>
+=head3 C<num_test_instances>
 
-Integer. The number of test classes run.
+Integer. The number of test instances run.
 
 =head3 C<num_test_methods>
 
@@ -157,9 +189,9 @@ Integer. The number of tests run.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of the entire test suite.
 
-=head2 Test Report for Classes
+=head2 Test Report for Instances
 
-Each L<Test::Class::Moose::Report::Class> instance provides the following
+Each L<Test::Class::Moose::Report::Instance> instance provides the following
 methods:
 
 =head3 C<test_methods>

@@ -1,4 +1,4 @@
-package Test::Class::Moose::Tutorial
+package Test::Class::Moose::Tutorial;
 
 # ABSTRACT: A starting guide for Test::Class::Moose
 
@@ -52,7 +52,7 @@ as a test.
     use My::Module;
 
     sub test_construction {
-        my ( $test, $report ) = @_;
+        my $test = shift;
         my $obj = My::Module->new;
         isa_ok $obj, 'My::Module';
     }
@@ -123,7 +123,7 @@ looks exactly as it should before we clean it up.
 
 =head2 test_setup / test_teardown
 
-What C<test_startup> and C<test_shutdonw> are for the entire test class,
+What C<test_startup> and C<test_shutdown> are for the entire test class,
 C<test_setup> and C<test_teardown> are for every single C<test_*> method.
 
 C<test_setup> is run before every test method. For canonical unit testing,
@@ -153,7 +153,7 @@ Since we're using C<Moose>, inheritance is as easy as:
 C<Test::Class::Moose> even provides a shortcut:
 
     package TestsFor::My::Text::Class;
-    use Test::Class::Moose => 'My::Test::Base';
+    use Test::Class::Moose extends => 'My::Test::Base';
 
 If C<My::Test::Base> will not be testing anything itself, we do not put it in
 C<t/lib/TestsFor>, instead we put it in C<lib> or C<t/lib> (depending on if we
@@ -169,6 +169,9 @@ are added in the regular C<Moose> way:
     package TestsFor::My::Test::Class;
     use Test::Class::Moose;
     with 'My::Test::Role';
+
+If you want your role to also provide tests, make sure you use
+L<Test::Class::Moose::Role> instead of C<Moose::Role>.
 
 =head2 Organizing Your Tests
 
@@ -192,14 +195,34 @@ If you need to prepare a plan for your tests, you can do so using the plan()
 method:
 
     sub test_constructor {
-        my ( $test, $report ) = @_;
-        $test->plan( 1 ); # 1 test in this sub
+        my $test = shift;
+        $test->test_report->plan( 1 ); # 1 test in this sub
         isa_ok My::Module->new, 'My::Module';
     }
 
 Using the C<plan()> method, we can know exactly how many tests did not run if
-the test method ends prematurely. Without it, we would only get the message
-"No plan was seen", we would not know which tests were not run.
+the test method ends prematurely, or how many extra tests were run if we had
+too many tests.
+
+Alternately, you can use the C<Test> (a single test) or C<Tests> attributes
+to set the plan. If you do this, the method is marked as a test method even if
+it does not begin with C<test_>.
+
+    # 'Test' asserts a plan of 1 test
+    sub test_constructor : Test {
+        my $test = shift;
+        isa_ok My::Module->new, 'My::Module';
+    }
+
+    # 'Tests' means multiple tests with no plan (note the test name)
+    sub a_test_method : Tests {
+        # many tests here
+    }
+
+    # 'Tests($integer) means a plan of $integer
+    sub this_is_another_test : Tests(3) {
+        # 3 tests
+    }
 
 =head2 skip
 
@@ -215,8 +238,8 @@ and call the C<test_skip> method with the reason we're skipping the test.
     }
     
     sub test_setup {
-        my ( $test, $report ) = @_;
-        if ( $report->name eq 'test_will_fail' ) {
+        my $test = shift;
+        if ( $test->test_report->current_method->name eq 'test_will_fail' ) {
             $test->test_skip( 'It doesn't work' );
         }
     }
@@ -225,7 +248,7 @@ If we don't want to run an entire class, we can use the C<test_startup> method
 and the same C<test_skip> method with the reason we're skipping the test.
 
     sub test_startup {
-        my ( $test, $report ) = @_;
+        my $test = shift;
         $test->test_skip( "The entire class doesn't work" );
     }
 
@@ -274,10 +297,11 @@ tags like "online" for tests that require a network, or "database" for tests
 that require a database, and then include or exclude those tags when you
 execute your tests.
 
-You add tags to your test methods using attributes:
+You add tags to your test methods using attributes. A test method may have one
+or more tags:
 
-    sub test_database :Tags( database ) { ... }
-    sub test_network :Tags( online ) { ... }
+    sub test_database : Tags( database )            { ... }
+    sub test_network  : Tests(7) Tags( online api ) { ... }
 
 Then, if your database goes down, you can exclude those tests from the
 C<t/test_class_tests.t> script:

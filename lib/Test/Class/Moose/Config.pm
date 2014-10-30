@@ -5,6 +5,7 @@ package Test::Class::Moose::Config;
 use 5.10.0;
 use Moose;
 use Moose::Util::TypeConstraints;
+use TAP::Formatter::Color;
 use namespace::autoclean;
 
 subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
@@ -12,9 +13,9 @@ subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
 coerce 'ArrayRefOfStrings', from 'Str', via { defined($_) ? [$_] : undef };
 
 has 'show_timing' => (
-    is  => 'ro',
-    isa => 'Bool',
-    lazy => 1,
+    is      => 'ro',
+    isa     => 'Bool',
+    lazy    => 1,
     default => sub {
         if ( $_[0]->use_environment and $ENV{HARNESS_IS_VERBOSE} ) {
             return 1;
@@ -32,9 +33,9 @@ has 'builder' => (
 );
 
 has 'statistics' => (
-    is  => 'ro',
-    isa => 'Bool',
-    lazy => 1,
+    is      => 'ro',
+    isa     => 'Bool',
+    lazy    => 1,
     default => sub {
         if ( $_[0]->use_environment and $ENV{HARNESS_IS_VERBOSE} ) {
             return 1;

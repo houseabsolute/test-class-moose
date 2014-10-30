@@ -1,5 +1,105 @@
 Revision history for Perl distribution Test-Class-Moose
 
+{{$NEXT}}
+
+0.58 2014-09-05
+        * Add a passed() method to class and method report objects (GitHub issue #30)
+        * If a test class did not run (such as an abstract class), the time()
+          method on reports now returns a zero duraction time instead of
+          undef (GitHub issue #34)
+
+0.57 2014-09-02
+        * Fix the homepage link in the meta info.
+
+0.56 2014-09-02
+        * This is the first release to include the deprecations and backwards
+          incompatibilities from 0.55. Please see that release's notes as
+          well!
+        * Skip parallel tests on Windows. This may be a bug in
+          Test::Class::Moose or Parallel::ForkManager, but for now we're
+          punting. Reported by Alexandr Ciornii. GitHub issue #36.
+        * Removed Sub::Attribute from the "recommends" list. This is required
+          now, and listing it as both required and recommends is confusing.
+        * Lots of doc fixes.
+
+0.55 2014-03-18
+        * There are a number of deprecations and backwards incompatible
+          changes in this release!
+        * Calling runtests() on Test::Class::Moose or a subclass of that class
+          is now deprecated. Use the new Test::Class::Moose::Runner class
+          instead.
+        * The Test::Class::Moose::Role::Parallel role no longer does
+          anything. You can use the Test::Class::Moose::Runner class to run
+          tests in parallel by passing a jobs parameter to its
+          constructor. See the docs for details.
+        * Parallel testing is now done _per test class instance_ rather than
+          per method. In other words, each subprocess instantiates a test
+          class and runs all of its test methods.
+        * You can now run multiple instances of a test class by using the
+          Test::Class::Moose::Role::ParameterizedInstances role. See the
+          Test::Class::Moose docs for details.
+        - All private methods defined as lexically-scoped variables in
+          Test::Class::Moose have been made actual methods so that roles and
+          subclasses can affect them.
+        - Removed MooseX::ClassAttribute from the list of prereqs in
+          Makefile.PL. Test::Class::Moose loaded this but never used it.
+
+0.54 2014-03-18
+        - Update the tutorial for typos and to documents Tests()
+        - Add the github.io homepage.
+
+0.53 2014-03-15
+        - Loooong day. The ContributorsFromGit dist::zilla plugin did, indeed,
+          add all git contributors to the POD, but it deleted all of my other
+          POD. This might be my record for number of rereleases in a day.
+
+0.52 2014-03-15
+        - Note in the docs the Sub::Attribute change from version 0.51
+        - Oops. Remove all of the .bak files from the distro.
+        - List contributors automatically in docs
+
+0.51 2014-03-15
+        - Sub::Attribute is now required and not optional.
+        - Added a Makefile.PL to the dzil distro so people can more easily
+          contribute.
+
+0.50 2014-03-14
+        - :Test and :Tests attributes have been added.
+        - TAP::Stream is now in its own distribution and thus removed from
+          this one.
+        - Test::Class::Moose::Role - croak() if preamble doesn't load
+          (Sebastian Willert)
+
+0.43 2014-01-29
+        - When running parallel tests, we now output a line of dots to the
+          screen to show that the test suite hasn't stalled. Further, the dots
+          are colored "green" and "red" (sorry color blind folk!) just like
+          Test::Harness, so you can see if tests have passed or failed.
+
+0.42 2014-01-15
+        - Remove experimental END block causing issues for some test suites.
+        - Merge Dave Rolsky's MetaJSON request (thanks, Dave!)
+        - Add better github meta info
+        - Document recommended test suite instantiation.
+        - Document what Test::Class::Moose::Role is for.
+
+0.41 2014-01-13
+        - Fix bug where "skip_all" tests would report as failing if
+          Sub::Attribute wasn't installed.
+
+0.40 2014-01-12
+        - Parallel tests now automatically ignore test methods tagged with
+          'noparallel'.
+        - Fix bug where sequential tests fail with parallel testing.
+        - Remove long-deprecated test_reporting() method.
+        - The second argument to test methods ($report) is now deprecated.
+          Call $test->test_report instead.
+        - You can now call has_tag() on a method report object.
+
+0.30 [unreleased]
+        - Experimental support for parallel testing. See
+          Test::Class::Moose::Role::Parallel.
+
 0.22 2013-08-17
         - Renamed tutorial from .pod to .pm to stop both cpan and metacpan
           from replacing main documentation with the tutorial.

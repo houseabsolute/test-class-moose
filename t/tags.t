@@ -1,16 +1,14 @@
 #!/usr/bin/env perl
-use Test::Most 'bail';
+use Test::Most;
 use lib 'lib';
 
 use Test::Class::Moose ();    # prevents us from inheriting from it
+sub registry () { 'Test::Class::Moose::AttributeRegistry' }
 
-BEGIN {
-    plan skip_all => 'Sub::Attribute not available. Cannot test tags'
-      if $Test::Class::Moose::NO_CAN_HAZ_ATTRIBUTES;
-}
 use Test::Class::Moose::Load qw(t/taglib);
+use Test::Class::Moose::Runner;
 
-subtest 'Multiple inclued tags' => sub {
+subtest 'Multiple included tags' => sub {
 
     # For TestsFor::Basic::Subclass, the method modifier for 'test_this_baby'
     # effectively overrides the base class method.
@@ -110,15 +108,50 @@ subtest
 
 sub _run_tests {
     my ( $new, $methods_for ) = @_;
-    my $test_suite   = Test::Class::Moose->new($new);
-    my @test_classes = sort $test_suite->test_classes;
+    my $runner =Test::Class::Moose::Runner->new($new);
+    my @test_classes = sort $runner->test_classes;
 
     foreach my $class (@test_classes) {
-        eq_or_diff [ $class->new( $test_suite->test_configuration->args )
-              ->test_methods ],
+        eq_or_diff
+          [ $runner->_executor->_tcm_test_methods_for_instance( $class->new ) ],
           $methods_for->{$class},
           "$class should have the correct test methods";
     }
 }
+
+subtest 'Verify registry' => sub {
+    ok registry->method_has_tag(
+        'TestsFor::Basic::Subclass', 'test_augment',
+        'second'
+      ),
+      'The tag registry should report if a method has a particular tag';
+    ok !registry->method_has_tag(
+        'TestsFor::Basic::Subclass', 'test_augment',
+        'first'
+      ),
+      '... or if it does not';
+
+    ok registry->class_has_tag('TestsFor::Basic::Subclass', 'second'),
+        'The tag registry should report if a class has a method with a given tag';
+
+    ok !registry->class_has_tag('TestsFor::Basic::Subclass', 'no such tag'),
+        '... or if it does not';
+};
+
+eval <<'END';
+    package TestsFor::Bad::Example;
+    use Test::Class::Moose;
+
+    sub test_setup : Test {
+        my $test = shift;
+        pass 'does not matter';
+    }
+
+    sub test_something { ok 1 }
+END
+
+my $error = $@;
+like $error, qr/Test control method 'test_setup' may not have a Test attribute/,
+    'Putting test attributes on a test control method should be a fatal error';
 
 done_testing;

@@ -126,7 +126,7 @@ C<TestsFor::Person::Employee> will inherit the
 C<TestsFor::Person->test_constructor()> method. Except as you can see in our
 example above, we've B<hardcoded> the class name, meaning that we won't be
 testing our code appropriately. The code using the
-L<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the classname (at
+L<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the class name (at
 least, it shouldn't), so when we call the inherited
 C<TestsFor::Person::Employee->test_constructor()> method, it constructs a
 C<TestsFor::Person::Employee> object, not a C<TestsFor::Person> object.

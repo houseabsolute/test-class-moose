@@ -3,15 +3,17 @@ use lib 'lib';
 use Test::Most;
 use Scalar::Util 'looks_like_number';
 use Test::Class::Moose::Load qw(t/lib);
-my $test_suite = Test::Class::Moose->new;
+use Test::Class::Moose::Runner;
+
+my $runner =Test::Class::Moose::Runner->new;
 
 subtest 'run the test suite' => sub {
-    $test_suite->runtests;
+    $runner->runtests;
 };
-my $report = $test_suite->test_report;
+my $report = $runner->test_report;
 explain $report->time->duration;
 
-foreach my $class ( $report->all_test_classes ) {
+foreach my $class ( $report->all_test_instances ) {
     my $class_name = $class->name;
     ok !$class->is_skipped, "$class_name was not skipped";
 
@@ -34,8 +36,8 @@ foreach my $class ( $report->all_test_classes ) {
     }
     explain "Run time for $class_name: ".$time->duration;
 }
-explain "Number of test classes: " . $report->num_test_classes;
-explain "Number of test methods: " . $report->num_test_methods;
-explain "Number of tests:        " . $report->num_tests_run;
+explain "Number of test instances: " . $report->num_test_instances;
+explain "Number of test methods: "   . $report->num_test_methods;
+explain "Number of tests:        "   . $report->num_tests_run;
 
 done_testing;

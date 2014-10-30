@@ -1,4 +1,4 @@
-package Test::Class::Moose::Report::Class;
+package Test::Class::Moose::Report::Instance;
 
 # ABSTRACT: Reporting on test classes
 
@@ -27,6 +27,11 @@ has 'error' => (
     isa       => 'Str',
     predicate => 'has_error',
 );
+
+sub current_method {
+    my $self = shift;
+    return $self->test_methods->[-1];
+}
 
 __PACKAGE__->meta->make_immutable;
 
