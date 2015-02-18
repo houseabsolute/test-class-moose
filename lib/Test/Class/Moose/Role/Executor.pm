@@ -53,6 +53,12 @@ sub _tcm_run_test_class {
             = $test_class->_tcm_make_test_class_instances(
             $self->test_configuration->args );
 
+        unless (%test_instances) {
+            my $message = "Skipping '$test_class': no test instances found";
+            $self->test_configuration->builder->plan(skip_all => $message);
+            return;
+        }
+
         foreach my $test_instance_name (sort keys %test_instances) {
             my $test_instance = $test_instances{$test_instance_name};
 
