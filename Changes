@@ -1,6 +1,7 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Allow _constructor_parameter_sets to return an empty list (GitHub issue #47)
 
 0.58 2014-09-05
         * Add a passed() method to class and method report objects (GitHub issue #30)
