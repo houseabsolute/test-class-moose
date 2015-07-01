@@ -522,7 +522,9 @@ class's constructor. Here's a really dumb example:
  sub test_something { ... }
 
 The test runner will run all the test methods in your class I<once per
-instance>, and each instance will be run in its own subtest.
+instance>, and each instance will be run in its own subtest. You can
+dynamically decide to skip your test class completely by having
+C<_constructor_parameter_sets> return an empty list.
 
 Note that this feature has great potential for abuse, so use it
 cautiously. That said, there are cases where this feature can greatly simplify
@@ -549,6 +551,10 @@ If you wish to skip a class, set the reason in the C<test_startup> method.
         my $test = shift;
         $test->test_skip("I don't want to run this class");
     }
+
+If you are using L<test class instances|/"TEST CLASS INSTANCES">, you
+can also make C<_constructor_parameter_sets> return an empty list,
+which will result in the class being skipped.
 
 If you wish to skip an individual method, do so in the C<test_setup> method.
 

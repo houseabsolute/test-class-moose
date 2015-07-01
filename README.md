@@ -90,7 +90,7 @@ does not start with `test_`:
         ...
     }
 
-__Note__: Prior to version 0.51, this feature only worked if you had the
+**Note**: Prior to version 0.51, this feature only worked if you had the
 optional `Sub::Attribute` installed.
 
 ## Plans
@@ -169,7 +169,7 @@ Do not run tests in test control methods. This will cause the test control
 method to fail (this is a feature, not a bug).  If a test control method
 fails, the class/method will fail and testing for that class should stop.
 
-__Every__ test control method will be called as a method. The invocant is the
+**Every** test control method will be called as a method. The invocant is the
 instance of your test class
 
 The available test control methods are:
@@ -247,7 +247,7 @@ To override a test control method, just remember that this is OO:
 
 # TEST CLASS INSTANCES
 
-__This feature is still considered experimental.__
+**This feature is still considered experimental.**
 
 By default, each test class you create will be instantiated once. However, you
 can tell the [Test::Class::Moose::Runner](https://metacpan.org/pod/Test::Class::Moose::Runner) to create multiple instances of a
@@ -282,7 +282,9 @@ class's constructor. Here's a really dumb example:
     sub test_something { ... }
 
 The test runner will run all the test methods in your class _once per
-instance_, and each instance will be run in its own subtest.
+instance_, and each instance will be run in its own subtest. You can
+dynamically decide to skip your test class completely by having
+`_constructor_parameter_sets` return an empty list.
 
 Note that this feature has great potential for abuse, so use it
 cautiously. That said, there are cases where this feature can greatly simplify
@@ -309,6 +311,10 @@ If you wish to skip a class, set the reason in the `test_startup` method.
         my $test = shift;
         $test->test_skip("I don't want to run this class");
     }
+
+If you are using [test class instances](#test-class-instances), you
+can also make `_constructor_parameter_sets` return an empty list,
+which will result in the class being skipped.
 
 If you wish to skip an individual method, do so in the `test_setup` method.
 
