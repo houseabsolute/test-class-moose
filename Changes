@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Doc updates including fixing the bug reporting link and making sure
+          the CONTRIBUTORS section is up to date.
 
 0.59 2015-07-06
         * Allow _constructor_parameter_sets to return an empty
