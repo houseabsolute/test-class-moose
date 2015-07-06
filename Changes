@@ -44,149 +44,149 @@ Revision history for Perl distribution Test-Class-Moose
         * You can now run multiple instances of a test class by using the
           Test::Class::Moose::Role::ParameterizedInstances role. See the
           Test::Class::Moose docs for details.
-        - All private methods defined as lexically-scoped variables in
+        * All private methods defined as lexically-scoped variables in
           Test::Class::Moose have been made actual methods so that roles and
           subclasses can affect them.
-        - Removed MooseX::ClassAttribute from the list of prereqs in
+        * Removed MooseX::ClassAttribute from the list of prereqs in
           Makefile.PL. Test::Class::Moose loaded this but never used it.
 
 0.54 2014-03-18
-        - Update the tutorial for typos and to documents Tests()
-        - Add the github.io homepage.
+        * Update the tutorial for typos and to documents Tests()
+        * Add the github.io homepage.
 
 0.53 2014-03-15
-        - Loooong day. The ContributorsFromGit dist::zilla plugin did, indeed,
+        * Loooong day. The ContributorsFromGit dist::zilla plugin did, indeed,
           add all git contributors to the POD, but it deleted all of my other
           POD. This might be my record for number of rereleases in a day.
 
 0.52 2014-03-15
-        - Note in the docs the Sub::Attribute change from version 0.51
-        - Oops. Remove all of the .bak files from the distro.
-        - List contributors automatically in docs
+        * Note in the docs the Sub::Attribute change from version 0.51
+        * Oops. Remove all of the .bak files from the distro.
+        * List contributors automatically in docs
 
 0.51 2014-03-15
-        - Sub::Attribute is now required and not optional.
-        - Added a Makefile.PL to the dzil distro so people can more easily
+        * Sub::Attribute is now required and not optional.
+        * Added a Makefile.PL to the dzil distro so people can more easily
           contribute.
 
 0.50 2014-03-14
-        - :Test and :Tests attributes have been added.
-        - TAP::Stream is now in its own distribution and thus removed from
+        * :Test and :Tests attributes have been added.
+        * TAP::Stream is now in its own distribution and thus removed from
           this one.
-        - Test::Class::Moose::Role - croak() if preamble doesn't load
+        * Test::Class::Moose::Role - croak() if preamble doesn't load
           (Sebastian Willert)
 
 0.43 2014-01-29
-        - When running parallel tests, we now output a line of dots to the
+        * When running parallel tests, we now output a line of dots to the
           screen to show that the test suite hasn't stalled. Further, the dots
           are colored "green" and "red" (sorry color blind folk!) just like
           Test::Harness, so you can see if tests have passed or failed.
 
 0.42 2014-01-15
-        - Remove experimental END block causing issues for some test suites.
-        - Merge Dave Rolsky's MetaJSON request (thanks, Dave!)
-        - Add better github meta info
-        - Document recommended test suite instantiation.
-        - Document what Test::Class::Moose::Role is for.
+        * Remove experimental END block causing issues for some test suites.
+        * Merge Dave Rolsky's MetaJSON request (thanks, Dave!)
+        * Add better github meta info
+        * Document recommended test suite instantiation.
+        * Document what Test::Class::Moose::Role is for.
 
 0.41 2014-01-13
-        - Fix bug where "skip_all" tests would report as failing if
+        * Fix bug where "skip_all" tests would report as failing if
           Sub::Attribute wasn't installed.
 
 0.40 2014-01-12
-        - Parallel tests now automatically ignore test methods tagged with
+        * Parallel tests now automatically ignore test methods tagged with
           'noparallel'.
-        - Fix bug where sequential tests fail with parallel testing.
-        - Remove long-deprecated test_reporting() method.
-        - The second argument to test methods ($report) is now deprecated.
+        * Fix bug where sequential tests fail with parallel testing.
+        * Remove long-deprecated test_reporting() method.
+        * The second argument to test methods ($report) is now deprecated.
           Call $test->test_report instead.
-        - You can now call has_tag() on a method report object.
+        * You can now call has_tag() on a method report object.
 
 0.30 [unreleased]
-        - Experimental support for parallel testing. See
+        * Experimental support for parallel testing. See
           Test::Class::Moose::Role::Parallel.
 
 0.22 2013-08-17
-        - Renamed tutorial from .pod to .pm to stop both cpan and metacpan
+        * Renamed tutorial from .pod to .pm to stop both cpan and metacpan
           from replacing main documentation with the tutorial.
 
 0.21 2013-08-15
-        - Fold on .t test into t/tags.t. Cleaner and stops some CPAN testers
+        * Fold on .t test into t/tags.t. Cleaner and stops some CPAN testers
           failures.
 
 0.20 2013-08-15
-        - Fix bug #87801 where excluded tags were ANDed instead of ORed.
+        * Fix bug #87801 where excluded tags were ANDed instead of ORed.
           Stefan Corneliu Petrea.
-        - The beginnings of a tutorial by Doug Bell (preaction)
-        - Doc fix by Olaf Alders.
-        - Tag inheritance added by Paul Boyd (see
+        * The beginnings of a tutorial by Doug Bell (preaction)
+        * Doc fix by Olaf Alders.
+        * Tag inheritance added by Paul Boyd (see
           https://github.com/Ovid/test-class-moose/pull/10). This change is
           slightly backwards-incompatible, but not many people were yet using
           this module (or tags).
 
 0.12 2013-05-27
-        - Bugfix: test_classes attribute to constructor is allowed to be
+        * Bugfix: test_classes attribute to constructor is allowed to be
           undef or an empty array ref.
-        - add_to_plan() is now deprecated. Use plan() instead. This solves the
+        * add_to_plan() is now deprecated. Use plan() instead. This solves the
           problem where you might also have a before modifier wanting to alter
           the plan.
 
 0.11 2013-05-19
-        - Added the test_classes attribute to the contructor. Allows you to
+        * Added the test_classes attribute to the contructor. Allows you to
           easily control which classes you wish to run.
 
 0.10 2013-05-08
-        - Sigh. Skip All tag tests if we can't define tags.
+        * Sigh. Skip All tag tests if we can't define tags.
 
 0.09 2013-05-07
-        - Emergency bug fix: don't require Sub::Attribute if they cannot load
+        * Emergency bug fix: don't require Sub::Attribute if they cannot load
           it.
 
 0.08 2013-05-06
-        - Add tag support.
-        - Clean up how start and end times for timing is handled.
+        * Add tag support.
+        * Clean up how start and end times for timing is handled.
 
 0.07 2013-04-07
-        - The $test_suite object now has the time() method.
-        - Fully document report methods
-        - Marked a bunch of "trusted" methods as effectively private.
-        - Rename tests_run() to num_tests_run() (internal consistency)
-        - Rename test_reporting() to test_report() (test_reporting() is now
+        * The $test_suite object now has the time() method.
+        * Fully document report methods
+        * Marked a bunch of "trusted" methods as effectively private.
+        * Rename tests_run() to num_tests_run() (internal consistency)
+        * Rename test_reporting() to test_report() (test_reporting() is now
           deprecated)
-        - Rename ::Reporting classes to ::Report
-        - Allow plans in methods. See #84046 in RT queue (Steffen W)
-        - Convert to Dist::Zilla
-        - Runtests returns $self.
+        * Rename ::Reporting classes to ::Report
+        * Allow plans in methods. See #84046 in RT queue (Steffen W)
+        * Convert to Dist::Zilla
+        * Runtests returns $self.
 
 0.06 2013-03-17
-        - Fix the MANIFEST again. That's it. After this I'm switching to
+        * Fix the MANIFEST again. That's it. After this I'm switching to
           Dist::Zilla.
 
 0.05 2013-03-17
-        - Even if attributes start with test_, they cannot be test methods.
-        - Add AutoUse to the MANIFEST :/
+        * Even if attributes start with test_, they cannot be test methods.
+        * Add AutoUse to the MANIFEST :/
 
 0.04 2013-03-17
-        - Fix test inheritance bug.
+        * Fix test inheritance bug.
 
 0.03 2013-03-16
-        - Add Test::Class::Moose::Role::AutoUse (automatically loads your
+        * Add Test::Class::Moose::Role::AutoUse (automatically loads your
           actual classes)
 
 0.02 2013-01-29
-        - Add class/method skipping. 
-        - Rename almost every overrideable method to /^test_/.
-        - Add a time reporting class. You can now fetch real, user and system
+        * Add class/method skipping. 
+        * Rename almost every overrideable method to /^test_/.
+        * Add a time reporting class. You can now fetch real, user and system
           time for each class or test method.
-        - Fix for errors when no test methods found (they should be skipped -
+        * Fix for errors when no test methods found (they should be skipped -
           beresfordt)
-        - Don't use a bare qw() for parens (reported on github by beresfordt)
-        - Make sure we have hi-res time reporting
-        - Move statistics gathering into its own classes
-        - Add include/exclude test method filtering
-        - Skip a test class if we don't find any test methods
-        - Most attributes pushed into Test::Class::Moose::Config
-        - Added "randomize" attribute per Udo Oji.
+        * Don't use a bare qw() for parens (reported on github by beresfordt)
+        * Make sure we have hi-res time reporting
+        * Move statistics gathering into its own classes
+        * Add include/exclude test method filtering
+        * Skip a test class if we don't find any test methods
+        * Most attributes pushed into Test::Class::Moose::Config
+        * Added "randomize" attribute per Udo Oji.
 
 0.01 2012-12-18
-        - Test::Class + Moose
+        * Test::Class + Moose
