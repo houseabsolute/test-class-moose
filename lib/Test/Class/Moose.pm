@@ -967,9 +967,9 @@ L<http://annocpan.org/dist/Test-Class-Moose>
 
 L<http://cpanratings.perl.org/d/Test-Class-Moose>
 
-=item * Search CPAN
+=item * MetaCPAN
 
-L<http://search.cpan.org/dist/Test-Class-Moose/>
+L<https://metacpan.org/release/Test-Class-Moose/>
 
 =back
 
