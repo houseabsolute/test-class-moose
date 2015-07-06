@@ -998,36 +998,4 @@ L<Test::Class> + L<Test::Most>.
 
 =back
 
-=head1 CONTRIBUTORS
-
-=over 4
-
-=item * Dave Rolsky <autarch@urth.org>
-
-=item * Doug Bell <doug.bell@baml.com>
-
-=item * Gregory Oschwald <goschwald@maxmind.com>
-
-=item * Jonathan C. Otsuka <djgoku@gmail.com>
-
-=item * Neil Bowers <neil@bowers.com>
-
-=item * Olaf Alders <olaf@wundersolutions.com>
-
-=item * Ovid <curtis\_ovid\_poe@yahoo.com>
-
-=item * Paul Boyd <pboyd@dev3l.net>
-
-=item * Petrea Corneliu Stefan <stefan@garage-coding.com>
-
-=item * Stuckdownawell <stuckdownawell@gmail.com>
-
-=item * Tom Beresford <tom.beresford@bskyb.com>
-
-=item * Tom Heady <tom@punch.net>
-
-=item * Udo Oji <Velti@signor.com>
-
-=back
-
 =cut
