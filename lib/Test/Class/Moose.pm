@@ -955,9 +955,9 @@ You can also look for information at:
 
 =over 4
 
-=item * RT: CPAN's request tracker (report bugs here)
+=item * GitHub Issues (report bugs here)
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose>
+L<https://github.com/test-class-moose/test-class-moose/issues>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
