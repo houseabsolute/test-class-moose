@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.60 2015-07-06
         * Doc updates including fixing the bug reporting link and making sure
           the CONTRIBUTORS section is up to date.
 

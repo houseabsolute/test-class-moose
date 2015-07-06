@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.59
+version 0.60
 
 # SYNOPSIS
 
@@ -700,9 +700,9 @@ You can find documentation for this module with the perldoc command.
 
 You can also look for information at:
 
-- RT: CPAN's request tracker (report bugs here)
+- GitHub Issues (report bugs here)
 
-    [http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose](http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose)
+    [https://github.com/test-class-moose/test-class-moose/issues](https://github.com/test-class-moose/test-class-moose/issues)
 
 - AnnoCPAN: Annotated CPAN documentation
 
@@ -712,9 +712,9 @@ You can also look for information at:
 
     [http://cpanratings.perl.org/d/Test-Class-Moose](http://cpanratings.perl.org/d/Test-Class-Moose)
 
-- Search CPAN
+- MetaCPAN
 
-    [http://search.cpan.org/dist/Test-Class-Moose/](http://search.cpan.org/dist/Test-Class-Moose/)
+    [https://metacpan.org/release/Test-Class-Moose/](https://metacpan.org/release/Test-Class-Moose/)
 
 # SEE ALSO
 
@@ -737,25 +737,30 @@ You can also look for information at:
 
     [Test::Class](https://metacpan.org/pod/Test::Class) + [Test::Most](https://metacpan.org/pod/Test::Most).
 
-# CONTRIBUTORS
-
-- Dave Rolsky <autarch@urth.org>
-- Doug Bell <doug.bell@baml.com>
-- Gregory Oschwald <goschwald@maxmind.com>
-- Jonathan C. Otsuka <djgoku@gmail.com>
-- Neil Bowers <neil@bowers.com>
-- Olaf Alders <olaf@wundersolutions.com>
-- Ovid <curtis\\\_ovid\\\_poe@yahoo.com>
-- Paul Boyd <pboyd@dev3l.net>
-- Petrea Corneliu Stefan <stefan@garage-coding.com>
-- Stuckdownawell <stuckdownawell@gmail.com>
-- Tom Beresford <tom.beresford@bskyb.com>
-- Tom Heady <tom@punch.net>
-- Udo Oji <Velti@signor.com>
-
 # AUTHOR
 
 Curtis "Ovid" Poe <ovid@cpan.org>
+
+# CONTRIBUTORS
+
+- Dave Rolsky <autarch@urth.org>
+- Petrea Corneliu Stefan <stefan@garage-coding.com>
+- Steven Humphrey <catchgithub@33k.co.uk>
+- Stuckdownawell <stuckdownawell@gmail.com>
+- Tim Vroom <vroom@blockstackers.com>
+- Tom Beresford <tom.beresford@bskyb.com>
+- Tom Heady <tom@punch.net>
+- Udo Oji <Velti@signor.com>
+- mephinet <mephinet@gmx.net>
+- Doug Bell <madcityzen@gmail.com>
+- Gregory Oschwald <goschwald@maxmind.com>
+- Jeremy Krieg <Jeremy.Krieg@YourAmigo.com>
+- Jonathan C. Otsuka <djgoku@gmail.com>
+- Jonathan Stowe <jns@gellyfish.co.uk>
+- Karen Etheridge <ether@cpan.org>
+- Neil Bowers <neil@bowers.com>
+- Olaf Alders <olaf@wundersolutions.com>
+- Paul Boyd <pboyd@dev3l.net>
 
 # COPYRIGHT AND LICENSE
 
