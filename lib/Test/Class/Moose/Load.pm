@@ -30,15 +30,24 @@ sub _load {
 
     # untaint that puppy!
     my ( $package ) = $_package =~ /^([[:word:]]+(?:::[[:word:]]+)*)$/;
-   
+
     # Filter out bad classes (mainly this means things in .svn and similar)
     return unless defined $package;
 
     unshift @INC => $dir unless $Added_to_INC{ $dir }++;
 
-    # either "require" it or "use" it with no import list. Otherwise, this
-    # module will inherit from Test::Class::Moose and break everything.
-    eval "use $package ()"; ## no critic
+    {
+        local $SIG{__DIE__} = sub {
+            undef $SIG{__DIE__};
+            require Carp;
+            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+            Carp::confess(@_);
+        };
+
+        # either "require" it or "use" it with no import list. Otherwise, this
+        # module will inherit from Test::Class::Moose and break everything.
+        eval "use $package ()";    ## no critic
+    }
     die $@ if $@;
 }
 
