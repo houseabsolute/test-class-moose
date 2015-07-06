@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.59 2015-07-06
         * Allow _constructor_parameter_sets to return an empty
           list. Implemented by Philipp Gortan. (GitHub issue #47)
         * Error messages when Test::Class::Moose::Load cannot load a module
