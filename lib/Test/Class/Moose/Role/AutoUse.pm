@@ -123,12 +123,12 @@ Your test subclass might look like this:
 
 Object-oriented tests I<inherit> their parent class tests. Thus,
 C<TestsFor::Person::Employee> will inherit the
-C<TestsFor::Person->test_constructor()> method. Except as you can see in our
+C<< TestsFor::Person->test_constructor() >> method. Except as you can see in our
 example above, we've B<hardcoded> the class name, meaning that we won't be
 testing our code appropriately. The code using the
 L<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the class name (at
 least, it shouldn't), so when we call the inherited
-C<TestsFor::Person::Employee->test_constructor()> method, it constructs a
+C<< TestsFor::Person::Employee->test_constructor() >> method, it constructs a
 C<TestsFor::Person::Employee> object, not a C<TestsFor::Person> object.
 
 Some might argue that this is a strawman and we should have done this:
