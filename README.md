@@ -761,6 +761,7 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 - Neil Bowers <neil@bowers.com>
 - Olaf Alders <olaf@wundersolutions.com>
 - Paul Boyd <pboyd@dev3l.net>
+- Andy Jack <https://github.com/andyjack>
 
 # COPYRIGHT AND LICENSE
 
