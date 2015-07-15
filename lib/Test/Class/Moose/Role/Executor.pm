@@ -348,7 +348,9 @@ sub test_classes {
         push @classes => $class if $class->isa('Test::Class::Moose');
     }
 
-    # eventually we'll want to control the test class order
+    if ( $self->test_configuration->randomize_classes ) {
+        return shuffle(@classes);
+    }
     return sort @classes;
 }
 

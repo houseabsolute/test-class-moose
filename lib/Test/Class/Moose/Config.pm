@@ -60,6 +60,12 @@ has 'randomize' => (
     default => 0,
 );
 
+has 'randomize_classes' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
+
 has 'include' => (
     is  => 'ro',
     isa => 'Regexp',
@@ -184,7 +190,11 @@ own if it conforms to the interface.
 
 =head2 C<randomize>
 
-Boolean. Will run tests in a random order.
+Boolean. Will run test methods of a class in a random order.
+
+=head2 C<randomize_classes>
+
+Boolean. Will run test classes in a random order.
 
 =head1 METHODS
 
