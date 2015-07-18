@@ -27,6 +27,8 @@ END
 
     eval $preamble;
     croak($@) if $@;
+    strict->import;
+    warnings->import;
     no strict "refs";
     *{"$caller\::Tags"}  = \&Tags;
     *{"$caller\::Test"}  = \&Test;
