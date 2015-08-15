@@ -102,7 +102,7 @@ TestsFor::Basic::Subclass->meta->add_method(
         explain "About to run $name";
         pass();
     },
-); 
+);
 $builder->todo_start('fail?');
 $runner =Test::Class::Moose::Runner->new;
 subtest 'test_setup() has tests in it' => sub {

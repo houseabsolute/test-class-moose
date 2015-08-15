@@ -28,7 +28,7 @@ foreach my $class ( $report->all_test_instances ) {
     };
     can_ok $class, 'time';
     my $time = $class->time;
-    isa_ok $time, 'Test::Class::Moose::Report::Time', 
+    isa_ok $time, 'Test::Class::Moose::Report::Time',
     '... and the object it returns';
     foreach my $method (qw/real user system/) {
         ok looks_like_number( $time->$method ),

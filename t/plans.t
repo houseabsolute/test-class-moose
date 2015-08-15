@@ -9,7 +9,7 @@ use Test::Class::Moose::Runner;
     package Person;
     use Moose;
     has [qw/first_name last_name/] => ( is => 'ro' );
-    
+
     sub full_name {
         my $self = shift;
         return join ' ' => $self->first_name, $self->last_name;

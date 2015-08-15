@@ -140,7 +140,7 @@ inspect your test environment.
 =head1 Test Class Composition
 
 The most important reason to choose a class test over a procedural test (using
-only C<Test::More>) is class composition. 
+only C<Test::More>) is class composition.
 
 =head2 Inheritance
 
@@ -236,7 +236,7 @@ and call the C<test_skip> method with the reason we're skipping the test.
         my ( $test ) = @_;
         fail "This doesn't work!";
     }
-    
+
     sub test_setup {
         my $test = shift;
         if ( $test->test_report->current_method->name eq 'test_will_fail' ) {

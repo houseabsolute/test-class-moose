@@ -117,7 +117,7 @@ Revision history for Perl distribution Test-Class-Moose
           Call $test->test_report instead.
         * You can now call has_tag() on a method report object.
 
-0.30 [unreleased]
+0.30 Not Released
         * Experimental support for parallel testing. See
           Test::Class::Moose::Role::Parallel.
 

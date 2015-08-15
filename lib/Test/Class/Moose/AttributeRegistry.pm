@@ -117,18 +117,19 @@ sub _superclass_tags {
 
     my $test_class_meta = Class::MOP::Class->initialize($test_class);
     my $method_meta;
-    
+
     $method_meta = $test_class_meta->find_next_method_by_name($method)
-    	if $test_class_meta->can('find_next_method_by_name');
+        if $test_class_meta->can('find_next_method_by_name');
 
-    if(!$method_meta){
-	#Might be a from a role or this class
-	my $mm = $test_class_meta->find_method_by_name($method);
-	my $orig = $mm->original_method;
+    if ( !$method_meta ) {
 
-	if($orig && ($mm->package_name ne $orig->package_name)){
-		$method_meta = $orig;
-	}
+        #Might be a from a role or this class
+        my $mm   = $test_class_meta->find_method_by_name($method);
+        my $orig = $mm->original_method;
+
+        if ( $orig && ( $mm->package_name ne $orig->package_name ) ) {
+            $method_meta = $orig;
+        }
     }
 
     # no method, so no tags to inherit
