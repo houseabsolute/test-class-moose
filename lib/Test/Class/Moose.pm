@@ -297,6 +297,11 @@ Just C<use Test::Class::Moose>. That's all. You'll get all L<Test::Most> test
 functions, too, along with C<strict> and C<warnings>. You can use all L<Moose>
 behavior, too.
 
+When you C<use Test::Class::Moose> it inserts itself as a parent class for
+your test class. This means that if you try to use C<extends> in your test
+class you will break things unless you include C<Test::Class::Moose> as a
+parent. We recommend that you use roles in your test classes instead.
+
 =head2 Declare a test method
 
 All method names that begin with C<test_> are test methods. Methods that do
