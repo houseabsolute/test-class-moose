@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.60
+version 0.61
 
 # SYNOPSIS
 
@@ -56,6 +56,11 @@ Better docs will come later. You should already know how to use Moose and
 Just `use Test::Class::Moose`. That's all. You'll get all [Test::Most](https://metacpan.org/pod/Test::Most) test
 functions, too, along with `strict` and `warnings`. You can use all [Moose](https://metacpan.org/pod/Moose)
 behavior, too.
+
+When you `use Test::Class::Moose` it inserts itself as a parent class for
+your test class. This means that if you try to use `extends` in your test
+class you will break things unless you include `Test::Class::Moose` as a
+parent. We recommend that you use roles in your test classes instead.
 
 ## Declare a test method
 
@@ -189,7 +194,7 @@ class you're running this in (though usually you shouldn't), use
     sub test_startup {
         my $test                 = shift;
         my $report               = $test->test_report;
-        my $class                = $report->current_class->name;
+        my $instance             = $report->current_instance->name;
         my $upcoming_test_method = $report->current_method->name;
         ...
     }
@@ -445,8 +450,8 @@ You can also call it in test classes (most useful in the `test_setup()` method):
     sub test_setup {
         my $test = shift;
         $self->next::method;
-        my $report= $test->test_report;
-        my $class = $test->current_class;
+        my $report = $test->test_report;
+        my $instance = $test->current_instance;
         my $method = $test->current_method; # the test method we're about to run
         if ( $method->name =~ /customer/ ) {
             $test->load_customer_fixture;
@@ -737,13 +742,25 @@ You can also look for information at:
 
     [Test::Class](https://metacpan.org/pod/Test::Class) + [Test::Most](https://metacpan.org/pod/Test::Most).
 
-# AUTHOR
+# AUTHORS
 
-Curtis "Ovid" Poe <ovid@cpan.org>
+- Curtis "Ovid" Poe <ovid@cpan.org>
+- Dave Rolsky <autarch@urth.org>
 
 # CONTRIBUTORS
 
-- Dave Rolsky <autarch@urth.org>
+- Andy Jack <github@veracity.ca>
+- Doug Bell <madcityzen@gmail.com>
+- Gregory Oschwald <goschwald@maxmind.com>
+- Jeremy Krieg <Jeremy.Krieg@YourAmigo.com>
+- Jonathan C. Otsuka <djgoku@gmail.com>
+- Jonathan Stowe <jns@gellyfish.co.uk>
+- Karen Etheridge <ether@cpan.org>
+- mark-5 <maflick88@gmail.com>
+- mephinet <mephinet@gmx.net>
+- Neil Bowers <neil@bowers.com>
+- Olaf Alders <olaf@wundersolutions.com>
+- Paul Boyd <pboyd@dev3l.net>
 - Petrea Corneliu Stefan <stefan@garage-coding.com>
 - Steven Humphrey <catchgithub@33k.co.uk>
 - Stuckdownawell <stuckdownawell@gmail.com>
@@ -751,17 +768,6 @@ Curtis "Ovid" Poe <ovid@cpan.org>
 - Tom Beresford <tom.beresford@bskyb.com>
 - Tom Heady <tom@punch.net>
 - Udo Oji <Velti@signor.com>
-- mephinet <mephinet@gmx.net>
-- Doug Bell <madcityzen@gmail.com>
-- Gregory Oschwald <goschwald@maxmind.com>
-- Jeremy Krieg <Jeremy.Krieg@YourAmigo.com>
-- Jonathan C. Otsuka <djgoku@gmail.com>
-- Jonathan Stowe <jns@gellyfish.co.uk>
-- Karen Etheridge <ether@cpan.org>
-- Neil Bowers <neil@bowers.com>
-- Olaf Alders <olaf@wundersolutions.com>
-- Paul Boyd <pboyd@dev3l.net>
-- Andy Jack <https://github.com/andyjack>
 
 # COPYRIGHT AND LICENSE
 

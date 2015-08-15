@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.61 2015-08-15
         * Added a randomize_classes attribute which can be passed to
           Test::Class::Moose::Runner. Implemented by Andy Jack. GitHub PR #53.
         * Test::Class::Moose::Role now enables strict and warnings in the
