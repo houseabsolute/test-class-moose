@@ -71,15 +71,25 @@ sub _inc_tests {
     $self->set_tests_run( $self->num_tests_run + $tests );
 }
 
-sub current_class {
+sub current_instance {
     my $self = shift;
     return $self->test_instances->[-1];
 }
 
+sub current_class {
+    Test::Class::Moose::Deprecated::deprecated(
+        message =>
+            'Calling current_class() on a Test::Class::Moose::Report object is deprecated.'
+            . ' Use current_instance() instead.',
+        feature => 'Test::Class::Moose->runtests',
+    );
+    goto &current_instance;
+}
+
 sub current_method {
     my $self = shift;
-    my $current_class = $self->current_class or return;
-    return $current_class->current_method;
+    my $current_instance = $self->current_instance or return;
+    return $current_instance->current_method;
 }
 
 sub plan {
@@ -183,6 +193,16 @@ Integer. The number of test methods run.
 =head3 C<num_tests_run>
 
 Integer. The number of tests run.
+
+=head3 C<current_instance>
+
+Returns the L<Test::Class::Moose::Report::Instance> for the test class
+instance currently being run, if it exists. This may return C<undef>.
+
+=head3 C<current_method>
+
+Returns the L<Test::Class::Moose::Report::Method> for the test method
+currently being run, if one exists. This may return C<undef>.
 
 =head3 C<time>
 

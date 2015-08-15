@@ -5,6 +5,13 @@ Revision history for Perl distribution Test-Class-Moose
           Test::Class::Moose::Runner. Implemented by Andy Jack. GitHub PR #53.
         * Test::Class::Moose::Role now enables strict and warnings in the
           caller just like Test::Class::Moose does. GitHub PR #54.
+        * Documented the current_instance and current_method methods for
+          Test::Class::Moose::Report. The current_instance method was formerly
+          named current_class, which is now deprecated, but still
+          works. Addresses GitHub #51.
+        * This distro now uses Package::DeprecationManager to generate
+          deprecation warnings. See Test::Class::Moose::Deprecated for
+          details.
 
 0.60 2015-07-06
         * Doc updates including fixing the bug reporting link and making sure

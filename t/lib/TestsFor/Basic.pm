@@ -7,10 +7,10 @@ has [ 'setup_class_found', 'setup_method_found' ] => (
 );
 
 sub test_setup {
-    my $test          = shift;
-    my $report        = $test->test_report;
-    my $current_class = $report->current_class;
-    $test->setup_class_found( $current_class->name );
+    my $test             = shift;
+    my $report           = $test->test_report;
+    my $current_instance = $report->current_instance;
+    $test->setup_class_found( $current_instance->name );
     $test->setup_method_found( $report->current_method->name );
 }
 
@@ -36,11 +36,11 @@ sub test_this_baby {
 }
 
 sub test_reporting {
-    my $test          = shift;
-    my $report        = $test->test_report;
-    my $current_class = $report->current_class;
-    is $current_class->name, $test->test_class,
-      'current_class() should report the correct class name';
+    my $test             = shift;
+    my $report           = $test->test_report;
+    my $current_instance = $report->current_instance;
+    is $current_instance->name, $test->test_class,
+      'current_instance() should report the correct class name';
     is $report->current_method->name, 'test_reporting',
       '... and we should also be able to get the current method name';
     is $test->setup_class_found, $test->test_class,

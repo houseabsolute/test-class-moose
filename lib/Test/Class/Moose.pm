@@ -10,6 +10,7 @@ use Sub::Attribute;
 
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
+use Test::Class::Moose::Deprecated;
 
 has 'test_report' => (
     is     => 'rw',
@@ -172,12 +173,20 @@ around 'BUILDARGS' => sub {
 sub runtests {
     my $self = shift;
 
+    Test::Class::Moose::Deprecated::deprecated(
+        message =>
+            'Calling runtests() on a Test::Class::Moose object is deprecated.'
+            . ' Use Test::Class::Moose::Runner instead.',
+        feature => 'Test::Class::Moose->runtests',
+    );
+
     # The only way this object won't have a _runner set is if someone calls
     # ->new() on their test class (which subclasses Test::Class::Moose) and
     # then calls ->runtests() on it, which has never been documented as
     # working.
     carp 'Calling runtests() on a Test::Class::Moose object is deprecated.'
         . ' Use Test::Class::Moose::Runner instead.';
+
 
     require Test::Class::Moose::Runner;
     my $runner
@@ -434,7 +443,7 @@ C<< $test->test_class >>, or you can do this:
     sub test_startup {
         my $test                 = shift;
         my $report               = $test->test_report;
-        my $class                = $report->current_class->name;
+        my $instance             = $report->current_instance->name;
         my $upcoming_test_method = $report->current_method->name;
         ...
     }
@@ -690,8 +699,8 @@ You can also call it in test classes (most useful in the C<test_setup()> method)
     sub test_setup {
         my $test = shift;
         $self->next::method;
-        my $report= $test->test_report;
-        my $class = $test->current_class;
+        my $report = $test->test_report;
+        my $instance = $test->current_instance;
         my $method = $test->current_method; # the test method we're about to run
         if ( $method->name =~ /customer/ ) {
             $test->load_customer_fixture;
