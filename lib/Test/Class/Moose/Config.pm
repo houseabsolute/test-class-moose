@@ -6,6 +6,7 @@ use 5.10.0;
 use Moose;
 use Moose::Util::TypeConstraints;
 use TAP::Formatter::Color;
+use Test::Builder;
 use namespace::autoclean;
 
 subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
