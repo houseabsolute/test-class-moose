@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.62 2015-08-30
         * Make Test::Class::Moose::Config load Test::Builder. It used this
           module without loading it, which could cause issues if nothing else
           loaded it. Fixed by Andy Jack. (GitHub PR #55).
