@@ -180,14 +180,6 @@ sub runtests {
         feature => 'Test::Class::Moose->runtests',
     );
 
-    # The only way this object won't have a _runner set is if someone calls
-    # ->new() on their test class (which subclasses Test::Class::Moose) and
-    # then calls ->runtests() on it, which has never been documented as
-    # working.
-    carp 'Calling runtests() on a Test::Class::Moose object is deprecated.'
-        . ' Use Test::Class::Moose::Runner instead.';
-
-
     require Test::Class::Moose::Runner;
     my $runner
         = Test::Class::Moose::Runner->new( $self->_config_p );
