@@ -24,11 +24,6 @@ has 'num_tests_run' => (
     default => 0,
 );
 
-sub tests_run {
-    carp "tests_run() deprecated as of version 0.07. Use num_tests_run().";
-    goto &num_tests_run;
-}
-
 has 'tests_planned' => (
     is        => 'rw',
     isa       => 'Int',
