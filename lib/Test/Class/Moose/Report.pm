@@ -28,12 +28,6 @@ has 'is_parallel' => (
     default => 0,
 );
 
-sub tests_run {
-    carp "tests_run() deprecated as of version 0.07. Use num_tests_run().";
-    goto &num_tests_run;
-}
-
-# see Moose::Meta::Attribute::Native::Trait::Array
 has test_instances => (
     is      => 'ro',
     traits  => ['Array'],
