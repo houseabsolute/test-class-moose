@@ -109,8 +109,10 @@ has 'test_report' => (
 );
 
 has 'test_class' => (
-    is  => 'rw',
-    isa => 'Str',
+    is       => 'ro',
+    isa      => 'Str',
+    init_arg => undef,
+    default  => sub { ref $_[0] },
 );
 
 has 'test_skip' => (
@@ -184,13 +186,6 @@ sub runtests {
         = Test::Class::Moose::Runner->new( $self->_config_p );
 
     return $runner->runtests();
-}
-
-sub BUILD {
-    my $self = shift;
-
-    # stash that name lest something change it later. Paranoid?
-    $self->test_class( $self->meta->name );
 }
 
 sub _tcm_make_test_class_instances {
