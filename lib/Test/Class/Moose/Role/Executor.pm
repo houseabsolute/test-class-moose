@@ -220,7 +220,7 @@ sub _tcm_run_test_method {
     my ( $self, $test_instance, $test_method, $instance_report ) = @_;
 
     my $report  = Test::Class::Moose::Report::Method->new(
-        { name => $test_method, instance_report => $instance_report } );
+        { name => $test_method, instance => $instance_report } );
 
     $self->test_report->current_instance->add_test_method($report);
     my $config = $self->test_configuration;

@@ -11,7 +11,7 @@ with qw(
   Test::Class::Moose::Role::Reporting
 );
 
-has 'instance_report' => (
+has 'instance' => (
     is       => 'ro',
     isa      => 'Test::Class::Moose::Report::Instance',
     required => 1,
@@ -44,9 +44,9 @@ sub add_to_plan {
 sub has_tag {
     my ( $self, $tag ) = @_;
     croak("has_tag(\$tag) requires a tag name") unless defined $tag;
-    my $instance_report = $self->instance_report->name;
-    my $method          = $self->name;
-    return Test::Class::Moose::AttributeRegistry->method_has_tag( $instance_report, $method, $tag );
+    my $instance = $self->instance->name;
+    my $method   = $self->name;
+    return Test::Class::Moose::AttributeRegistry->method_has_tag( $instance, $method, $tag );
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -65,7 +65,7 @@ L<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
 
-=head2 C<instance_report>
+=head2 C<instance>
 
 The L<Test::Class::Moose::Report::Instance> for this method.
 
