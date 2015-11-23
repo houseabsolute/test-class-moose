@@ -108,7 +108,7 @@ subtest
 
 sub _run_tests {
     my ( $new, $methods_for ) = @_;
-    my $runner =Test::Class::Moose::Runner->new($new);
+    my $runner = Test::Class::Moose::Runner->new($new);
     my @test_classes = sort $runner->test_classes;
 
     foreach my $class (@test_classes) {

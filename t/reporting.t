@@ -5,7 +5,7 @@ use Scalar::Util 'looks_like_number';
 use Test::Class::Moose::Load qw(t/lib);
 use Test::Class::Moose::Runner;
 
-my $runner =Test::Class::Moose::Runner->new;
+my $runner = Test::Class::Moose::Runner->new;
 
 subtest 'run the test suite' => sub {
     $runner->runtests;

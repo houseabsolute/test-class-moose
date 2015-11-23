@@ -36,7 +36,7 @@ TestsFor::Basic::Subclass->meta->add_method(
 my $builder = $runner->test_configuration->builder;
 $builder->todo_start('testing a dying test');
 my @tests;
-$runner =Test::Class::Moose::Runner->new;
+$runner = Test::Class::Moose::Runner->new;
 subtest 'test_this_will_die() dies' => sub {
     $runner->runtests;
     @tests = $runner->test_configuration->builder->details;

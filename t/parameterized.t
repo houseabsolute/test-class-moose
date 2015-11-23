@@ -4,7 +4,7 @@ use lib 'lib';
 use Test::Class::Moose::Load qw(t/parameterizedlib);
 use Test::Class::Moose::Runner;
 
-my $runner =Test::Class::Moose::Runner->new;
+my $runner = Test::Class::Moose::Runner->new;
 
 my @tests;
 subtest 'parameterized tests' => sub {
