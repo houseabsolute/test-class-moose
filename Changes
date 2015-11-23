@@ -1,6 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Removed the Test::Class::Moose::Report::Instance's error
+          attribute. Contrary to the documentation, this attribute was never
+          populated.
 
 0.62 2015-08-30
         * Make Test::Class::Moose::Config load Test::Builder. It used this

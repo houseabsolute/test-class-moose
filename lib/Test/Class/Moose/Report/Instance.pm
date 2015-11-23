@@ -22,12 +22,6 @@ has test_methods => (
     },
 );
 
-has 'error' => (
-    is        => 'rw',
-    isa       => 'Str',
-    predicate => 'has_error',
-);
-
 sub current_method {
     my $self = shift;
     return $self->test_methods->[-1];
@@ -58,11 +52,3 @@ objects.
 =head2 C<all_test_methods>
 
 Returns an array of L<Test::Class::Moose::Report::Method> objects.
-
-=head2 C<error>
-
-If this class could not be run, returns a string explaining the error.
-
-=head2 C<has_error>
-
-Returns a boolean indicating whether or not the class has an error.
