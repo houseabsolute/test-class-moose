@@ -26,9 +26,8 @@ has 'test_configuration' => (
 );
 
 has 'test_report' => (
-    is      => 'rw',
+    is      => 'ro',
     isa     => 'Test::Class::Moose::Report',
-    writer  => '__set_test_report',
     builder => '_build_test_report',
 );
 
