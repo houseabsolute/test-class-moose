@@ -117,9 +117,10 @@ sub _run_parallel_jobs {
 
     my $job_num = 0;
     foreach my $test_class ( $self->test_classes ) {
-        my %test_instances
-            = $test_class->_tcm_make_test_class_instances(
-            $self->test_configuration->args );
+        my %test_instances = $test_class->_tcm_make_test_class_instances(
+            $self->test_configuration->args,
+            test_report => $self->test_report,
+        );
 
         foreach my $test_instance_name (sort keys %test_instances) {
             my $test_instance = $test_instances{$test_instance_name};

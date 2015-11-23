@@ -48,9 +48,10 @@ sub _tcm_run_test_class {
     return sub {
         local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
 
-        my %test_instances
-            = $test_class->_tcm_make_test_class_instances(
-            $self->test_configuration->args );
+        my %test_instances = $test_class->_tcm_make_test_class_instances(
+            $self->test_configuration->args,
+            test_report => $self->test_report,
+        );
 
         unless (%test_instances) {
             my $message = "Skipping '$test_class': no test instances found";
@@ -88,8 +89,6 @@ sub _tcm_run_test_instance {
     my $config  = $self->test_configuration;
     my $builder = $config->builder;
     my $report  = $self->test_report;
-
-    $test_instance->__set_test_report($report);
 
     # set up test class reporting
     my $instance_report = Test::Class::Moose::Report::Instance->new(

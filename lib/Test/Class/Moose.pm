@@ -104,9 +104,8 @@ BEGIN {
 }
 
 has 'test_report' => (
-    is     => 'rw',
-    isa    => 'Test::Class::Moose::Report',
-    writer => '__set_test_report',
+    is  => 'ro',
+    isa => 'Test::Class::Moose::Report',
 );
 
 has 'test_class' => (
@@ -195,9 +194,9 @@ sub BUILD {
 }
 
 sub _tcm_make_test_class_instances {
-    my ( $test_class, $args ) = @_;
+    my $test_class = shift;
 
-    return ( $test_class => $test_class->new($args) );
+    return ( $test_class => $test_class->new(@_) );
 }
 
 sub test_methods {

@@ -7,9 +7,8 @@ use Moose::Role;
 requires '_constructor_parameter_sets';
 
 sub _tcm_make_test_class_instances {
-    my ( $class, $args ) = @_;
-
-    my %base_args = %{$args};
+    my $class     = shift;
+    my %base_args = @_;
 
     my %sets = $class->_constructor_parameter_sets;
     return map { $_ => $class->new( %{ $sets{$_} }, %base_args ) }

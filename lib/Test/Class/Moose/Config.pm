@@ -100,10 +100,10 @@ has 'test_classes' => (
 sub args {
     my $self = shift;
 
-    return {
+    return (
         map { defined $self->$_ ? ( $_ => $self->$_ ) : () }
         map { $_->name } $self->meta->get_all_attributes
-    };
+    );
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -203,7 +203,7 @@ Boolean. Will run test classes in a random order.
 
  my $tests = Some::Test::Class->new($test_suite->test_configuration->args);
 
-Returns a hash reference of the args used to build the configuration. Used in
+Returns a hash of the args used to build the configuration. Used in
 testing. You probably won't need it.
 
 =head1 BUGS
