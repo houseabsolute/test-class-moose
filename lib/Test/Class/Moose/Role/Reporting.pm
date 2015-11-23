@@ -3,8 +3,6 @@ package Test::Class::Moose::Role::Reporting;
 # ABSTRACT: Reporting gathering role
 
 use Moose::Role;
-use Benchmark qw(timediff timestr :hireswallclock);
-use Test::Class::Moose::Report::Time;
 with 'Test::Class::Moose::Role::HasTimeReport';
 
 has 'name' => (
