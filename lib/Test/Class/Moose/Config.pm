@@ -131,16 +131,16 @@ kept here to minimize namespace pollution in L<Test::Class::Moose>.
 
 =head1 ATTRIBUTES
 
-=head2 * C<show_timing>
+=head2 C<show_timing>
 
 Boolean. Will display verbose information on the amount of time it takes each
 test class/test method to run.
 
-=head2 * C<statistics>
+=head2 C<statistics>
 
 Boolean. Will display number of classes, test methods and tests run.
 
-=head2 * C<use_environment>
+=head2 C<use_environment>
 
 Boolean.  Sets show_timing and statistics to true if your test harness is running verbosely, false otherwise.
 
