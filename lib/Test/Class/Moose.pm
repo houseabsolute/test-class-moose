@@ -12,7 +12,7 @@ use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
 use Test::Class::Moose::Deprecated;
 
-sub __create_attributes {
+sub __sub_attr_declaration_code {
 
     # XXX sharing this behavior here because my first attempt at creating a
     # role was a complete failure. MooseX::MethodAttributes can help here, but
@@ -99,7 +99,7 @@ DECLARE_ATTRIBUTES
 }
 
 BEGIN {
-    eval __PACKAGE__->__create_attributes;
+    eval __PACKAGE__->__sub_attr_declaration_code;
     croak($@) if $@;
 }
 

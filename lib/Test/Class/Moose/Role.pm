@@ -10,7 +10,7 @@ use Test::Class::Moose::AttributeRegistry;
 
 BEGIN {
     require Test::Class::Moose;
-    eval Test::Class::Moose->__create_attributes;
+    eval Test::Class::Moose->__sub_attr_declaration_code;
     croak($@) if $@;
 }
 
