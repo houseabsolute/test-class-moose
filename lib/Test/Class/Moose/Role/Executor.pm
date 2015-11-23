@@ -185,23 +185,17 @@ sub _tcm_filter_by_tag {
     return @filtered_methods;
 }
 
-my $TEST_CONTROL_METHODS = sub {
-    local *__ANON__ = 'ANON_TEST_CONTROL_METHODS';
-    return {
-        map { $_ => 1 }
-          qw/
-          test_startup
-          test_setup
-          test_teardown
-          test_shutdown
-          /
-    };
-};
+my %TEST_CONTROL_METHODS = map { $_ => 1 } qw/
+    test_startup
+    test_setup
+    test_teardown
+    test_shutdown
+    /;
 
 sub _tcm_run_test_control_method {
     my ( $self, $test_instance, $phase, $report_object ) = @_;
 
-    $TEST_CONTROL_METHODS->()->{$phase}
+    $TEST_CONTROL_METHODS{$phase}
       or croak("Unknown test control method ($phase)");
 
     my $success;
