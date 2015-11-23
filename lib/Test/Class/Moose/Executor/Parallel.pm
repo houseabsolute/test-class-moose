@@ -34,21 +34,6 @@ has '_color' => (
     lazy_build => 1,
 );
 
-my $run_instance = sub {
-    my ( $self, $test_instance_name, $test_instance ) = @_;
-
-    my $builder = Test::Builder->new;
-
-    my $output;
-    $builder->output( \$output );
-    $builder->failure_output( \$output );
-    $builder->todo_output( \$output );
-
-    $self->_tcm_run_test_instance( $test_instance_name, $test_instance );
-
-    return $output;
-};
-
 sub runtests {
     my $self = shift;
 
@@ -68,7 +53,7 @@ sub runtests {
     $self->_run_parallel_jobs($fork, \@sequential);
 
     for my $pair (@sequential) {
-        my $output = $self->$run_instance( @{$pair} );
+        my $output = $self->_run_instance( @{$pair} );
         $stream->add_to_stream( TAP::Stream::Text->new(
             text => $output,
             name => "Sequential tests for $pair->[0] run after parallel tests",
@@ -127,7 +112,7 @@ sub _run_parallel_jobs {
             if ( $self->_test_instance_is_parallelizable($test_instance) ) {
                 $job_num++;
                 my $pid = $fork->start and next;
-                my $output = $self->$run_instance(
+                my $output = $self->_run_instance(
                     $test_instance_name,
                     $test_instance
                 );
@@ -156,6 +141,21 @@ sub _test_instance_is_parallelizable {
     }
     $self->_tcm_test_methods_for_instance($test_instance);
 }
+
+sub _run_instance {
+    my ( $self, $test_instance_name, $test_instance ) = @_;
+
+    my $builder = Test::Builder->new;
+
+    my $output;
+    $builder->output( \$output );
+    $builder->failure_output( \$output );
+    $builder->todo_output( \$output );
+
+    $self->_tcm_run_test_instance( $test_instance_name, $test_instance );
+
+    return $output;
+};
 
 after '_tcm_run_test_method' => sub {
     my $self    = shift;
