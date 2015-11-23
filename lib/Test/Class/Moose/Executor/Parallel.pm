@@ -29,7 +29,7 @@ has 'color_output' => (
 );
 
 has '_color' => (
-    is         => 'rw',
+    is         => 'ro',
     isa        => 'TAP::Formatter::Color',
     lazy_build => 1,
 );

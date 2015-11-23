@@ -11,7 +11,7 @@ with qw(
 );
 
 has test_methods => (
-    is      => 'rw',
+    is      => 'ro',
     traits  => ['Array'],
     isa     => 'ArrayRef[Test::Class::Moose::Report::Method]',
     default => sub { [] },

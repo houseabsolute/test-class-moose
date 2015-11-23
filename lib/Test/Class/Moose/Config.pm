@@ -51,7 +51,7 @@ has 'use_environment' => (
 );
 
 has 'test_class' => (
-    is  => 'rw',
+    is  => 'ro',
     isa => 'Str',
 );
 
