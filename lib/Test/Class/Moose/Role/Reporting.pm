@@ -5,7 +5,7 @@ package Test::Class::Moose::Role::Reporting;
 use Moose::Role;
 use Benchmark qw(timediff timestr :hireswallclock);
 use Test::Class::Moose::Report::Time;
-with 'Test::Class::Moose::Role::Timing';
+with 'Test::Class::Moose::Role::HasTimeReport';
 
 has 'name' => (
     is       => 'ro',
@@ -41,7 +41,7 @@ Note that everything in here is experimental and subject to change.
 
 =head1 IMPLEMENTS
 
-L<Test::Class::Moose::Role::Timing>.
+L<Test::Class::Moose::Role::HasTimeReport>.
 
 =head1 REQUIRES
 
@@ -74,7 +74,7 @@ Returns true if the class or method passed.
 
 =head2 C<time>
 
-(From L<Test::Class::Moose::Role::Timing>)
+(From L<Test::Class::Moose::Role::HasTimeReport>)
 
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class or method.

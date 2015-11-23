@@ -6,7 +6,7 @@ use 5.10.0;
 use Carp;
 use Moose;
 use namespace::autoclean;
-with 'Test::Class::Moose::Role::Timing';
+with 'Test::Class::Moose::Role::HasTimeReport';
 
 has 'num_test_methods' => (
     is      => 'rw',

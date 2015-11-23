@@ -1,4 +1,4 @@
-package Test::Class::Moose::Role::Timing;
+package Test::Class::Moose::Role::HasTimeReport;
 
 # ABSTRACT: Report timing role
 
