@@ -12,12 +12,6 @@ use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
 use Test::Class::Moose::Deprecated;
 
-has 'test_report' => (
-    is     => 'rw',
-    isa    => 'Test::Class::Moose::Report',
-    writer => '__set_test_report',
-);
-
 sub __create_attributes {
 
     # XXX sharing this behavior here because my first attempt at creating a
@@ -108,6 +102,12 @@ BEGIN {
     eval __PACKAGE__->__create_attributes;
     croak($@) if $@;
 }
+
+has 'test_report' => (
+    is     => 'rw',
+    isa    => 'Test::Class::Moose::Report',
+    writer => '__set_test_report',
+);
 
 has 'test_class' => (
     is  => 'rw',
