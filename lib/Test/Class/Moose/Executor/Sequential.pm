@@ -38,6 +38,47 @@ END
     return $self;
 }
 
+sub _tcm_run_test_class {
+    my ( $self, $test_class ) = @_;
+
+    return sub {
+        local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
+
+        my %test_instances = $test_class->_tcm_make_test_class_instances(
+            $self->test_configuration->args,
+            test_report => $self->test_report,
+        );
+
+        unless (%test_instances) {
+            my $message = "Skipping '$test_class': no test instances found";
+            $self->test_configuration->builder->plan(skip_all => $message);
+            return;
+        }
+
+        foreach my $test_instance_name (sort keys %test_instances) {
+            my $test_instance = $test_instances{$test_instance_name};
+
+            if ( values %test_instances > 1 ) {
+                $self->test_configuration->builder->subtest(
+                    $test_instance_name,
+                    sub {
+                        $self->_tcm_run_test_instance(
+                            $test_instance_name,
+                            $test_instance,
+                        );
+                    },
+                );
+            }
+            else {
+                $self->_tcm_run_test_instance(
+                    $test_instance_name,
+                    $test_instance,
+                );
+            }
+        }
+    };
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
