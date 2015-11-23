@@ -6,44 +6,45 @@ use Moose::Role;
 use Benchmark qw(timediff timestr :hireswallclock);
 use Test::Class::Moose::Report::Time;
 
-# this seems like some serious abuse of attributes. Plus, time() is only set
-# as a side-effect of _end_benchmark(). I should rethink this. It's hidden
-# from the outside world, but still ...
 has '_start_benchmark' => (
-    is            => 'rw',
+    is            => 'ro',
     isa           => 'Benchmark',
     lazy          => 1,
     default       => sub { Benchmark->new },
+    predicate     => '_has_start_benchmark',
     documentation => 'Trusted method for Test::Class::Moose',
 );
 
 has '_end_benchmark' => (
-    is      => 'rw',
-    isa     => 'Benchmark',
-    lazy    => 1,
-    default => sub {
-        my $self      = shift;
-        my $benchmark = Benchmark->new;
-        my $time      = Test::Class::Moose::Report::Time->new(
-            timediff( $benchmark, $self->_start_benchmark ) );
-        $self->time($time);
-        return $benchmark;
-    },
+    is            => 'ro',
+    isa           => 'Benchmark',
+    lazy          => 1,
+    default       => sub { Benchmark->new },
+    predicate     => '_has_end_benchmark',
     documentation => 'Trusted method for Test::Class::Moose',
 );
 
 has 'time' => (
-    is      => 'rw',
+    is      => 'ro',
     isa     => 'Test::Class::Moose::Report::Time',
-    default => sub {
+    lazy    => 1,
+    builder => '_build_time',
+);
 
-        # return a "zero" if no time is set
-        my $self      = shift;
+sub _build_time {
+    my $self = shift;
+
+    # If we don't have start & end marked we'll return a report with zero time
+    # elapsed.
+    unless ( $self->_has_start_benchmark && $self->_has_end_benchmark ) {
         my $benchmark = Benchmark->new;
         return Test::Class::Moose::Report::Time->new(
             timediff( $benchmark, $benchmark ) );
-    },
-);
+    }
+
+    return Test::Class::Moose::Report::Time->new(
+        timediff( $self->_end_benchmark, $self->_start_benchmark ) );
+}
 
 1;
 
