@@ -223,14 +223,6 @@ objects.
 
 Returns an array of L<Test::Class::Moose::Report::Method> objects.
 
-=head3 C<error>
-
-If this class could not be run, returns a string explaining the error.
-
-=head3 C<has_error>
-
-Returns a boolean indicating whether or not the class has an error.
-
 =head3 C<name>
 
 The name of the test class.
