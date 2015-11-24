@@ -3,6 +3,9 @@ package Test::Class::Moose::Report::Time;
 # ABSTRACT: Reporting object for timing
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Moose;
 use Benchmark qw(timestr :hireswallclock);
 use namespace::autoclean;

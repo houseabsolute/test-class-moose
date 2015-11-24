@@ -3,6 +3,9 @@ package Test::Class::Moose::Executor::Sequential;
 # ABSTRACT: Execute tests sequentially
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Moose 2.0000;
 use Carp;
 use namespace::autoclean;

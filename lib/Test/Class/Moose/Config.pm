@@ -3,6 +3,9 @@ package Test::Class::Moose::Config;
 # ABSTRACT: Configuration information for Test::Class::Moose
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Moose;
 use Moose::Util::TypeConstraints;
 use TAP::Formatter::Color;

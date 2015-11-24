@@ -3,6 +3,9 @@ package Test::Class::Moose::Role::Reporting;
 # ABSTRACT: Reporting gathering role
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Moose::Role;
 with 'Test::Class::Moose::Role::HasTimeReport';
 

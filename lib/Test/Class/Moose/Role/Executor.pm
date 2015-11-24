@@ -3,6 +3,9 @@ package Test::Class::Moose::Role::Executor;
 # ABSTRACT: Common code for Runner classes
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Moose::Role 2.0000;
 use Carp;
 use namespace::autoclean;

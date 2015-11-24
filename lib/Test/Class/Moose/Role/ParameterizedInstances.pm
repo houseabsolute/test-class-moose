@@ -3,6 +3,9 @@ package Test::Class::Moose::Role::ParameterizedInstances;
 # ABSTRACT: run tests against multiple instances of a test class
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Moose::Role;
 
 requires '_constructor_parameter_sets';

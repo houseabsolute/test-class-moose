@@ -3,6 +3,9 @@ package Test::Class::Moose::Report::Class;
 # ABSTRACT: Reporting on test classes
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Moose;
 use Carp;
 use namespace::autoclean;

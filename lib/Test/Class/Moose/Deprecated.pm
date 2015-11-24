@@ -4,6 +4,8 @@ package Test::Class::Moose::Deprecated;
 
 use 5.10.0;
 
+our $VERSION = '0.63';
+
 use Package::DeprecationManager -deprecations => {
     'Test::Class::Moose->runtests' => '0.55',
 };

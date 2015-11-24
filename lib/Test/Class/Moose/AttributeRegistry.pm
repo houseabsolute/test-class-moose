@@ -5,6 +5,8 @@ package Test::Class::Moose::AttributeRegistry;
 use strict;
 use warnings;
 
+our $VERSION = '0.63';
+
 use Carp;
 use Class::MOP;
 use List::MoreUtils qw( any uniq );

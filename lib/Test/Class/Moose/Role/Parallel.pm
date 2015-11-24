@@ -3,6 +3,9 @@ package Test::Class::Moose::Role::Parallel;
 # ABSTRACT: Deprecated parallel runner role - see docs for details
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Moose::Role 2.0000;
 use namespace::autoclean;
 

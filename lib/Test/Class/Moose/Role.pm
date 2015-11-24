@@ -3,6 +3,9 @@ package Test::Class::Moose::Role;
 # ABSTRACT: Test::Class::Moose for roles
 
 use 5.10.0;
+
+our $VERSION = '0.63';
+
 use Carp;
 
 use Sub::Attribute;
