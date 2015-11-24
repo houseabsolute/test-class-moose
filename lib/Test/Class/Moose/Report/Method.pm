@@ -51,14 +51,6 @@ sub plan {
     $self->tests_planned( ( $self->tests_planned || 0 ) + $integer );
 }
 
-sub add_to_plan {
-    my ( $self, $integer ) = @_;
-    carp(
-        "add_to_plan() is deprecated. You can now call plan() multiple times"
-    );
-    return $self->plan($integer);
-}
-
 sub has_tag {
     my ( $self, $tag ) = @_;
     croak("has_tag(\$tag) requires a tag name") unless defined $tag;
@@ -77,7 +69,7 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
-=for Pod::Coverage add_to_plan plan
+=for Pod::Coverage plan
 
 =head1 DESCRIPTION
 
