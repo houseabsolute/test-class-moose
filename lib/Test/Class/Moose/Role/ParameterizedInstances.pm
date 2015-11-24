@@ -12,7 +12,7 @@ sub _tcm_make_test_class_instances {
 
     my %sets = $class->_constructor_parameter_sets;
     return map { $_ => $class->new( %{ $sets{$_} }, %base_args ) }
-        keys %sets;
+      keys %sets;
 }
 
 1;

@@ -7,7 +7,7 @@ use Test::Class::Moose::Runner;
 my $runner = Test::Class::Moose::Runner->new( show_timing => 0 );
 
 my %methods_for = (
-    'TestsFor::Basic'           => [qw/test_me test_reporting test_this_baby/],
+    'TestsFor::Basic' => [qw/test_me test_reporting test_this_baby/],
     'TestsFor::Basic::Subclass' => [
         qw/
           test_me

@@ -21,7 +21,9 @@ sub test_one_set {
         is( $self->bar, 42, 'ran a test where bar is 42' );
     }
     else {
-        fail('ran a test where neither foo nor bar are set - this should be impossible');
+        fail(
+            'ran a test where neither foo nor bar are set - this should be impossible'
+        );
     }
 }
 

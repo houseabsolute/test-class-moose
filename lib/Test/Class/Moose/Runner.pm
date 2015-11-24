@@ -33,8 +33,8 @@ has '_executor' => (
     handles    => [ 'runtests', 'test_classes', 'test_report' ],
 );
 
-my %config_attrs = map { $_->init_arg => 1}
-    Test::Class::Moose::Config->meta->get_all_attributes;
+my %config_attrs = map { $_->init_arg => 1 }
+  Test::Class::Moose::Config->meta->get_all_attributes;
 around BUILDARGS => sub {
     my $orig  = shift;
     my $class = shift;
@@ -42,7 +42,7 @@ around BUILDARGS => sub {
     my $p = $class->$orig(@_);
 
     my %config_p = map { $config_attrs{$_} ? ( $_ => delete $p->{$_} ) : () }
-        keys %{$p};
+      keys %{$p};
 
     $p->{test_configuration} ||= Test::Class::Moose::Config->new(%config_p);
 

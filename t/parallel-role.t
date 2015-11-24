@@ -6,6 +6,7 @@ use Test::Requires {
 use Test::Warnings qw( warnings );
 
 {
+
     package My::Runner;
     use Test::Class::Moose;
     with 'Test::Class::Moose::Role::Parallel';

@@ -155,8 +155,8 @@ END
 # XXX - this is only necessary for backwards compatibility, where people call
 # Test::Class::Moose->new(...)->runtests() instead of
 # Test::Class::Moose::Runner->new(...)->runtests()
-my %config_attrs = map { $_->init_arg => 1}
-    Test::Class::Moose::Config->meta->get_all_attributes;
+my %config_attrs = map { $_->init_arg => 1 }
+  Test::Class::Moose::Config->meta->get_all_attributes;
 around 'BUILDARGS' => sub {
     my $orig  = shift;
     my $class = shift;
@@ -164,7 +164,7 @@ around 'BUILDARGS' => sub {
     my $p = $class->$orig(@_);
 
     my %config_p
-        = map { $_ => delete $p->{$_} } grep { $config_attrs{$_} } keys %{$p};
+      = map { $_ => delete $p->{$_} } grep { $config_attrs{$_} } keys %{$p};
     $p->{_config_p} = \%config_p;
 
     return $p;
@@ -176,14 +176,13 @@ sub runtests {
 
     Test::Class::Moose::Deprecated::deprecated(
         message =>
-            'Calling runtests() on a Test::Class::Moose object is deprecated.'
-            . ' Use Test::Class::Moose::Runner instead.',
+          'Calling runtests() on a Test::Class::Moose object is deprecated.'
+          . ' Use Test::Class::Moose::Runner instead.',
         feature => 'Test::Class::Moose->runtests',
     );
 
     require Test::Class::Moose::Runner;
-    my $runner
-        = Test::Class::Moose::Runner->new( $self->_config_p );
+    my $runner = Test::Class::Moose::Runner->new( $self->_config_p );
 
     return $runner->runtests();
 }
@@ -204,7 +203,7 @@ sub test_methods {
         next if $method->isa('Moose::Meta::Method::Accessor');
 
         my $class = ref $self;
-        my $name = $method->name;
+        my $name  = $method->name;
         next
           unless $name =~ /^test_/
           || Test::Class::Moose::AttributeRegistry->has_test_attribute(

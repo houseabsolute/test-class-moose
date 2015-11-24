@@ -38,7 +38,7 @@ sub _build_test_report {
     # types of Executors. However, the real fix is to make parallel reporting
     # actually work so the report doesn't have to care about this.
     return Test::Class::Moose::Report->new(
-        is_parallel => (ref $self) =~ /::Parallel$/ ? 1 : 0,
+        is_parallel => ( ref $self ) =~ /::Parallel$/ ? 1 : 0,
     );
 }
 
@@ -55,7 +55,7 @@ sub _tcm_run_test_instance {
         }
     );
     $report->current_class->add_test_instance($instance_report)
-        if $report->current_class;
+      if $report->current_class;
 
     my @test_methods = $self->_tcm_test_methods_for_instance($test_instance);
 
@@ -71,7 +71,8 @@ sub _tcm_run_test_instance {
     $report->_inc_test_methods( scalar @test_methods );
 
     # startup
-    unless ( my $report = $self->_tcm_run_test_control_method(
+    unless (
+        my $report = $self->_tcm_run_test_control_method(
             $test_instance, 'test_startup', $instance_report
         )
       )
@@ -173,27 +174,27 @@ sub _tcm_filter_by_tag {
         my @new_method_list = @filtered_methods;
         foreach my $method (@filtered_methods) {
             foreach my $tag (@$exclude) {
-                if (
-                    Test::Class::Moose::AttributeRegistry->method_has_tag(
+                if (Test::Class::Moose::AttributeRegistry->method_has_tag(
                         $class, $method, $tag
                     )
                   )
                 {
-                  @new_method_list = grep { $_ ne $method } @new_method_list;
+                    @new_method_list
+                      = grep { $_ ne $method } @new_method_list;
                 }
             }
-        };
+        }
         @filtered_methods = @new_method_list;
-    };
+    }
     return @filtered_methods;
 }
 
 my %TEST_CONTROL_METHODS = map { $_ => 1 } qw/
-    test_startup
-    test_setup
-    test_teardown
-    test_shutdown
-    /;
+  test_startup
+  test_setup
+  test_teardown
+  test_shutdown
+  /;
 
 sub _tcm_run_test_control_method {
     my ( $self, $test_instance, $phase, $report_object ) = @_;
@@ -210,7 +211,7 @@ sub _tcm_run_test_control_method {
         )
     );
     my $phase_method_report
-        = Test::Class::Moose::Report::Method->new( \%report_args );
+      = Test::Class::Moose::Report::Method->new( \%report_args );
 
     my $set_meth = "set_${phase}_method";
     $report_object->$set_meth($phase_method_report);
@@ -245,7 +246,7 @@ sub _tcm_run_test_control_method {
 sub _tcm_run_test_method {
     my ( $self, $test_instance, $test_method, $instance_report ) = @_;
 
-    my $report  = Test::Class::Moose::Report::Method->new(
+    my $report = Test::Class::Moose::Report::Method->new(
         { name => $test_method, instance => $instance_report } );
 
     $instance_report->add_test_method($report);
@@ -288,8 +289,7 @@ sub _tcm_run_test_method {
             $report->_end_benchmark;
             if ( $config->show_timing ) {
                 my $time = $report->time->duration;
-                $config->builder->diag(
-                    $report->name . ": $time" );
+                $config->builder->diag( $report->name . ": $time" );
             }
         },
     );
@@ -299,7 +299,7 @@ sub _tcm_run_test_method {
         $test_instance,
         'test_teardown',
         $report,
-    ) or $report->passed(fail "test_teardown failed");
+    ) or $report->passed( fail "test_teardown failed" );
     if ( !$report->is_skipped ) {
         $report->num_tests_run($num_tests);
         if ( !$report->has_plan ) {

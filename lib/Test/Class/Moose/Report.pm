@@ -49,8 +49,9 @@ sub num_test_instances {
 
 sub all_test_classes {
     my $self = shift;
-    warn "When running tests in parallel we are unable to store test classes\n"
-        if $self->is_parallel;
+    warn
+      "When running tests in parallel we are unable to store test classes\n"
+      if $self->is_parallel;
     return $self->_all_test_classes;
 }
 
@@ -86,7 +87,7 @@ sub current_method {
 sub plan {
     my ( $self, $plan ) = @_;
     my $current_method = $self->current_method
-        or croak("You tried to plan but we don't have a test method yet!");
+      or croak("You tried to plan but we don't have a test method yet!");
     $current_method->plan($plan);
 }
 

@@ -3,6 +3,7 @@ use Test::Class::Moose;
 with 'Test::Class::Moose::Role::ParameterizedInstances';
 
 sub _constructor_parameter_sets {
+
     # dynamically decided that there is nothing to do (e.g., because
     # I'm being called in the context of an abstract base class)
     return ();

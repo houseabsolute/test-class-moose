@@ -63,9 +63,9 @@ $runner = Test::Class::Moose::Runner->new(
 
 foreach my $class (@test_classes) {
     eq_or_diff
-        [ $runner->_executor->_tcm_test_methods_for_instance( $class->new ) ],
-        $methods_for{$class},
-        "$class should have the correct test methods";
+      [ $runner->_executor->_tcm_test_methods_for_instance( $class->new ) ],
+      $methods_for{$class},
+      "$class should have the correct test methods";
 }
 subtest 'runtests' => sub {
     $runner->runtests;

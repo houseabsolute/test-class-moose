@@ -49,7 +49,9 @@ sub plan {
 
 sub add_to_plan {
     my ( $self, $integer ) = @_;
-    carp("add_to_plan() is deprecated. You can now call plan() multiple times");
+    carp(
+        "add_to_plan() is deprecated. You can now call plan() multiple times"
+    );
     return $self->plan($integer);
 }
 
@@ -58,7 +60,10 @@ sub has_tag {
     croak("has_tag(\$tag) requires a tag name") unless defined $tag;
     my $instance = $self->instance->name;
     my $method   = $self->name;
-    return Test::Class::Moose::AttributeRegistry->method_has_tag( $instance, $method, $tag );
+    return Test::Class::Moose::AttributeRegistry->method_has_tag(
+        $instance,
+        $method, $tag
+    );
 }
 
 __PACKAGE__->meta->make_immutable;

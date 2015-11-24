@@ -51,14 +51,17 @@ sub runtests {
     my $fork = $self->_make_fork_manager($stream);
 
     my @sequential;
-    $self->_run_parallel_jobs($fork, \@sequential);
+    $self->_run_parallel_jobs( $fork, \@sequential );
 
     for my $pair (@sequential) {
         my $output = $self->_run_instance( @{$pair} );
-        $stream->add_to_stream( TAP::Stream::Text->new(
-            text => $output,
-            name => "Sequential tests for $pair->[0] run after parallel tests",
-        ) );
+        $stream->add_to_stream(
+            TAP::Stream::Text->new(
+                text => $output,
+                name =>
+                  "Sequential tests for $pair->[0] run after parallel tests",
+            )
+        );
     }
 
     # this prevents overwriting the line of dots output from
@@ -74,7 +77,7 @@ sub runtests {
 sub _make_fork_manager {
     my ( $self, $stream ) = @_;
 
-    my $fork = Parallel::ForkManager->new($self->jobs);
+    my $fork = Parallel::ForkManager->new( $self->jobs );
     $fork->run_on_finish(
         sub {
             my ($pid, $exit_code, $ident, $exit_signal, $core_dump,
@@ -84,7 +87,10 @@ sub _make_fork_manager {
             if ( defined($result) ) {
                 my ( $job_num, $tap ) = @$result;
                 $stream->add_to_stream(
-                    TAP::Stream::Text->new( text => $tap, name => "Job #$job_num (pid: $pid)" ) );
+                    TAP::Stream::Text->new(
+                        text => $tap, name => "Job #$job_num (pid: $pid)"
+                    )
+                );
             }
             else
             { # problems occuring during storage or retrieval will throw a warning
@@ -104,7 +110,7 @@ sub _run_parallel_jobs {
     my $job_num = 0;
     foreach my $test_class ( $self->test_classes ) {
         my $class_report
-            = Test::Class::Moose::Report::Class->new( name => $test_class );
+          = Test::Class::Moose::Report::Class->new( name => $test_class );
         $self->test_report->add_test_class($class_report);
 
         my %test_instances = $test_class->_tcm_make_test_class_instances(
@@ -112,7 +118,7 @@ sub _run_parallel_jobs {
             test_report => $self->test_report,
         );
 
-        foreach my $test_instance_name (sort keys %test_instances) {
+        foreach my $test_instance_name ( sort keys %test_instances ) {
             my $test_instance = $test_instances{$test_instance_name};
             if ( $self->_test_instance_is_parallelizable($test_instance) ) {
                 $job_num++;
@@ -124,7 +130,7 @@ sub _run_parallel_jobs {
                 $fork->finish( 0, [ $job_num, $output ] );
             }
             else {
-                push @{$sequential}, [$test_instance_name, $test_instance];
+                push @{$sequential}, [ $test_instance_name, $test_instance ];
             }
         }
     }
@@ -160,7 +166,7 @@ sub _run_instance {
     $self->_tcm_run_test_instance( $test_instance_name, $test_instance );
 
     return $output;
-};
+}
 
 after '_tcm_run_test_method' => sub {
     my $self    = shift;

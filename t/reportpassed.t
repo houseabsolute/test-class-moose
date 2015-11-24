@@ -59,15 +59,15 @@ foreach my $class ( $report->all_test_classes ) {
         foreach my $method ( $instance->all_test_methods ) {
             my $method_name = $method->name;
             is $method->passed, $passed{$class_name}{methods}{$method_name},
-                "$class_name\::$method_name pass/fail status should be correct";
+              "$class_name\::$method_name pass/fail status should be correct";
             cmp_ok $method->num_tests_run, '>', 0,
-                '... and some tests should have been run';
+              '... and some tests should have been run';
             explain "Run time for $method_name: " . $method->time->duration;
         }
         can_ok $instance, 'time';
         my $time = $instance->time;
         isa_ok $time, 'Test::Class::Moose::Report::Time',
-            '... and the object it returns';
+          '... and the object it returns';
 
         my $instance_name = $instance->name;
         explain "Run time for $instance_name: " . $time->duration;

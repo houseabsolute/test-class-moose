@@ -47,7 +47,7 @@ sub _tcm_run_test_class {
         local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
 
         my $class_report
-            = Test::Class::Moose::Report::Class->new( name => $test_class );
+          = Test::Class::Moose::Report::Class->new( name => $test_class );
         $self->test_report->add_test_class($class_report);
 
         my %test_instances = $test_class->_tcm_make_test_class_instances(
@@ -59,14 +59,14 @@ sub _tcm_run_test_class {
             my $message = "Skipping '$test_class': no test instances found";
             $class_report->skipped($message);
             $class_report->passed(1);
-            $self->test_configuration->builder->plan(skip_all => $message);
+            $self->test_configuration->builder->plan( skip_all => $message );
             return;
         }
 
         $class_report->_start_benchmark;
 
         my $passed = 1;
-        foreach my $test_instance_name (sort keys %test_instances) {
+        foreach my $test_instance_name ( sort keys %test_instances ) {
             my $test_instance = $test_instances{$test_instance_name};
 
             my $instance_report;

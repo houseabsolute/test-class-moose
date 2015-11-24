@@ -3,7 +3,7 @@ use Test::Most;
 use lib 'lib';
 
 use Test::Class::Moose ();    # prevents us from inheriting from it
-sub registry () { 'Test::Class::Moose::AttributeRegistry' }
+sub registry () {'Test::Class::Moose::AttributeRegistry'}
 
 use Test::Class::Moose::Load qw(t/taglib);
 use Test::Class::Moose::Runner;
@@ -33,11 +33,11 @@ subtest 'Multiple included tags' => sub {
                   /
             ],
             'TestsFor::MultipleExclude' => [],
-        'TestsFor::Basic::WithRole' => [
-        qw/
-        test_in_a_role_with_tags
-           /
-        ],
+            'TestsFor::Basic::WithRole' => [
+                qw/
+                  test_in_a_role_with_tags
+                  /
+            ],
         }
     );
 };
@@ -67,13 +67,13 @@ subtest 'Simple exluded tag' => sub {
                   test_87801_3
                   /
             ],
-        'TestsFor::Basic::WithRole' => [
-            qw/
-            test_in_a_role
-            test_in_a_role_with_tags
-            test_in_withrole
-            /
-        ],
+            'TestsFor::Basic::WithRole' => [
+                qw/
+                  test_in_a_role
+                  test_in_a_role_with_tags
+                  test_in_withrole
+                  /
+            ],
         }
     );
 };
@@ -84,7 +84,7 @@ subtest 'Simple included tag' => sub {
         {   'TestsFor::Basic'           => [],
             'TestsFor::Basic::Subclass' => [qw/ test_augment /],
             'TestsFor::MultipleExclude' => [],
-        'TestsFor::Basic::WithRole' => [],
+            'TestsFor::Basic::WithRole' => [],
         }
     );
 };
@@ -101,19 +101,20 @@ subtest
         {   'TestsFor::Basic'           => [],
             'TestsFor::Basic::Subclass' => [],
             'TestsFor::MultipleExclude' => [qw/test_87801_3/],
-        'TestsFor::Basic::WithRole' => [],
+            'TestsFor::Basic::WithRole' => [],
         }
     );
   };
 
 sub _run_tests {
     my ( $new, $methods_for ) = @_;
-    my $runner = Test::Class::Moose::Runner->new($new);
+    my $runner       = Test::Class::Moose::Runner->new($new);
     my @test_classes = sort $runner->test_classes;
 
     foreach my $class (@test_classes) {
-        eq_or_diff
-          [ $runner->_executor->_tcm_test_methods_for_instance( $class->new ) ],
+        eq_or_diff [
+            $runner->_executor->_tcm_test_methods_for_instance( $class->new )
+          ],
           $methods_for->{$class},
           "$class should have the correct test methods";
     }
@@ -131,11 +132,11 @@ subtest 'Verify registry' => sub {
       ),
       '... or if it does not';
 
-    ok registry->class_has_tag('TestsFor::Basic::Subclass', 'second'),
-        'The tag registry should report if a class has a method with a given tag';
+    ok registry->class_has_tag( 'TestsFor::Basic::Subclass', 'second' ),
+      'The tag registry should report if a class has a method with a given tag';
 
-    ok !registry->class_has_tag('TestsFor::Basic::Subclass', 'no such tag'),
-        '... or if it does not';
+    ok !registry->class_has_tag( 'TestsFor::Basic::Subclass', 'no such tag' ),
+      '... or if it does not';
 };
 
 eval <<'END';
@@ -151,7 +152,8 @@ eval <<'END';
 END
 
 my $error = $@;
-like $error, qr/Test control method 'test_setup' may not have a Test attribute/,
-    'Putting test attributes on a test control method should be a fatal error';
+like $error,
+  qr/Test control method 'test_setup' may not have a Test attribute/,
+  'Putting test attributes on a test control method should be a fatal error';
 
 done_testing;

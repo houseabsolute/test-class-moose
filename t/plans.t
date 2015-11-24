@@ -6,6 +6,7 @@ use Test::Class::Moose::Runner;
 
 {
     BEGIN { $INC{'Person.pm'} = 1 }
+
     package Person;
     use Moose;
     has [qw/first_name last_name/] => ( is => 'ro' );
@@ -17,6 +18,7 @@ use Test::Class::Moose::Runner;
 }
 {
     BEGIN { $INC{'Person/Employee.pm'} = 1 }
+
     package Person::Employee;
 
     use Moose;
@@ -55,8 +57,7 @@ my %expected_tests_planned = (
     'TestsFor::Attributes::Subclass::test_more_than_one_test'         => 3,
     'TestsFor::Attributes::Subclass::test_with_attribute_but_no_plan' => 3,
     'TestsFor::Attributes::Subclass::this_is_a_test_method_because_of_the_attribute'
-      =>
-      3,
+      => 3,
 );
 my %expected_tests_run = (
     'TestsFor::Person::test_person'                         => 1,
@@ -70,8 +71,7 @@ my %expected_tests_run = (
     'TestsFor::Attributes::Subclass::test_more_than_one_test'         => 3,
     'TestsFor::Attributes::Subclass::test_with_attribute_but_no_plan' => 3,
     'TestsFor::Attributes::Subclass::this_is_a_test_method_because_of_the_attribute'
-      =>
-      5,
+      => 5,
 );
 
 foreach my $class ( $report->all_test_classes ) {
@@ -79,9 +79,9 @@ foreach my $class ( $report->all_test_classes ) {
         foreach my $method ( $instance->all_test_methods ) {
             my $fq_name = join '::' => $instance->name, $method->name;
             is $method->tests_planned, $expected_tests_planned{$fq_name},
-                "$fq_name should have $expected_tests_planned{$fq_name} tests planned";
+              "$fq_name should have $expected_tests_planned{$fq_name} tests planned";
             is $method->num_tests_run, $expected_tests_run{$fq_name},
-                "$fq_name should have $expected_tests_run{$fq_name} tests run";
+              "$fq_name should have $expected_tests_run{$fq_name} tests run";
         }
     }
 }

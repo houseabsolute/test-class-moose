@@ -10,7 +10,7 @@ requires 'runtests';
 
 before runtests => sub {
     warn
-        "The Test::Class::Moose::Role::Parallel role is deprecated. Use the new Test::Class::Moose::Runner class instead.";
+      "The Test::Class::Moose::Role::Parallel role is deprecated. Use the new Test::Class::Moose::Runner class instead.";
 };
 
 1;
