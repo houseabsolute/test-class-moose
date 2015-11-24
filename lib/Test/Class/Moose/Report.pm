@@ -103,7 +103,11 @@ __END__
 
 =head1 SYNOPSIS
 
- my $report = Test::Class::Moose->new->runtests->test_report;
+    use Test::Class::Moose::Runner;
+
+    my $runner = Test::Class::Moose::Runner->new;
+    $runner->runtests;
+    my $report = $runner->test_report;
 
 =head1 DESCRIPTION
 
@@ -123,183 +127,96 @@ report information:
     subtest 'run the test suite' => sub {
         $test_suite->runtests;
     };
+
     my $report = $test_suite->test_report;
     my $duration = $report->time->duration;
     diag "Test suite run time: $duration";
 
-    foreach my $class ( $report->all_test_instances ) {
+    foreach my $class (@c) {
         my $class_name = $class->name;
-        ok !$class->is_skipped, "$class_name was not skipped";
+        subtest "report for class:$class_name" => sub {
+            ok !$class->is_skipped, "class:$class_name was not skipped";
+            ok $class->passed, "class:$class_name passed";
 
-        subtest "$class_name methods" => sub {
-            foreach my $method ( $class->all_test_methods ) {
-                my $method_name = $method->name;
-                ok !$method->is_skipped, "$method_name was not skipped";
-                cmp_ok $method->num_tests, '>', 0,
-                  '... and some tests should have been run';
-                diag "Run time for $method_name: ".$method->time->duration;
+            my @i = $class->all_test_instances;
+            is scalar @i, 1, "tested one instance for $class_name";
+
+            foreach my $instance (@i) {
+                my $instance_name = $instance->name;
+                subtest "report for instance:$instance_name" => sub {
+                    ok !$instance->is_skipped,
+                      "instance:$instance_name was not skipped";
+                    ok $instance->passed, "instance:$instance_name passed";
+
+                    my @methods = $instance->all_test_methods;
+                    is_deeply
+                      [ sort map { $_->name } @methods ],
+                      $expected_methods{$class_name},
+                      "instance:$instance_name ran the expected methods";
+
+                    foreach my $method (@methods) {
+                        my $method_name = $method->name;
+                        subtest "report for method:$method_name" => sub {
+                            ok !$method->is_skipped,
+                              "$method_name was not skipped";
+                            cmp_ok $method->num_tests_run, '>', 0,
+                              '... and some tests should have been run';
+                            _test_report_time($method);
+                        };
+                    }
+                };
             }
         };
-        my $time   = $class->time;
-        diag "Run time for $class_name: ".$class->time->duration;
-
-        my $real   = $time->real;
-        my $user   = $time->user;
-        my $system = $time->system;
-        # do with these as you will
     }
-    diag "Number of test instances: " . $report->num_test_instances;
-    diag "Number of test methods: "   . $report->num_test_methods;
-    diag "Number of tests:        "   . $report->num_tests;
-
-    done_testing;
-
 
 Reporting is currently in alpha. The interface is not guaranteed to be stable.
 
-=head2 The Report
+=head1 METHODS
 
- my $report = Test::Class::Moose->new->runtests->test_report;
+The top level report object for the whole test suite is returned from the
+L<Test::Class::Moose::Runner> object's C<test_report> method.
 
-Or:
+This object provides the following methods:
 
- my $test_suite = Test::Class::Moose->new;
- $test_suite->runtests;
- my $report = $test_suite->test_report;
-
-After the test suite is run, you can call the C<test_report> method to get the
-report. The test report is a L<Test::Class::Moose::Report> object. This object
-provides the following methods:
-
-=head3 C<all_test_classes>
+=head2 C<all_test_classes>
 
 Returns an array of L<Test::Class::Moose::Report::Class> objects.
 
-=head3 C<num_test_instances>
+=head2 C<num_test_classes>
 
 Integer. The number of test classes run.
 
-=head3 C<num_test_instances>
+=head2 C<num_test_instances>
 
 Integer. The number of test instances run.
 
-=head3 C<num_test_methods>
+=head2 C<num_test_methods>
 
-Integer. The number of test methods run.
+Integer. The number of test methods that the runner tried to run.
 
-=head3 C<num_tests_run>
+=head2 C<num_tests_run>
 
 Integer. The number of tests run.
 
-=head3 C<current_class>
+=head2 C<current_class>
 
 Returns the L<Test::Class::Moose::Report::Class> for the test class currently
 being run, if it exists. This may return C<undef>.
 
-=head3 C<current_instance>
+=head2 C<current_instance>
 
 Returns the L<Test::Class::Moose::Report::Instance> for the test class
 instance currently being run, if it exists. This may return C<undef>.
 
-=head3 C<current_method>
+=head2 C<current_method>
 
 Returns the L<Test::Class::Moose::Report::Method> for the test method
 currently being run, if one exists. This may return C<undef>.
 
-=head3 C<time>
+=head2 C<time>
 
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of the entire test suite.
-
-=head2 Test Report for Instances
-
-Each L<Test::Class::Moose::Report::Instance> instance provides the following
-methods:
-
-=head3 C<test_methods>
-
-Returns an array reference of L<Test::Class::Moose::Report::Method>
-objects.
-
-=head3 C<all_test_methods>
-
-Returns an array of L<Test::Class::Moose::Report::Method> objects.
-
-=head3 C<name>
-
-The name of the test class.
-
-=head3 C<notes>
-
-A hashref. The end user may use this to store anything desired.
-
-=head3 C<skipped>
-
-If the class or method is skipped, this will return the skip message.
-
-=head3 C<is_skipped>
-
-Returns true if the class or method is skipped.
-
-=head3 C<time>
-
-Returns a L<Test::Class::Moose::Report::Time> object. This object
-represents the duration of this class.
-
-=head2 Test Report for Methods
-
-Each L<Test::Class::Moose::Report::Method> instance provides the following
-methods:
-
-=head3 C<name>
-
-The "name" of the test method.
-
-=head3 C<notes>
-
-A hashref. The end user may use this to store anything desired.
-
-=head3 C<skipped>
-
-If the class or method is skipped, this will return the skip message.
-
-=head3 C<is_skipped>
-
-Returns true if the class or method is skipped.
-
-=head3 C<time>
-
-Returns a L<Test::Class::Moose::Report::Time> object. This object
-represents the duration of this class or method.
-
-=head2 Test Report for Time
-
-Each L<Test::Class::Moose::Report::Time> instance has the following methods:
-
-=head3 C<real>
-
-    my $real = $time->real;
-
-Returns the "real" amount of time the class or method took to run.
-
-=head3 C<user>
-
-    my $user = $time->user;
-
-Returns the "user" amount of time the class or method took to run.
-
-=head3 C<system>
-
-    my $system = $time->system;
-
-Returns the "system" amount of time the class or method took to run.
-
-=head3 C<duration>
-
-Returns the returns a human-readable representation of the time this class or
-method took to run. Something like:
-
-  0.00177908 wallclock secs ( 0.00 usr +  0.00 sys =  0.00 CPU)
 
 =head1 TRUSTED METHODS
 
@@ -354,5 +271,3 @@ L<http://search.cpan.org/dist/Test-Class-Moose/>
 =back
 
 =cut
-
-1;

@@ -47,10 +47,7 @@ L<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
 
-=head2 C<test_instances>
-
-Returns an array reference of L<Test::Class::Moose::Report::Instance>
-objects.
+See L<Test::Class::Moose::Role::Reporting> for additional attributes.
 
 =head2 C<all_test_instances>
 

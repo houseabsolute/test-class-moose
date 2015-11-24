@@ -89,6 +89,8 @@ L<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
 
+See L<Test::Class::Moose::Role::Reporting> for additional attributes.
+
 =head2 C<instance>
 
 The L<Test::Class::Moose::Report::Instance> for this method.

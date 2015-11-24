@@ -59,10 +59,11 @@ L<Test::Class::Moose::Role::Reporting>.
 
 =head1 ATTRIBUTES
 
-=head2 C<test_methods>
+See L<Test::Class::Moose::Role::Reporting> for additional attributes.
 
-Returns an array reference of L<Test::Class::Moose::Report::Method>
-objects.
+=head2 C<class>
+
+The L<Test::Class::Moose::Report::Class> for this instance.
 
 =head2 C<all_test_methods>
 
@@ -71,4 +72,4 @@ Returns an array of L<Test::Class::Moose::Report::Method> objects.
 =head2 C<current_method>
 
 Returns the current (really, most recent)
-L<Test::Class::Moose::Report::Instance> object that is being run.
+L<Test::Class::Moose::Report::Method> object that is being run.
