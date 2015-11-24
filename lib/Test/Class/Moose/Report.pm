@@ -94,6 +94,53 @@ sub plan {
     $current_method->plan($plan);
 }
 
+sub timing_data {
+    my $self = shift;
+
+    my %t = ( time => $self->time->as_hashref );
+
+    for my $class ( $self->all_test_classes ) {
+        my $class_inner = $t{class}{ $class->name }
+          = { time => $class->time->as_hashref };
+
+        for my $instance ( $class->all_test_instances ) {
+            my $instance_inner = $class_inner->{instance}{ $instance->name }
+              = { time => $instance->time->as_hashref };
+
+            $self->_populate_control_timing_data(
+                $instance_inner, $instance,
+                qw( test_startup test_shutdown )
+            );
+
+            for my $method ( $instance->all_test_methods ) {
+                my $method_inner = $instance_inner->{method}{ $method->name }
+                  = { time => $method->time->as_hashref };
+
+                $self->_populate_control_timing_data(
+                    $method_inner, $method,
+                    qw( test_setup test_teardown ),
+                );
+            }
+        }
+    }
+
+    return \%t;
+}
+
+sub _populate_control_timing_data {
+    my $self    = shift;
+    my $hashref = shift;
+    my $report  = shift;
+
+    for my $control (@_) {
+        my $control_method = $report->${ \( $control . '_method' ) };
+        $hashref->{control}{$control}{time}
+          = $control_method->time->as_hashref;
+    }
+
+    return;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -218,6 +265,39 @@ currently being run, if one exists. This may return C<undef>.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of the entire test suite.
 
+=head2 C<timing_data>
+
+Returns a complex nested hashref containing timing data for the entire test
+run. This is primarily intended for serialization or shipping the data to code
+in other languages. If you want to analyze timing data from the same process
+as the test report, you might as well just use the Perl API.
+
+See L</TIMING DATA STRUCTURE> for an example of the full structure.
+
+At the top level of the data structure are two keys, C<time> and C<class>. The
+C<time> key is replicated through different levels of the structure. It always
+contains three keys:
+
+    {   real   => 1.0001,
+        system => 0.94,
+        user   => 0.1,
+    }
+
+The C<class> key in turn contains a hashref keyed by class names. For each
+class, there is a C<time> key and an C<instance> key.
+
+The C<instance> key contains a hashref keyed on instance names. For each
+instance, there is a hashref with C<time>, C<control>, and C<method> keys.
+
+The C<control> key contains a hashref keyed on the control method names,
+C<test_startup> and C<test_shutdown>. Each of those keys contains a hashref
+containing C<time> key.
+
+The C<method> keys are the names of the methods that were run for that test
+instance. Each of those keys is in turn a hashref containing C<control> and
+C<time> keys. The C<control> key contains a hashref keyed on the control
+method names, C<test_setup> and C<test_teardown>.
+
 =head1 TRUSTED METHODS
 
 The following L<Test::Class::Moose::Report> methods are for internal use only
@@ -233,6 +313,76 @@ might want to hack on L<Test::Class::Moose>.
 
     $statistics->_inc_tests;        # increments by 1
     $statistics->_inc_tests($x);    # increments by $x
+
+=head1 TIMING DATA STRUCTURE
+
+Here's an example of what the entire timing data structure looks like:
+
+    {   time => {
+            real   => "90.2795791625977",
+            system => "13.5419368743896",
+            user   => 100
+        },
+        class => {
+            "TestsFor::Basic" => {
+                time => {
+                    real   => "37.7511978149414",
+                    system => "5.66267967224121",
+                    user   => "32.0885181427002"
+                },
+                instance => {
+                    "TestsFor::Basic" => {
+                        time => {
+                            real   => "27.4395942687988",
+                            system => "4.11593914031982",
+                            user   => "23.323655128479"
+                        },
+                        control => {
+                            test_shutdown => {
+                                time => {
+                                    real   => "0.240802764892578",
+                                    system => "0.0361204147338867",
+                                    user   => "0.204682350158691"
+                                },
+                            },
+                            test_startup => {
+                                time => {
+                                    real   => "0.360012054443359",
+                                    system => "0.0540018081665039",
+                                    user   => "0.306010246276855"
+                                },
+                            },
+                        },
+                        method => {
+                            test_me => {
+                                time => {
+                                    real   => "4.6992301940918",
+                                    system => "0.70488452911377",
+                                    user   => "3.99434566497803"
+                                },
+                                control => {
+                                    test_setup => {
+                                        time => {
+                                            real   => "0.510215759277344",
+                                            system => "0.0765323638916016",
+                                            user   => "0.433683395385742"
+                                        },
+                                    },
+                                    test_teardown => {
+                                        time => {
+                                            real   => "0.269412994384766",
+                                            system => "0.0404119491577148",
+                                            user   => "0.229001045227051"
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
 
 =head1 BUGS
 

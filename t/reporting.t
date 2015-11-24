@@ -78,6 +78,60 @@ foreach my $class (@c) {
     };
 }
 
+my $pos_or_zero = sub { looks_like_number( $_[0] ) && $_[0] >= 0 };
+my %time_cmp = (
+    time => {
+        real   => code($pos_or_zero),
+        system => code($pos_or_zero),
+        user   => code($pos_or_zero),
+    },
+);
+
+cmp_deeply(
+    $report->timing_data,
+    {   %time_cmp,
+        class => {
+            map { _class_cmp_deeply($_) } 'TestsFor::Basic',
+            'TestsFor::Basic::Subclass',
+        },
+    },
+    'timing_data contains expected data structure',
+);
+
+sub _class_cmp_deeply {
+    my $class = shift;
+
+    my %instance_control_cmp = (
+        control => {
+            test_startup  => \%time_cmp,
+            test_shutdown => \%time_cmp,
+        },
+    );
+
+    my %method_control_cmp = (
+        control => {
+            test_setup    => \%time_cmp,
+            test_teardown => \%time_cmp,
+        },
+    );
+
+    return (
+        $class => {
+            %time_cmp,
+            instance => {
+                $class => {
+                    %time_cmp,
+                    %instance_control_cmp,
+                    method => {
+                        map { $_ => { %time_cmp, %method_control_cmp } }
+                          @{ $expected_methods{$class} },
+                    },
+                },
+            },
+        }
+    );
+}
+
 explain 'Number of test classes:   ' . $report->num_test_instances;
 explain 'Number of test instances: ' . $report->num_test_instances;
 explain 'Number of test methods:   ' . $report->num_test_methods;
@@ -117,4 +171,42 @@ sub _test_report_time {
           '... greater than or equal to zero';
     }
     explain 'Run time = ' . $time->duration;
+}
+
+__END__
+
+This is the code I used to generate the example in Test::Class::Moose::Report
+(plus a little manual editing to move the time key to the top of each nested
+hashref).
+
+my $t = $report->timing_data;
+delete $t->{class}{'TestsFor::Basic::Subclass'};
+delete $t->{class}{'TestsFor::Basic'}{instance}{'TestsFor::Basic'}{method}{test_reporting};
+delete $t->{class}{'TestsFor::Basic'}{instance}{'TestsFor::Basic'}{method}{test_this_baby};
+use Devel::Dwarn; Dwarn _fudge($t);
+
+sub _fudge {
+    my $t = shift;
+
+    use Data::Visitor::Callback;
+
+    Data::Visitor::Callback->new(
+        hash => sub {
+            shift;
+            my $h = shift;
+
+            for my $k ( grep { exists $h->{$_} } qw( real system user ) ) {
+                if ($h->{$k} ) {
+                    $h->{$k} *= 10_000;
+                }
+                else {
+                    $h->{$k} = $h->{real} * ($k eq 'system' ? 0.15 : 0.85);
+                }
+            }
+
+            return $h;
+        },
+    )->visit($t);
+
+    return $t;
 }

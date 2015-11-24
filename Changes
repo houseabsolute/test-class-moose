@@ -1,6 +1,10 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Added a new method to Test::Class::Moose::Report, timing_data. This
+          returns a complex data structure containing timing data for all
+          levels of test suite. This is useful if you want to store test run
+          timing data for later analysis.
         * Added a new report object, Test::Class::Moose::Report::Class. Each
           class that is tested gets one of these reports. The Class report in
           turn contains 1+ Instance reports, which in turn contains 1+ Method

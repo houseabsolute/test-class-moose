@@ -70,6 +70,11 @@ sub duration {
     return timestr( $self->_timediff );
 }
 
+sub as_hashref {
+    my $self = shift;
+    return { map { $_ => $self->$_ } qw( real user system ) };
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -110,3 +115,7 @@ Returns the returns a human-readable representation of the time this class or
 method took to run. Something like:
 
   0.00177908 wallclock secs ( 0.00 usr +  0.00 sys =  0.00 CPU)
+
+=head2 C<as_hashref>
+
+Returns the C<real>, C<user>, and C<system> time values in a hashref.
