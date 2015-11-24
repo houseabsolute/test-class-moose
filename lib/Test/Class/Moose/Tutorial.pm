@@ -2,6 +2,8 @@ package Test::Class::Moose::Tutorial;
 
 # ABSTRACT: A starting guide for Test::Class::Moose
 
+use 5.10.0;
+
 # there is no code here, but we're moving this from .pod to .pm to try to work
 # around a strange bug where this is showing up instead of main docs on
 # metacpan and cpan

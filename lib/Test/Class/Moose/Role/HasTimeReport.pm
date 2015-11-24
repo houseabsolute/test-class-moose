@@ -2,6 +2,7 @@ package Test::Class::Moose::Role::HasTimeReport;
 
 # ABSTRACT: Report timing role
 
+use 5.10.0;
 use Moose::Role;
 use Benchmark qw(timediff timestr :hireswallclock);
 use Test::Class::Moose::Report::Time;

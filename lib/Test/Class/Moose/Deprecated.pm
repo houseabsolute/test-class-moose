@@ -2,6 +2,8 @@ package Test::Class::Moose::Deprecated;
 
 # ABSTRACT: Managed deprecation warnings for Test::Class::Moose
 
+use 5.10.0;
+
 use Package::DeprecationManager -deprecations => {
     'Test::Class::Moose->runtests' => '0.55',
 };

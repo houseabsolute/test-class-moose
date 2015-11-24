@@ -2,6 +2,7 @@ package Test::Class::Moose::Role::Reporting;
 
 # ABSTRACT: Reporting gathering role
 
+use 5.10.0;
 use Moose::Role;
 with 'Test::Class::Moose::Role::HasTimeReport';
 

@@ -2,6 +2,7 @@ package Test::Class::Moose::Report::Time;
 
 # ABSTRACT: Reporting object for timing
 
+use 5.10.0;
 use Moose;
 use Benchmark qw(timestr :hireswallclock);
 use namespace::autoclean;
