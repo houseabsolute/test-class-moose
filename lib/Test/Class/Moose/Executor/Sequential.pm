@@ -99,3 +99,5 @@ sub _tcm_run_test_class {
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+=for Pod::Coverage Tags Tests runtests

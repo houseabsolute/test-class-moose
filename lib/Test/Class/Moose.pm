@@ -229,6 +229,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage Tags Tests runtests
+
 =head1 SYNOPSIS
 
     package TestsFor::DateTime;

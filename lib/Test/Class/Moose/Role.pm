@@ -39,6 +39,8 @@ END
 
 __END__
 
+=for Pod::Coverage Tags Test Tests
+
 =head1 DESCRIPTION
 
 If you need the functionality of L<Test::Class::Moose> to be available inside

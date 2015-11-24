@@ -199,3 +199,5 @@ sub _build__color {
 }
 
 1;
+
+=for Pod::Coverage Tags Tests runtests

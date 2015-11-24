@@ -52,3 +52,8 @@ objects.
 =head2 C<all_test_instances>
 
 Returns an array of L<Test::Class::Moose::Report::Instance> objects.
+
+=head2 C<current_instance>
+
+Returns the current (really, most recent)
+L<Test::Class::Moose::Report::Instance> object that is being run.

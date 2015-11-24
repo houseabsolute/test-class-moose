@@ -74,6 +74,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage add_to_plan plan
+
 =head1 DESCRIPTION
 
 Should be considered experimental and B<read only>.
@@ -102,7 +104,7 @@ The number of tests planned for this test method. If a plan has not been
 explicitly set with C<$report->test_plan>, then this number will always be
 equal to the number of tests run.
 
-=head1 C<has_tag>
+=head2 C<has_tag>
 
     my $method = $test->test_report->current_method;
     if ( $method->has_tag('db') ) {

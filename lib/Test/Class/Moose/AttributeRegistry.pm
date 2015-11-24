@@ -233,9 +233,14 @@ for it.
 
 Find all tags defined for all methods.  Returns a sorted list of tags.
 
+=item class_has_tag( $class, $tag )
+
+Returns a boolean (0|1) indicating whether the given class has any method with
+the specified tag.
+
 =item method_has_tag( $class, $method, $tag )
 
-Returns a boolean (0|1), indicating whether the given method in the given class
+Returns a boolean (0|1) indicating whether the given method in the given class
 has the specified tag.
 
 =back

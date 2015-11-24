@@ -332,3 +332,5 @@ sub test_classes {
 }
 
 1;
+
+=for Pod::Coverage test_classes

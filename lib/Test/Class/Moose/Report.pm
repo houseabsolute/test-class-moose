@@ -96,6 +96,8 @@ __PACKAGE__->meta->make_immutable;
 1;
 __END__
 
+=for Pod::Coverage plan
+
 =head1 SYNOPSIS
 
  my $report = Test::Class::Moose->new->runtests->test_report;
@@ -166,13 +168,13 @@ After the test suite is run, you can call the C<test_report> method to get the
 report. The test report is a L<Test::Class::Moose::Report> object. This object
 provides the following methods:
 
-=head3 C<test_instances>
+=head3 C<all_test_classes>
 
-Returns an array reference of L<Test::Class::Moose::Report::Instance> instances.
+Returns an array of L<Test::Class::Moose::Report::Class> objects.
 
-=head3 C<all_test_instances>
+=head3 C<num_test_instances>
 
-Returns an array of L<Test::Class::Moose::Report::Instance> instances.
+Integer. The number of test classes run.
 
 =head3 C<num_test_instances>
 
