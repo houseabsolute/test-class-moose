@@ -3,8 +3,7 @@ package Test::Class::Moose::Deprecated;
 # ABSTRACT: Managed deprecation warnings for Test::Class::Moose
 
 use Package::DeprecationManager -deprecations => {
-    'Test::Class::Moose->runtests'              => '0.55',
-    'Test::Class::Moose::Report->current_class' => '0.61',
+    'Test::Class::Moose->runtests' => '0.55',
 };
 
 1;
@@ -35,11 +34,5 @@ The following features were deprecated in past versions and will now warn:
 This was deprecated in version 0.55.
 
 Use L<Test::Class::Moose::Runner> to run tests instead.
-
-=head2 Test::Class::Moose::Report->current_class
-
-This was deprecated in version 0.61.
-
-Use L<Test::Class::Moose::Report->current_instance> instead.
 
 =cut
