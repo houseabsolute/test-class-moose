@@ -42,8 +42,8 @@ sub _build_time {
             timediff( $benchmark, $benchmark ) );
     }
 
-    return Test::Class::Moose::Report::Time->new(
-        timediff( $self->_end_benchmark, $self->_start_benchmark ) );
+    return Test::Class::Moose::Report::Time->new( timediff =>
+          timediff( $self->_end_benchmark, $self->_start_benchmark ) );
 }
 
 1;

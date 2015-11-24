@@ -6,31 +6,60 @@ use Moose;
 use Benchmark qw(timestr :hireswallclock);
 use namespace::autoclean;
 
-has 'real'             => ( is => 'ro', isa => 'Num',       required => 1 );
-has 'user'             => ( is => 'ro', isa => 'Num',       required => 1 );
-has 'system'           => ( is => 'ro', isa => 'Num',       required => 1 );
-has '_children_user'   => ( is => 'ro', isa => 'Num',       required => 1 );
-has '_children_system' => ( is => 'ro', isa => 'Num',       required => 1 );
-has '_iters'           => ( is => 'ro', isa => 'Num',       required => 1 );
-has '_timediff'        => ( is => 'ro', isa => 'Benchmark', required => 1 );
+has 'real' => (
+    is       => 'ro',
+    isa      => 'Num',
+    lazy     => 1,
+    default  => sub { $_[0]->_timediff->[0] },
+    init_arg => undef,
+);
 
-around 'BUILDARGS' => sub {
-    my ( $orig, $class, $timediff ) = @_;
-    my %args;
-    @args{
-        qw/
-          real
-          user
-          system
-          _children_user
-          _children_system
-          _iters
-          /
-      }
-      = @$timediff;
-    $args{_timediff} = $timediff;
-    return $class->$orig(%args);
-};
+has 'user' => (
+    is       => 'ro',
+    isa      => 'Num',
+    lazy     => 1,
+    default  => sub { $_[0]->_timediff->[1] },
+    init_arg => undef,
+);
+
+has 'system' => (
+    is       => 'ro',
+    isa      => 'Num',
+    lazy     => 1,
+    default  => sub { $_[0]->_timediff->[2] },
+    init_arg => undef,
+);
+
+has '_children_user' => (
+    is       => 'ro',
+    isa      => 'Num',
+    lazy     => 1,
+    default  => sub { $_[0]->_timediff->[3] },
+    init_arg => undef,
+);
+
+has '_children_system' => (
+    is       => 'ro',
+    isa      => 'Num',
+    lazy     => 1,
+    default  => sub { $_[0]->_timediff->[4] },
+    init_arg => undef,
+);
+
+has '_iters' => (
+    is       => 'ro',
+    isa      => 'Num',
+    lazy     => 1,
+    default  => sub { $_[0]->_timediff->[5] },
+    init_arg => undef,
+);
+
+has '_timediff' => (
+    is       => 'ro',
+    isa      => 'Benchmark',
+    required => 1,
+    init_arg => 'timediff',
+);
 
 sub duration {
     my $self = shift;
