@@ -5,7 +5,7 @@ package Test::Class::Moose::Load;
 use strict;
 use warnings;
 
-our $VERSION = '0.63';
+our $VERSION = '0.64';
 
 use File::Find;
 use File::Spec;

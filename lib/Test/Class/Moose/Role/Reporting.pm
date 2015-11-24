@@ -4,7 +4,7 @@ package Test::Class::Moose::Role::Reporting;
 
 use 5.10.0;
 
-our $VERSION = '0.63';
+our $VERSION = '0.64';
 
 use Moose::Role;
 with 'Test::Class::Moose::Role::HasTimeReport';
