@@ -1,11 +1,12 @@
 *.swp
 .\#*
 .build
+/.tidyall.d
+MYMETA.json
+MYMETA.yml
 Makefile
 Makefile.PL
 Makefile.old
-MYMETA.yml
-MYMETA.json
 Test-Class-Moose-*
 \#*\#
 _build
