@@ -815,6 +815,7 @@ wrong).
         # do with these as you will
     }
     diag "Number of test classes: "   . $report->num_test_classes;
+    diag "Number of test instances: " . $report->num_test_instances;
     diag "Number of test methods: "   . $report->num_test_methods;
     diag "Number of tests:        "   . $report->num_tests;
 
