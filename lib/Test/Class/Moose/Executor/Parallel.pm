@@ -13,6 +13,7 @@ use Parallel::ForkManager;
 use TAP::Stream 0.44;
 use Test::Builder;
 use Test::Class::Moose::AttributeRegistry;
+use Test::Class::Moose::Report::Class;
 
 use List::MoreUtils qw(uniq);
 
@@ -102,6 +103,10 @@ sub _run_parallel_jobs {
 
     my $job_num = 0;
     foreach my $test_class ( $self->test_classes ) {
+        my $class_report
+            = Test::Class::Moose::Report::Class->new( name => $test_class );
+        $self->test_report->add_test_class($class_report);
+
         my %test_instances = $test_class->_tcm_make_test_class_instances(
             $self->test_configuration->args,
             test_report => $self->test_report,

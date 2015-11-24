@@ -23,13 +23,15 @@ my %expected_tests_run = (
     'TestsFor::Parameterized with bar::test_one_set' => 1,
 );
 
-foreach my $instance ( $report->all_test_instances ) {
-    foreach my $method ( $instance->all_test_methods ) {
-        my $fq_name = join '::' => $instance->name, $method->name;
-        is $method->tests_planned, $expected_tests_planned{$fq_name},
-            "$fq_name should have $expected_tests_planned{$fq_name} tests planned";
-        is $method->num_tests_run, $expected_tests_run{$fq_name},
-            "$fq_name should have $expected_tests_run{$fq_name} tests run";
+foreach my $class ( $report->all_test_classes ) {
+    foreach my $instance ( $class->all_test_instances ) {
+        foreach my $method ( $instance->all_test_methods ) {
+            my $fq_name = join '::' => $instance->name, $method->name;
+            is $method->tests_planned, $expected_tests_planned{$fq_name},
+                "$fq_name should have $expected_tests_planned{$fq_name} tests planned";
+            is $method->num_tests_run, $expected_tests_run{$fq_name},
+                "$fq_name should have $expected_tests_run{$fq_name} tests run";
+        }
     }
 }
 

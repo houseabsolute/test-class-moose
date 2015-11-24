@@ -10,25 +10,36 @@ subtest 'skip' => sub {
     $runner->runtests;
 };
 
-my $instances = $runner->test_report->test_instances;
-is $instances->[0]->name, 'TestsFor::Basic',
-  'Our first class should be listed in reporting';
-ok $instances->[0]->is_skipped, '... and it should be listed as skipped';
-explain $instances->[0]->skipped;    # the skip reason
+my $classes = $runner->test_report->test_classes;
 
-is $instances->[1]->name, 'TestsFor::SkipSomeMethods',
-  'Our second class should be listed in reporting';
-ok !$instances->[1]->is_skipped, '... and it should NOT be listed as skipped';
-my $methods = $instances->[1]->test_methods;
+{
+    is $classes->[0]->name, 'TestsFor::Basic',
+        'Our first class should be listed in reporting';
 
-is @$methods, 3, '... and it should have three test methods';
+    my $instances = $classes->[0]->test_instances;
 
-my @skipped = grep { $_->is_skipped } @$methods;
-is scalar @skipped, 1,
-  '... and the correct number of methods should be skipped';
-is $skipped[0]->name, 'test_me',
-    '... and they should be the correct methods';
-is $skipped[0]->num_tests_run, 0,
-    '... and we should have 0 tests run';
+    ok $instances->[0]->is_skipped, '... and it should be listed as skipped';
+    explain $instances->[0]->skipped;    # the skip reason
+}
+
+{
+    is $classes->[1]->name, 'TestsFor::SkipSomeMethods',
+        'Our second class should be listed in reporting';
+
+    my $instances = $classes->[1]->test_instances;
+    ok !$instances->[0]->is_skipped,
+        '... and it should NOT be listed as skipped';
+    my $methods = $instances->[0]->test_methods;
+
+    is @$methods, 3, '... and it should have three test methods';
+
+    my @skipped = grep { $_->is_skipped } @$methods;
+    is scalar @skipped, 1,
+        '... and the correct number of methods should be skipped';
+    is $skipped[0]->name, 'test_me',
+        '... and they should be the correct methods';
+    is $skipped[0]->num_tests_run, 0,
+        '... and we should have 0 tests run';
+}
 
 done_testing;

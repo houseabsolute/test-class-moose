@@ -8,6 +8,8 @@ use Moose;
 use namespace::autoclean;
 with 'Test::Class::Moose::Role::HasTimeReport';
 
+use List::Util qw( sum );
+
 has 'num_test_methods' => (
     is      => 'rw',
     isa     => 'Int',
@@ -28,29 +30,28 @@ has 'is_parallel' => (
     default => 0,
 );
 
-has test_instances => (
+has test_classes => (
     is      => 'ro',
     traits  => ['Array'],
-    isa     => 'ArrayRef[Test::Class::Moose::Report::Instance]',
+    isa     => 'ArrayRef[Test::Class::Moose::Report::Class]',
     default => sub { [] },
     handles => {
-        _all_test_instances => 'elements',
-        add_test_instance   => 'push',
-        num_test_instances  => 'count',
+        _all_test_classes => 'elements',
+        add_test_class    => 'push',
+        num_test_classes  => 'count',
     },
 );
 
-sub all_test_instances {
+sub num_test_instances {
     my $self = shift;
-    warn "When running tests in parallel we are unable to store test class instances\n"
-        if $self->is_parallel;
-    return $self->_all_test_instances;
+    return sum map { $_->num_test_instances } $self->all_test_classes;
 }
 
 sub all_test_classes {
     my $self = shift;
-    warn "The all_test_classes() method has been renamed to all_test_instances()\n";
-    return $self->all_test_instances;
+    warn "When running tests in parallel we are unable to store test classes\n"
+        if $self->is_parallel;
+    return $self->_all_test_classes;
 }
 
 sub _inc_test_methods {
@@ -65,19 +66,15 @@ sub _inc_tests {
     $self->set_tests_run( $self->num_tests_run + $tests );
 }
 
-sub current_instance {
+sub current_class {
     my $self = shift;
-    return $self->test_instances->[-1];
+    return $self->test_classes->[-1];
 }
 
-sub current_class {
-    Test::Class::Moose::Deprecated::deprecated(
-        message =>
-            'Calling current_class() on a Test::Class::Moose::Report object is deprecated.'
-            . ' Use current_instance() instead.',
-        feature => 'Test::Class::Moose->runtests',
-    );
-    goto &current_instance;
+sub current_instance {
+    my $self = shift;
+    my $current_class = $self->current_class or return;
+    return $current_class->current_instance;
 }
 
 sub current_method {
@@ -187,6 +184,11 @@ Integer. The number of test methods run.
 =head3 C<num_tests_run>
 
 Integer. The number of tests run.
+
+=head3 C<current_class>
+
+Returns the L<Test::Class::Moose::Report::Class> for the test class currently
+being run, if it exists. This may return C<undef>.
 
 =head3 C<current_instance>
 

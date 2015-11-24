@@ -50,23 +50,27 @@ my %passed = (
     },
 );
 
-foreach my $class ( $report->all_test_instances ) {
+foreach my $class ( $report->all_test_classes ) {
     my $class_name = $class->name;
     is $class->passed, $passed{$class_name}{class},
       "$class_name pass/fail status should be correct";
 
-    foreach my $method ( $class->all_test_methods ) {
-        my $method_name = $method->name;
-        is $method->passed, $passed{$class_name}{methods}{$method_name},
-          "$class_name\::$method_name pass/fail status should be correct";
-        cmp_ok $method->num_tests_run, '>', 0,
-          '... and some tests should have been run';
-        explain "Run time for $method_name: " . $method->time->duration;
+    foreach my $instance ( $class->all_test_instances ) {
+        foreach my $method ( $instance->all_test_methods ) {
+            my $method_name = $method->name;
+            is $method->passed, $passed{$class_name}{methods}{$method_name},
+                "$class_name\::$method_name pass/fail status should be correct";
+            cmp_ok $method->num_tests_run, '>', 0,
+                '... and some tests should have been run';
+            explain "Run time for $method_name: " . $method->time->duration;
+        }
+        can_ok $instance, 'time';
+        my $time = $instance->time;
+        isa_ok $time, 'Test::Class::Moose::Report::Time',
+            '... and the object it returns';
+
+        my $instance_name = $instance->name;
+        explain "Run time for $instance_name: " . $time->duration;
     }
-    can_ok $class, 'time';
-    my $time = $class->time;
-    isa_ok $time, 'Test::Class::Moose::Report::Time',
-      '... and the object it returns';
-    explain "Run time for $class_name: " . $time->duration;
 }
 done_testing;

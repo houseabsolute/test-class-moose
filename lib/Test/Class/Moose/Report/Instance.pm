@@ -10,6 +10,18 @@ with qw(
   Test::Class::Moose::Role::Reporting
 );
 
+has test_startup_method => (
+    is     => 'rw',
+    isa    => 'Test::Class::Moose::Report::Method',
+    writer => 'set_test_startup_method',
+);
+
+has test_shutdown_method => (
+    is     => 'rw',
+    isa    => 'Test::Class::Moose::Report::Method',
+    writer => 'set_test_shutdown_method',
+);
+
 has test_methods => (
     is      => 'ro',
     traits  => ['Array'],

@@ -54,7 +54,8 @@ sub _tcm_run_test_instance {
         {   name => $test_instance_name,
         }
     );
-    $report->add_test_instance($instance_report);
+    $report->current_class->add_test_instance($instance_report)
+        if $report->current_class;
 
     my @test_methods = $self->_tcm_test_methods_for_instance($test_instance);
 
@@ -63,28 +64,30 @@ sub _tcm_run_test_instance {
         $instance_report->skipped($message);
         $instance_report->passed(1);
         $builder->plan( skip_all => $message );
-        return;
+        return $instance_report;
     }
     $instance_report->_start_benchmark;
 
     $report->_inc_test_methods( scalar @test_methods );
 
     # startup
-    if (!$self->_tcm_run_test_control_method(
+    unless ( my $report = $self->_tcm_run_test_control_method(
             $test_instance, 'test_startup', $instance_report
         )
       )
     {
         fail "test_startup failed";
-        return;
+        $instance_report->passed(0);
+        return $instance_report;
     }
 
     if ( my $message = $test_instance->test_skip ) {
 
         # test_startup skipped the class
         $instance_report->skipped($message);
+        $instance_report->passed(1);
         $builder->plan( skip_all => $message );
-        return;
+        return $instance_report;
     }
 
     $builder->plan( tests => scalar @test_methods );
@@ -93,13 +96,13 @@ sub _tcm_run_test_instance {
 
     my $all_passed = 1;
     foreach my $test_method (@test_methods) {
-        my $report_method = $self->_tcm_run_test_method(
+        my $method_report = $self->_tcm_run_test_method(
             $test_instance,
             $test_method,
             $instance_report,
         );
-        $report->_inc_tests( $report_method->num_tests_run );
-        $all_passed = 0 if not $report_method->passed;
+        $report->_inc_tests( $method_report->num_tests_run );
+        $all_passed = 0 if not $method_report->passed;
     }
     $instance_report->passed($all_passed);
 
@@ -198,8 +201,28 @@ sub _tcm_run_test_control_method {
     $TEST_CONTROL_METHODS{$phase}
       or croak("Unknown test control method ($phase)");
 
+    my %report_args = (
+        name     => $phase,
+        instance => (
+              $report_object->isa('Test::Class::Moose::Report::Method')
+            ? $report_object->instance
+            : $report_object
+        )
+    );
+    my $phase_method_report
+        = Test::Class::Moose::Report::Method->new( \%report_args );
+
+    my $set_meth = "set_${phase}_method";
+    $report_object->$set_meth($phase_method_report);
+
     my $success;
     my $builder = $self->test_configuration->builder;
+
+    # It'd be nicer to start and end immediately after we call
+    # $test_instance->$phase but we can't guarantee that those calls would
+    # happen inside the try block.
+    $phase_method_report->_start_benchmark;
+
     try {
         my $num_tests = $builder->current_test;
         $test_instance->$phase($report_object);
@@ -213,6 +236,9 @@ sub _tcm_run_test_control_method {
         my $class = $test_instance->test_class;
         $builder->diag("$class->$phase() failed: $error");
     };
+
+    $phase_method_report->_end_benchmark;
+
     return $success;
 }
 
@@ -222,7 +248,7 @@ sub _tcm_run_test_method {
     my $report  = Test::Class::Moose::Report::Method->new(
         { name => $test_method, instance => $instance_report } );
 
-    $self->test_report->current_instance->add_test_method($report);
+    $instance_report->add_test_method($report);
     my $config = $self->test_configuration;
 
     my $builder = $config->builder;

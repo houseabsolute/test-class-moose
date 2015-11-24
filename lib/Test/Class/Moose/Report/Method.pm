@@ -11,6 +11,18 @@ with qw(
   Test::Class::Moose::Role::Reporting
 );
 
+has test_setup_method => (
+    is     => 'rw',
+    isa    => 'Test::Class::Moose::Report::Method',
+    writer => 'set_test_setup_method',
+);
+
+has test_teardown_method => (
+    is     => 'rw',
+    isa    => 'Test::Class::Moose::Report::Method',
+    writer => 'set_test_teardown_method',
+);
+
 has 'instance' => (
     is       => 'ro',
     isa      => 'Test::Class::Moose::Report::Instance',
