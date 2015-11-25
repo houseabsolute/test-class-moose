@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.64     2015-11-25 (TRIAL RELEASE)
         * Fixed a bug Test::Class::Moose::Role::HasTimeReport introduced in
           the last release. Attempting to get the time for a report on
           something that didn't run (because it was skipped) caused an error.
