@@ -133,7 +133,8 @@ sub _populate_control_timing_data {
     my $report  = shift;
 
     for my $control (@_) {
-        my $control_method = $report->${ \( $control . '_method' ) };
+        my $control_method = $report->${ \( $control . '_method' ) }
+          or next;
         $hashref->{control}{$control}{time}
           = $control_method->time->as_hashref;
     }
