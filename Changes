@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.65     2015-11-25 (TRIAL RELEASE)
         * Fixed a bug in generating timing data for a test run. If a test
           instance is skipped entirely there will not be any timing data for
           its test_shutdown method.
