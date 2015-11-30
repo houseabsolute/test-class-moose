@@ -8,47 +8,21 @@ our $VERSION = '0.65';
 
 use Moose;
 use Benchmark qw(timestr :hireswallclock);
+use List::Util qw( max );
 use namespace::autoclean;
 
-has 'real' => (
-    is       => 'ro',
-    isa      => 'Num',
-    lazy     => 1,
-    default  => sub { $_[0]->_timediff->[0] },
-    init_arg => undef,
-);
-
-has 'user' => (
-    is       => 'ro',
-    isa      => 'Num',
-    lazy     => 1,
-    default  => sub { $_[0]->_timediff->[1] },
-    init_arg => undef,
-);
-
-has 'system' => (
-    is       => 'ro',
-    isa      => 'Num',
-    lazy     => 1,
-    default  => sub { $_[0]->_timediff->[2] },
-    init_arg => undef,
-);
-
-has '_children_user' => (
-    is       => 'ro',
-    isa      => 'Num',
-    lazy     => 1,
-    default  => sub { $_[0]->_timediff->[3] },
-    init_arg => undef,
-);
-
-has '_children_system' => (
-    is       => 'ro',
-    isa      => 'Num',
-    lazy     => 1,
-    default  => sub { $_[0]->_timediff->[4] },
-    init_arg => undef,
-);
+{
+    my @fields = qw( real user system _children_user _children_system );
+    for my $i ( 0 .. $#fields ) {
+        has $fields[$i] => (
+            is       => 'ro',
+            isa      => 'Num',
+            lazy     => 1,
+            default  => sub { max( $_[0]->_timediff->[$i], 0 ) },
+            init_arg => undef,
+        );
+    }
+}
 
 has '_iters' => (
     is       => 'ro',

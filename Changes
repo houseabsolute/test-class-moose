@@ -1,6 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * On some systems it seems that Benchmark can report negative run
+          times. We now make sure all times are no less than zero in
+          Test::Class::Moose::Report::Time.
 
 0.65     2015-11-25 (TRIAL RELEASE)
         * Fixed a bug in generating timing data for a test run. If a test
