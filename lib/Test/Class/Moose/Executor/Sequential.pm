@@ -4,7 +4,7 @@ package Test::Class::Moose::Executor::Sequential;
 
 use 5.10.0;
 
-our $VERSION = '0.66';
+our $VERSION = '0.67';
 
 use Moose 2.0000;
 use Carp;
