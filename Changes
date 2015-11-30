@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.66     2015-11-30 (TRIAL RELEASE)
         * On some systems it seems that Benchmark can report negative run
           times. We now make sure all times are no less than zero in
           Test::Class::Moose::Report::Time.
