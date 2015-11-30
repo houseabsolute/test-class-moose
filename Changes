@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.67     2015-11-30
         * Same as 0.66, but repeating changes from 0.63 since there's a bunch
           of them.
         * Added a new method to Test::Class::Moose::Report, timing_data. This
