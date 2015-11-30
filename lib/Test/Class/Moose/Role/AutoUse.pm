@@ -4,7 +4,7 @@ package Test::Class::Moose::Role::AutoUse;
 
 use 5.10.0;
 
-our $VERSION = '0.67';
+our $VERSION = '0.68';
 
 use Moose::Role;
 use Carp 'confess';
