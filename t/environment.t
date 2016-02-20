@@ -5,8 +5,6 @@ use Scalar::Util 'looks_like_number';
 use Test::Class::Moose::Load qw(t/lib);
 use Test::Class::Moose::Runner;
 
-$ENV{TEST_CLASS_MOOSE_SKIP_RUNTESTS} = 1;
-
 {
     my $runner = Test::Class::Moose::Runner->new;
     is( $runner->test_configuration->show_timing, undef,
