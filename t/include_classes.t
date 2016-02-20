@@ -21,8 +21,4 @@ foreach my $class (@test_classes) {
       "$class should have the correct test methods";
 }
 
-subtest 'test suite' => sub {
-    $runner->runtests;
-};
-
 done_testing;
