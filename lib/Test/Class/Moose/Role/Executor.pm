@@ -46,7 +46,7 @@ sub _build_test_report {
 }
 
 sub _tcm_run_test_instance {
-    my ( $self, $test_instance_name, $test_instance ) = @_;
+    my ( $self, $class_report, $test_instance_name, $test_instance ) = @_;
 
     my $instance_report = Test::Class::Moose::Report::Instance->new(
         {   name => $test_instance_name,
@@ -54,8 +54,7 @@ sub _tcm_run_test_instance {
     );
 
     my $report = $self->test_report;
-    $report->current_class->add_test_instance($instance_report)
-      if $report->current_class;
+    $class_report->add_test_instance($instance_report);
 
     my @test_methods = $self->_tcm_test_methods_for_instance($test_instance);
 

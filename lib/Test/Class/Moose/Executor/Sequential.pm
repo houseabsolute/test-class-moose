@@ -93,6 +93,7 @@ sub _tcm_run_test_class_sub {
                         $test_instance_name,
                         sub {
                             $instance_report = $self->_tcm_run_test_instance(
+                                $class_report,
                                 $test_instance_name,
                                 $test_instance,
                             );
@@ -101,6 +102,7 @@ sub _tcm_run_test_class_sub {
                 }
                 else {
                     $instance_report = $self->_tcm_run_test_instance(
+                        $class_report,
                         $test_instance_name,
                         $test_instance,
                     );
