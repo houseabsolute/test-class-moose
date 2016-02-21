@@ -235,24 +235,20 @@ sub _tcm_run_test_control_method {
     $phase_method_report->_start_benchmark;
 
     my $ctx = context();
-    my $sub = $ctx->hub->filter(
-        sub {
-            croak "Tests may not be run in test control methods ($phase)"
-              if $_[1]->increments_count;
-        }
-    );
 
     my $success = try {
+        my $count = $ctx->hub->count;
         $test_instance->$phase($report_object);
+        croak "Tests may not be run in test control methods ($phase)"
+            unless $count == $ctx->hub->count;
         1;
     }
     catch {
         my $error = $_;
         my $class = $test_instance->test_class;
-        $ctx->ok( 0, "$class->$phase failed", $error );
+        $ctx->ok( 0, "$class->$phase failed", [$error] );
     }
     finally {
-        $ctx->hub->unfilter($sub);
         $ctx->release;
     };
 
