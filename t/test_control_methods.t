@@ -45,12 +45,22 @@ subtest(
                 {   name => 'TestsFor::Basic::Subclass',
                     pass => bool(0),
                 },
+                Ok => {
+                    name => 'TestsFor::Basic::Subclass->test_startup failed',
+                    pass => bool(0),
+                },
+                Diag => {
+                    message =>
+                      qr/\QFailed test 'TestsFor::Basic::Subclass->test_startup failed'\E.+/s,
+                },
+                Diag => {
+                    message =>
+                      qr/\Qforced die at t\E.\Qtest_control_methods.t\E.+/s
+                },
+                Plan => { max => 1 },
             ],
             Diag => {
-                message => qr/\QFailed test 'TestsFor::Basic::Subclass'\E.+/s
-            },
-            Diag => {
-                message => qr/\QCaught exception in subtest: Tests may not be run in test control methods (test_startup)\E.+/s
+                message => qr/\QFailed test 'TestsFor::Basic::Subclass'\E.+/s,
             },
         );
     }
@@ -62,7 +72,7 @@ _replace_subclass_method(
     },
 );
 subtest(
-    'events when test_startup dies',
+    'events when test_startup runs tests',
     sub {
         is_events(
             intercept { $runner->runtests },
@@ -76,13 +86,26 @@ subtest(
                 {   name => 'TestsFor::Basic::Subclass',
                     pass => bool(0),
                 },
+                Ok => {
+                    name => undef,
+                    pass => bool(1),
+                },
+                Ok => {
+                    name => 'TestsFor::Basic::Subclass->test_startup failed',
+                    pass => bool(0),
+                },
+                Diag => {
+                    message =>
+                      qr/\QFailed test 'TestsFor::Basic::Subclass->test_startup failed'\E.+/s,
+                },
+                Diag => {
+                    message =>
+                      qr/\QTests may not be run in test control methods (test_startup)\E.+/s,
+                },
+                Plan => { max => 2 },
             ],
             Diag => {
                 message => qr/\QFailed test 'TestsFor::Basic::Subclass'\E.+/s
-            },
-            Diag => {
-                message =>
-                  qr/\QCaught exception in subtest: Tests may not be run in test control methods (test_startup)\E.+/s
             },
         );
     }

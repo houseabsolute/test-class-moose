@@ -246,6 +246,7 @@ sub _tcm_run_test_control_method {
         my $error = $_;
         my $class = $test_instance->test_class;
         $ctx->ok( 0, "$class->$phase failed", [$error] );
+        0;
     }
     finally {
         $ctx->release;
