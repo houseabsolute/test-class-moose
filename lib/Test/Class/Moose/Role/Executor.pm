@@ -318,7 +318,9 @@ sub _tcm_run_test_method {
         $ctx->release;
     };
 
-    $report->passed($passed);
+    # $passed will be undef if the tests failed but we want to stick to 0 or
+    # 1.
+    $report->passed( $passed ? 1 : 0 );
 
     $self->_tcm_run_test_control_method(
         $test_instance,
