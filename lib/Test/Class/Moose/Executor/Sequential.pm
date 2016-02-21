@@ -30,7 +30,7 @@ sub runtests {
             $ctx->note("\nRunning tests for $test_class\n\n");
             run_subtest(
                 $test_class,
-                $self->_tcm_run_test_class_sub($test_class),
+                sub { $self->_tcm_run_test_class($test_class) },
             );
         }
 
@@ -54,73 +54,68 @@ END
     return $self;
 }
 
-sub _tcm_run_test_class_sub {
+sub _tcm_run_test_class {
     my ( $self, $test_class ) = @_;
 
-    return sub {
-        local *__ANON__ = 'ANON_TCM_RUN_TEST_CLASS';
+    my $class_report
+      = Test::Class::Moose::Report::Class->new( name => $test_class );
+    $self->test_report->add_test_class($class_report);
 
-        my $class_report
-          = Test::Class::Moose::Report::Class->new( name => $test_class );
-        $self->test_report->add_test_class($class_report);
+    my $ctx = context();
 
-        my $ctx = context();
+    my $passed = 1;
+    try {
+        my %test_instances = $test_class->_tcm_make_test_class_instances(
+            $self->test_configuration->args,
+            test_report => $self->test_report,
+        );
 
-        my $passed = 1;
-        try {
-            my %test_instances = $test_class->_tcm_make_test_class_instances(
-                $self->test_configuration->args,
-                test_report => $self->test_report,
-            );
+        unless (%test_instances) {
+            my $message = "Skipping '$test_class': no test instances found";
+            $class_report->skipped($message);
+            $class_report->passed(1);
+            $ctx->plan( 0, 'SKIP' => $message );
+            return;
+        }
 
-            unless (%test_instances) {
-                my $message
-                  = "Skipping '$test_class': no test instances found";
-                $class_report->skipped($message);
-                $class_report->passed(1);
-                $ctx->plan( 0, 'SKIP' => $message );
-                return;
+        $class_report->_start_benchmark;
+
+        foreach my $test_instance_name ( sort keys %test_instances ) {
+            my $test_instance = $test_instances{$test_instance_name};
+
+            my $instance_report;
+            if ( values %test_instances > 1 ) {
+                run_subtest(
+                    $test_instance_name,
+                    sub {
+                        $instance_report = $self->_tcm_run_test_instance(
+                            $class_report,
+                            $test_instance_name,
+                            $test_instance,
+                        );
+                    },
+                );
+            }
+            else {
+                $instance_report = $self->_tcm_run_test_instance(
+                    $class_report,
+                    $test_instance_name,
+                    $test_instance,
+                );
             }
 
-            $class_report->_start_benchmark;
-
-            foreach my $test_instance_name ( sort keys %test_instances ) {
-                my $test_instance = $test_instances{$test_instance_name};
-
-                my $instance_report;
-                if ( values %test_instances > 1 ) {
-                    run_subtest(
-                        $test_instance_name,
-                        sub {
-                            $instance_report = $self->_tcm_run_test_instance(
-                                $class_report,
-                                $test_instance_name,
-                                $test_instance,
-                            );
-                        },
-                    );
-                }
-                else {
-                    $instance_report = $self->_tcm_run_test_instance(
-                        $class_report,
-                        $test_instance_name,
-                        $test_instance,
-                    );
-                }
-
-                $passed = 0 if not $instance_report->passed;
-            }
+            $passed = 0 if not $instance_report->passed;
         }
-        catch {
-            die $_;
-        }
-        finally {
-            $ctx->release;
-        };
-
-        $class_report->passed($passed);
-        $class_report->_end_benchmark;
+    }
+    catch {
+        die $_;
+    }
+    finally {
+        $ctx->release;
     };
+
+    $class_report->passed($passed);
+    $class_report->_end_benchmark;
 }
 
 __PACKAGE__->meta->make_immutable;
