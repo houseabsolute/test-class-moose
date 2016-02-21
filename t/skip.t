@@ -1,18 +1,78 @@
 #!/usr/bin/env perl
+
+use lib 'lib', 't/lib';
+
+use Test::Deep qw( bool );
+use Test::Events;
 use Test::Most;
-use lib 'lib';
+
+use Test2::API qw( intercept );
 use Test::Class::Moose::Load qw(t/skiplib);
 use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new;
 
-use Test2::API qw( intercept );
-use Devel::Dwarn;
-#Dwarn( intercept { $runner->runtests } );
-
-subtest 'skip' => sub {
-    $runner->runtests;
-};
+is_events(
+    intercept { $runner->runtests },
+    Plan => { max     => 2 },
+    Note => { message => "\nRunning tests for TestsFor::Basic\n\n" },
+    Note => { message => 'TestsFor::Basic' },
+    Subtest => [
+        {   name => 'TestsFor::Basic',
+            pass => bool(1),
+        },
+        Plan => {
+            directive => 'SKIP',
+            reason    => 'all methods should be skipped',
+            max       => 0,
+        },
+    ],
+    Note =>
+      { message => "\nRunning tests for TestsFor::SkipSomeMethods\n\n" },
+    Note => { message => 'TestsFor::SkipSomeMethods' },
+    Subtest => [
+        {   name => 'TestsFor::SkipSomeMethods',
+            pass => bool(1),
+        },
+        Plan => { max     => 3 },
+        Note => { message => 'TestsFor::SkipSomeMethods->test_again()' },
+        Note => { message => 'test_again' },
+        Subtest => [
+            {   name => 'test_again',
+                pass => bool(1),
+            },
+            Ok => {
+                name => 'in test_again',
+                pass => bool(1),
+            },
+            Plan => { max => 1 },
+        ],
+        Note => { message => 'TestsFor::SkipSomeMethods->test_me()' },
+        Note => { message => 'test_me' },
+        Subtest => [
+            {   name => 'test_me',
+                pass => bool(1),
+            },
+            Plan => {
+                directive => 'SKIP',
+                reason => 'only methods listed as skipped should be skipped',
+                max    => 0,
+            },
+        ],
+        Note => { message => 'TestsFor::SkipSomeMethods->test_this_baby()' },
+        Note => { message => 'test_this_baby' },
+        Subtest => [
+            {   name => 'test_this_baby',
+                pass => bool(1),
+            },
+            Ok => {
+                name => 'whee! (TestsFor::SkipSomeMethods)',
+                pass => bool(1),
+            },
+            Plan => { max => 1 },
+        ],
+    ],
+);
 
 my $classes = $runner->test_report->test_classes;
 
