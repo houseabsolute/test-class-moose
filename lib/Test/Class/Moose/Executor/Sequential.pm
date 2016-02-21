@@ -12,7 +12,8 @@ use namespace::autoclean;
 with 'Test::Class::Moose::Role::Executor';
 
 use Test::Class::Moose::Report::Class;
-use Test::Most 0.32 ();
+use Test2::API qw( context run_subtest );
+use Try::Tiny;
 
 sub runtests {
     my $self = shift;
@@ -21,29 +22,39 @@ sub runtests {
     $report->_start_benchmark;
     my @test_classes = $self->test_classes;
 
-    my $builder = $self->test_configuration->builder;
-    $builder->plan( tests => scalar @test_classes );
+    my $ctx = context();
+    try {
+        $ctx->plan( scalar @test_classes );
 
-    foreach my $test_class (@test_classes) {
-        Test::Most::explain("\nRunning tests for $test_class\n\n");
-        $builder->subtest(
-            $test_class,
-            $self->_tcm_run_test_class($test_class),
-        );
-    }
+        foreach my $test_class (@test_classes) {
+            $ctx->note("\nRunning tests for $test_class\n\n");
+            run_subtest(
+                $test_class,
+                $self->_tcm_run_test_class_sub($test_class),
+            );
+        }
 
-    $builder->diag(<<"END") if $self->test_configuration->statistics;
+        $ctx->diag(<<"END") if $self->test_configuration->statistics;
 Test classes:    @{[ $report->num_test_classes ]}
 Test instances:  @{[ $report->num_test_instances ]}
 Test methods:    @{[ $report->num_test_methods ]}
 Total tests run: @{[ $report->num_tests_run ]}
 END
-    $builder->done_testing;
+
+        $ctx->done_testing;
+    }
+    catch {
+        die $_;
+    }
+    finally {
+        $ctx->release;
+    };
+
     $report->_end_benchmark;
     return $self;
 }
 
-sub _tcm_run_test_class {
+sub _tcm_run_test_class_sub {
     my ( $self, $test_class ) = @_;
 
     return sub {
@@ -53,46 +64,57 @@ sub _tcm_run_test_class {
           = Test::Class::Moose::Report::Class->new( name => $test_class );
         $self->test_report->add_test_class($class_report);
 
-        my %test_instances = $test_class->_tcm_make_test_class_instances(
-            $self->test_configuration->args,
-            test_report => $self->test_report,
-        );
-
-        unless (%test_instances) {
-            my $message = "Skipping '$test_class': no test instances found";
-            $class_report->skipped($message);
-            $class_report->passed(1);
-            $self->test_configuration->builder->plan( skip_all => $message );
-            return;
-        }
-
-        $class_report->_start_benchmark;
+        my $ctx = context();
 
         my $passed = 1;
-        foreach my $test_instance_name ( sort keys %test_instances ) {
-            my $test_instance = $test_instances{$test_instance_name};
+        try {
+            my %test_instances = $test_class->_tcm_make_test_class_instances(
+                $self->test_configuration->args,
+                test_report => $self->test_report,
+            );
 
-            my $instance_report;
-            if ( values %test_instances > 1 ) {
-                $self->test_configuration->builder->subtest(
-                    $test_instance_name,
-                    sub {
-                        $instance_report = $self->_tcm_run_test_instance(
-                            $test_instance_name,
-                            $test_instance,
-                        );
-                    },
-                );
-            }
-            else {
-                $instance_report = $self->_tcm_run_test_instance(
-                    $test_instance_name,
-                    $test_instance,
-                );
+            unless (%test_instances) {
+                my $message
+                  = "Skipping '$test_class': no test instances found";
+                $class_report->skipped($message);
+                $class_report->passed(1);
+                $ctx->plan( 0, 'SKIP' => $message );
+                return;
             }
 
-            $passed = 0 if not $instance_report->passed;
+            $class_report->_start_benchmark;
+
+            foreach my $test_instance_name ( sort keys %test_instances ) {
+                my $test_instance = $test_instances{$test_instance_name};
+
+                my $instance_report;
+                if ( values %test_instances > 1 ) {
+                    run_subtest(
+                        $test_instance_name,
+                        sub {
+                            $instance_report = $self->_tcm_run_test_instance(
+                                $test_instance_name,
+                                $test_instance,
+                            );
+                        },
+                    );
+                }
+                else {
+                    $instance_report = $self->_tcm_run_test_instance(
+                        $test_instance_name,
+                        $test_instance,
+                    );
+                }
+
+                $passed = 0 if not $instance_report->passed;
+            }
         }
+        catch {
+            die $_;
+        }
+        finally {
+            $ctx->release;
+        };
 
         $class_report->passed($passed);
         $class_report->_end_benchmark;

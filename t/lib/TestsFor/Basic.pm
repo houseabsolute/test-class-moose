@@ -1,6 +1,8 @@
 package TestsFor::Basic;
 use Test::Class::Moose;
 
+use Test::Deep qw( bool );
+
 has [ 'setup_class_found', 'setup_method_found' ] => (
     is  => 'rw',
     isa => 'Str',
@@ -47,6 +49,89 @@ sub test_reporting {
       'test_setup() should know our current class name';
     is $test->setup_method_found, 'test_reporting',
       '... and our current method name';
+}
+
+sub expected_test_events {
+    return (
+        Note => { message => "\nRunning tests for TestsFor::Basic\n\n" },
+        Note => { message => 'TestsFor::Basic' },
+        Subtest => [
+            {   name => 'TestsFor::Basic',
+                pass => bool(1),
+            },
+            Plan => { max     => 3 },
+            Note => { message => 'TestsFor::Basic->test_me()' },
+            Note => { message => 'test_me' },
+            Subtest => [
+                {   name => 'test_me',
+                    pass => bool(1),
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => 'test_me() ran (TestsFor::Basic)',
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => 'this is another test (TestsFor::Basic)',
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => 'test_setup() should know our current class name',
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => '... and our current method name',
+                },
+                Plan => { max => 4 },
+            ],
+            Note => { message => 'TestsFor::Basic->test_reporting()' },
+            Note => { message => 'test_reporting' },
+            Subtest => [
+                {   name => 'test_reporting',
+                    pass => bool(1),
+                },
+                Ok => {
+                    pass => bool(1),
+                    name =>
+                      'current_instance() should report the correct class name',
+                },
+                Ok => {
+                    pass => bool(1),
+                    name =>
+                      '... and we should also be able to get the current method name',
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => 'test_setup() should know our current class name',
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => '... and our current method name',
+                },
+                Plan => { max => 4 },
+            ],
+            Note => { message => 'TestsFor::Basic->test_this_baby()' },
+            Note => { message => 'test_this_baby' },
+            Subtest => [
+                {   name => 'test_this_baby',
+                    pass => bool(1),
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => 'whee! (TestsFor::Basic)',
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => 'test_setup() should know our current class name',
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => '... and our current method name',
+                },
+                Plan => { max => 3 },
+            ],
+        ],
+    );
 }
 
 1;

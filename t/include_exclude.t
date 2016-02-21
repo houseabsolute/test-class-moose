@@ -27,10 +27,9 @@ foreach my $class (@test_classes) {
       $methods_for{$class},
       "$class should have the correct test methods";
 }
-my @tests;
+
 subtest 'runtests' => sub {
     $runner->runtests;
-    @tests = $runner->test_configuration->builder->details;
 };
 
 ok my $report = $runner->test_report,
@@ -69,7 +68,6 @@ foreach my $class (@test_classes) {
 }
 subtest 'runtests' => sub {
     $runner->runtests;
-    @tests = $runner->test_configuration->builder->details;
 };
 
 ok $report = $runner->test_report,

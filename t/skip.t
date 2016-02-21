@@ -6,6 +6,10 @@ use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new;
 
+use Test2::API qw( intercept );
+use Devel::Dwarn;
+#Dwarn( intercept { $runner->runtests } );
+
 subtest 'skip' => sub {
     $runner->runtests;
 };
@@ -19,6 +23,7 @@ my $classes = $runner->test_report->test_classes;
     my $instances = $classes->[0]->test_instances;
 
     ok $instances->[0]->is_skipped, '... and it should be listed as skipped';
+    ok $instances->[0]->passed, '... and it is reported as passed';
     explain $instances->[0]->skipped;    # the skip reason
 }
 
@@ -29,6 +34,7 @@ my $classes = $runner->test_report->test_classes;
     my $instances = $classes->[1]->test_instances;
     ok !$instances->[0]->is_skipped,
       '... and it should NOT be listed as skipped';
+    ok $instances->[0]->passed, '... and it is reported as passed';
     my $methods = $instances->[0]->test_methods;
 
     is @$methods, 3, '... and it should have three test methods';

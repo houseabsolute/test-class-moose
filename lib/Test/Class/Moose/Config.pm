@@ -9,7 +9,6 @@ our $VERSION = '0.70';
 use Moose;
 use Moose::Util::TypeConstraints;
 use TAP::Formatter::Color;
-use Test::Builder;
 use namespace::autoclean;
 
 subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
@@ -25,14 +24,6 @@ has 'show_timing' => (
             return 1;
         }
         return;
-    },
-);
-
-has 'builder' => (
-    is      => 'ro',
-    isa     => 'Test::Builder',
-    default => sub {
-        Test::Builder->new;
     },
 );
 
@@ -118,7 +109,6 @@ __END__
 
  my $tc_config = Test::Class::Moose::Config->new({
      show_timing => 1,
-     builder     => Test::Builder->new,
      statistics  => 1,
      randomize   => 0,
  });
@@ -186,11 +176,6 @@ them. For example, if your network is down:
      exclude_tags => 'network',
  });
 
-
-=head2 C<builder>
-
-Usually defaults to C<< Test::Builder->new >>, but you could substitute your
-own if it conforms to the interface.
 
 =head2 C<randomize>
 

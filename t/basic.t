@@ -1,6 +1,12 @@
 #!/usr/bin/env perl
+
+use lib 'lib', 't/lib';
+
+use Test::Deep qw( bool );
+use Test::Events;
 use Test::Most;
-use lib 'lib';
+
+use Test2::API qw( intercept );
 use Test::Class::Moose::Load qw(t/lib);
 use Test::Class::Moose::Runner;
 
@@ -26,38 +32,52 @@ foreach my $class (@test_classes) {
       "$class should have the correct test methods";
 }
 
-subtest 'test suite' => sub {
-    $runner->runtests;
-};
+subtest(
+    'events from runner',
+    sub {
+        is_events(
+            intercept { $runner->runtests },
+            Plan => { max => 2 },
+            TestsFor::Basic->expected_test_events,
+            TestsFor::Basic::Subclass->expected_test_events,
+        );
+    }
+);
 
 TestsFor::Basic::Subclass->meta->add_method(
     'test_this_will_die' => sub { die 'forced die' },
 );
-my $builder = $runner->test_configuration->builder;
-$builder->todo_start('testing a dying test');
-my @tests;
-$runner = Test::Class::Moose::Runner->new;
-subtest 'test_this_will_die() dies' => sub {
-    $runner->runtests;
-    @tests = $runner->test_configuration->builder->details;
-};
-$builder->todo_end;
 
-my @expected_tests = (
-    {   'actual_ok' => 1,
-        'name'      => 'TestsFor::Basic',
-        'ok'        => 1,
-        'reason'    => '',
-        'type'      => ''
-    },
-    {   'actual_ok' => 0,
-        'name'      => 'TestsFor::Basic::Subclass',
-        'ok'        => 0,
-        'reason'    => '',
-        'type'      => ''
+my @subclass_events = TestsFor::Basic::Subclass->expected_test_events;
+$subclass_events[5][0]{pass} = bool(0);
+$subclass_events[5][2]{max}++;
+
+push @{ $subclass_events[5] }, (
+    Note => { message => 'TestsFor::Basic::Subclass->test_this_will_die()' },
+    Note => { message => 'test_this_will_die' },
+    Subtest => [
+        {   name => 'test_this_will_die',
+            pass => bool(0),
+        },
+    ],
+    Diag => { message => qr{\QFailed test 'test_this_will_die'\E.+}s },
+    Diag => { message => qr{\QCaught exception in subtest:\E.+}s },
+);
+
+push @subclass_events, (
+    Diag => { message => qr{\QFailed test 'TestsFor::Basic::Subclass'\E.+}s },
+);
+
+subtest(
+    'events from runner when a test dies',
+    sub {
+        is_events(
+            intercept { $runner->runtests },
+            Plan => { max => 2 },
+            TestsFor::Basic->expected_test_events,
+            @subclass_events,
+        );
     }
 );
-eq_or_diff \@tests, \@expected_tests,
-  'Dying test methods should fail but not kill the test suite';
 
 done_testing;

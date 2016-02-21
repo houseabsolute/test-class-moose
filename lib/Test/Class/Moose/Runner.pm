@@ -136,12 +136,6 @@ Boolean. Will run test classes in a random order. Note that if you specify an
 explicit list of classes in C<test_classes>, these classes will be run in the
 order you specify.
 
-=item * C<builder>
-
-Defaults to C<< Test::Builder->new >>. You can supply your own builder if you
-want, but it must conform to the L<Test::Builder> interface. We make no
-guarantees about which part of the interface it needs.
-
 =item * C<test_classes>
 
 Takes a class name or an array reference of class names. If it is present,

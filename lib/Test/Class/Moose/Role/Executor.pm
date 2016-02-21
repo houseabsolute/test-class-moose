@@ -10,22 +10,23 @@ use Moose::Role 2.0000;
 use Carp;
 use namespace::autoclean;
 
-use List::Util qw(shuffle);
 use List::SomeUtils qw(uniq);
-use Test::Builder;
-use Test::Most;
-use Try::Tiny;
+use List::Util qw(shuffle);
+use Test2::API qw( context run_subtest test2_stack );
+use Test::More;
+use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
-use Test::Class::Moose::Report;
 use Test::Class::Moose::Report::Instance;
 use Test::Class::Moose::Report::Method;
-use Test::Class::Moose::AttributeRegistry;
+use Test::Class::Moose::Report;
+use Try::Tiny;
 
 requires 'runtests';
 
 has 'test_configuration' => (
     is  => 'ro',
     isa => 'Test::Class::Moose::Config',
+
 );
 
 has 'test_report' => (
@@ -48,81 +49,90 @@ sub _build_test_report {
 sub _tcm_run_test_instance {
     my ( $self, $test_instance_name, $test_instance ) = @_;
 
-    my $config  = $self->test_configuration;
-    my $builder = $config->builder;
-    my $report  = $self->test_report;
-
-    # set up test class reporting
     my $instance_report = Test::Class::Moose::Report::Instance->new(
         {   name => $test_instance_name,
         }
     );
+
+    my $report = $self->test_report;
     $report->current_class->add_test_instance($instance_report)
       if $report->current_class;
 
     my @test_methods = $self->_tcm_test_methods_for_instance($test_instance);
 
-    unless (@test_methods) {
-        my $message = "Skipping '$test_instance_name': no test methods found";
-        $instance_report->skipped($message);
-        $instance_report->passed(1);
-        $builder->plan( skip_all => $message );
-        return $instance_report;
+    my $ctx = context();
+    try {
+        unless (@test_methods) {
+            my $message
+              = "Skipping '$test_instance_name': no test methods found";
+            $instance_report->skipped($message);
+            $instance_report->passed(1);
+            $ctx->plan( 0, SKIP => $message );
+            return;
+        }
+        $instance_report->_start_benchmark;
+
+        $report->_inc_test_methods( scalar @test_methods );
+
+        unless (
+            $self->_tcm_run_test_control_method(
+                $test_instance, 'test_startup', $instance_report,
+            )
+          )
+        {
+            $instance_report->passed(0);
+            return;
+        }
+
+        if ( my $message = $test_instance->test_skip ) {
+
+            # test_startup skipped the class
+            $instance_report->skipped($message);
+            $instance_report->passed(1);
+            $ctx->plan( 0, SKIP => $message );
+            return;
+        }
+
+        $ctx->plan( scalar @test_methods );
+
+        my $all_passed = 1;
+        foreach my $test_method (@test_methods) {
+            my $method_report = $self->_tcm_run_test_method(
+                $test_instance,
+                $test_method,
+                $instance_report,
+                $ctx,
+            );
+            $report->_inc_tests( $method_report->num_tests_run )
+              if $method_report->num_tests_run;
+            $all_passed = 0 if not $method_report->passed;
+        }
+        $instance_report->passed($all_passed);
+
+        # shutdown
+        unless (
+            $self->_tcm_run_test_control_method(
+                $test_instance, 'test_shutdown', $instance_report,
+            )
+          )
+        {
+            $instance_report->passed(0);
+        }
+
+        # finalize reporting
+        $instance_report->_end_benchmark;
+        if ( $self->test_configuration->show_timing ) {
+            my $time = $instance_report->time->duration;
+            $ctx->diag("$test_instance_name: $time");
+        }
     }
-    $instance_report->_start_benchmark;
-
-    $report->_inc_test_methods( scalar @test_methods );
-
-    # startup
-    unless (
-        my $report = $self->_tcm_run_test_control_method(
-            $test_instance, 'test_startup', $instance_report
-        )
-      )
-    {
-        fail "test_startup failed";
-        $instance_report->passed(0);
-        return $instance_report;
+    catch {
+        die $_;
     }
+    finally {
+        $ctx->release;
+    };
 
-    if ( my $message = $test_instance->test_skip ) {
-
-        # test_startup skipped the class
-        $instance_report->skipped($message);
-        $instance_report->passed(1);
-        $builder->plan( skip_all => $message );
-        return $instance_report;
-    }
-
-    $builder->plan( tests => scalar @test_methods );
-
-    # run test methods
-
-    my $all_passed = 1;
-    foreach my $test_method (@test_methods) {
-        my $method_report = $self->_tcm_run_test_method(
-            $test_instance,
-            $test_method,
-            $instance_report,
-        );
-        $report->_inc_tests( $method_report->num_tests_run );
-        $all_passed = 0 if not $method_report->passed;
-    }
-    $instance_report->passed($all_passed);
-
-    # shutdown
-    $self->_tcm_run_test_control_method(
-        $test_instance,
-        'test_shutdown',
-        $instance_report,
-    ) or $instance_report->passed( fail("test_shutdown() failed") );
-
-    # finalize reporting
-    $instance_report->_end_benchmark;
-    if ( $config->show_timing ) {
-        my $time = $instance_report->time->duration;
-        $builder->diag("$test_instance_name: $time");
-    }
     return $instance_report;
 }
 
@@ -219,26 +229,31 @@ sub _tcm_run_test_control_method {
     my $set_meth = "set_${phase}_method";
     $report_object->$set_meth($phase_method_report);
 
-    my $success;
-    my $builder = $self->test_configuration->builder;
-
     # It'd be nicer to start and end immediately after we call
     # $test_instance->$phase but we can't guarantee that those calls would
     # happen inside the try block.
     $phase_method_report->_start_benchmark;
 
-    try {
-        my $num_tests = $builder->current_test;
-        $test_instance->$phase($report_object);
-        if ( $builder->current_test ne $num_tests ) {
-            croak("Tests may not be run in test control methods ($phase)");
+    my $ctx = context();
+    my $sub = $ctx->hub->filter(
+        sub {
+            croak "Tests may not be run in test control methods ($phase)"
+              if $_[1]->increments_count;
         }
-        $success = 1;
+    );
+
+    my $success = try {
+        $test_instance->$phase($report_object);
+        1;
     }
     catch {
         my $error = $_;
         my $class = $test_instance->test_class;
-        $builder->diag("$class->$phase() failed: $error");
+        $ctx->ok( 0, "$class->$phase failed", $error );
+    }
+    finally {
+        $ctx->hub->unfilter($sub);
+        $ctx->release;
     };
 
     $phase_method_report->_end_benchmark;
@@ -253,62 +268,73 @@ sub _tcm_run_test_method {
         { name => $test_method, instance => $instance_report } );
 
     $instance_report->add_test_method($report);
-    my $config = $self->test_configuration;
 
-    my $builder = $config->builder;
     $test_instance->test_skip_clear;
     $self->_tcm_run_test_control_method(
         $test_instance,
         'test_setup',
-        $report
-    ) or fail "test_setup failed";
-    my $num_tests;
-
-    my $test_class = $test_instance->test_class;
-    Test::Most::explain("$test_class->$test_method()");
-    my $passed = $builder->subtest(
-        $test_method,
-        sub {
-            if ( my $message = $test_instance->test_skip ) {
-                $report->skipped($message);
-                $builder->plan( skip_all => $message );
-                return;
-            }
-            $report->_start_benchmark;
-
-            my $old_test_count = $builder->current_test;
-            try {
-                $test_instance->$test_method($report);
-                if ( $report->has_plan ) {
-                    $builder->plan( tests => $report->tests_planned );
-                }
-            }
-            catch {
-                fail "$test_method failed: $_";
-                $report->passed(0);
-            };
-            $num_tests = $builder->current_test - $old_test_count;
-
-            $report->_end_benchmark;
-            if ( $config->show_timing ) {
-                my $time = $report->time->duration;
-                $config->builder->diag( $report->name . ": $time" );
-            }
-        },
+        $report,
     );
+
+    my $num_tests = 0;
+    my $test_class = $test_instance->test_class;
+    my $ctx = context();
+
+    my $plan = $ctx->hub->plan;
+
+    my $passed = try {
+        $ctx->note("$test_class->$test_method()");
+
+        $report->_start_benchmark;
+
+        # If the call to ->$test_method fails then this subtest will fail and
+        # Test2::API will also include a diagnostic message with the error.
+        my $p = run_subtest(
+            $test_method,
+            sub {
+                my $hub = test2_stack()->top;
+                if ( my $message = $test_instance->test_skip ) {
+                    $report->skipped($message);
+                    # I can't figure out how to get our current context in
+                    # order to call $ctx->plan instead.
+                    plan( skip_all => $message );
+                    return;
+                }
+
+                $test_instance->$test_method($report);
+                $num_tests = $hub->count;
+            },
+        );
+
+        $report->_end_benchmark;
+        if ( $self->test_configuration->show_timing ) {
+            my $time = $report->time->duration;
+            $ctx->diag( $report->name . ": $time" );
+        }
+
+        return $p;
+    }
+    catch {
+        die $_;
+    }
+    finally {
+        $ctx->release;
+    };
+
     $report->passed($passed);
 
     $self->_tcm_run_test_control_method(
         $test_instance,
         'test_teardown',
         $report,
-    ) or $report->passed( fail "test_teardown failed" );
-    if ( !$report->is_skipped ) {
-        $report->num_tests_run($num_tests);
-        if ( !$report->has_plan ) {
-            $report->tests_planned($num_tests);
-        }
-    }
+    ) or $report->passed(0);
+
+    return $report unless $num_tests && !$report->is_skipped;
+
+    $report->num_tests_run($num_tests);
+    $report->tests_planned($num_tests)
+      unless $report->has_plan;
+
     return $report;
 }
 
