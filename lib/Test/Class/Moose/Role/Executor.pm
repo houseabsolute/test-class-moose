@@ -13,7 +13,6 @@ use namespace::autoclean;
 use List::SomeUtils qw(uniq);
 use List::Util qw(shuffle);
 use Test2::API qw( context run_subtest test2_stack );
-use Test::More;
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
 use Test::Class::Moose::Report::Instance;
@@ -293,7 +292,8 @@ sub _tcm_run_test_method {
                     $report->skipped($message);
                     # I can't figure out how to get our current context in
                     # order to call $ctx->plan instead.
-                    plan( skip_all => $message );
+                    my $sub_ctx = context( level => -1 );
+                    $sub_ctx->plan( 0, SKIP => $message );
                     return;
                 }
 
