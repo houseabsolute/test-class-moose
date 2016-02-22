@@ -65,12 +65,12 @@ sub _tcm_run_test_class {
 
     my $passed = 1;
     try {
-        my %test_instances = $test_class->_tcm_make_test_class_instances(
+        my @test_instances = $test_class->_tcm_make_test_class_instances(
             $self->test_configuration->args,
             test_report => $self->test_report,
         );
 
-        unless (%test_instances) {
+        unless (@test_instances) {
             my $message = "Skipping '$test_class': no test instances found";
             $class_report->skipped($message);
             $class_report->passed(1);
@@ -80,17 +80,17 @@ sub _tcm_run_test_class {
 
         $class_report->_start_benchmark;
 
-        foreach my $test_instance_name ( sort keys %test_instances ) {
-            my $test_instance = $test_instances{$test_instance_name};
-
+        foreach my $test_instance (
+            sort { $a->test_instance_name cmp $b->test_instance_name }
+            @test_instances )
+        {
             my $instance_report;
-            if ( values %test_instances > 1 ) {
+            if ( @test_instances > 1 ) {
                 run_subtest(
-                    $test_instance_name,
+                    $test_instance->test_instance_name,
                     sub {
                         $instance_report = $self->_tcm_run_test_instance(
                             $class_report,
-                            $test_instance_name,
                             $test_instance,
                         );
                     },
@@ -99,7 +99,6 @@ sub _tcm_run_test_class {
             else {
                 $instance_report = $self->_tcm_run_test_instance(
                     $class_report,
-                    $test_instance_name,
                     $test_instance,
                 );
             }

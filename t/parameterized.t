@@ -3,8 +3,19 @@ use Test::Most;
 use lib 'lib';
 use Test::Class::Moose::Load qw(t/parameterizedlib);
 use Test::Class::Moose::Runner;
+use TestsFor::Parameterized;
 
 my $runner = Test::Class::Moose::Runner->new;
+
+is_deeply(
+    [   sort  { $a cmp $b }
+          map { $_->test_instance_name }
+          TestsFor::Parameterized->_tcm_make_test_class_instances
+    ],
+    [   'TestsFor::Parameterized with bar', 'TestsFor::Parameterized with foo'
+    ],
+    'test_instance_name returns the correct name for each instance'
+);
 
 subtest 'parameterized tests' => sub {
     $runner->runtests;

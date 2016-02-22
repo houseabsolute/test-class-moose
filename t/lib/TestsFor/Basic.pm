@@ -16,6 +16,12 @@ sub test_setup {
     $test->setup_method_found( $report->current_method->name );
 }
 
+sub test_my_instance_name {
+    my $self = shift;
+    is $self->test_instance_name, ref $self,
+      'test_instance_name matches class name';
+}
+
 sub test_me {
     my $test  = shift;
     my $class = ref $test;
@@ -59,7 +65,7 @@ sub expected_test_events {
             {   name => 'TestsFor::Basic',
                 pass => bool(1),
             },
-            Plan => { max     => 3 },
+            Plan => { max     => 4 },
             Note => { message => 'TestsFor::Basic->test_me()' },
             Note => { message => 'test_me' },
             Subtest => [
@@ -83,6 +89,18 @@ sub expected_test_events {
                     name => '... and our current method name',
                 },
                 Plan => { max => 4 },
+            ],
+            Note => { message => 'TestsFor::Basic->test_my_instance_name()' },
+            Note => { message => 'test_my_instance_name' },
+            Subtest => [
+                {   name => 'test_my_instance_name',
+                    pass => bool(1),
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => 'test_instance_name matches class name',
+                },
+                Plan => { max => 1 },
             ],
             Note => { message => 'TestsFor::Basic->test_reporting()' },
             Note => { message => 'test_reporting' },

@@ -12,12 +12,8 @@ my $runner = Test::Class::Moose::Runner->new(
 );
 
 my %methods_for = (
-    'TestsFor::Basic'           => [qw/test_this_baby/],
-    'TestsFor::Basic::Subclass' => [
-        qw/
-          test_this_baby
-          /
-    ],
+    'TestsFor::Basic'           => ['test_this_baby'],
+    'TestsFor::Basic::Subclass' => ['test_this_baby'],
 );
 my @test_classes = sort $runner->test_classes;
 
@@ -50,10 +46,17 @@ $runner = Test::Class::Moose::Runner->new(
 );
 
 %methods_for = (
-    'TestsFor::Basic'           => [qw/test_me test_reporting/],
+    'TestsFor::Basic' => [
+        qw/
+          test_me
+          test_my_instance_name
+          test_reporting
+          /
+    ],
     'TestsFor::Basic::Subclass' => [
         qw/
           test_me
+          test_my_instance_name
           test_reporting
           test_this_should_be_run
           /
@@ -76,8 +79,8 @@ isa_ok $report, 'Test::Class::Moose::Report',
   '... and the object it returns';
 is $report->num_test_instances, 2,
   '... and it should return the correct number of test class instances';
-is $report->num_test_methods, 5,
+is $report->num_test_methods, 7,
   '... and the correct number of test methods';
-is $report->num_tests_run, 18, '... and the correct number of tests';
+is $report->num_tests_run, 20, '... and the correct number of tests';
 
 done_testing;

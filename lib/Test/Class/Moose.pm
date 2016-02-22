@@ -125,6 +125,13 @@ has 'test_class' => (
     default  => sub { ref $_[0] },
 );
 
+has 'test_instance_name' => (
+    is       => 'rw',
+    writer   => '_set_test_instance_name',
+    isa      => 'Str',
+    init_arg => undef,
+);
+
 has 'test_skip' => (
     is      => 'rw',
     isa     => 'Str',
@@ -201,7 +208,10 @@ sub runtests {
 sub _tcm_make_test_class_instances {
     my $test_class = shift;
 
-    return ( $test_class => $test_class->new(@_) );
+    my $instance = $test_class->new(@_);
+    $instance->_set_test_instance_name($test_class);
+
+    return $instance;
 }
 
 sub test_methods {

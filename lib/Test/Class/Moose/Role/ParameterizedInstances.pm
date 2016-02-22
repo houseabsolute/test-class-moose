@@ -19,8 +19,15 @@ sub _tcm_make_test_class_instances {
     my %base_args = @_;
 
     my %sets = $class->_constructor_parameter_sets;
-    return map { $_ => $class->new( %{ $sets{$_} }, %base_args ) }
-      keys %sets;
+
+    my @instances;
+    for my $name ( keys %sets ) {
+        my $instance = $class->new( %{ $sets{$name} }, %base_args );
+        $instance->_set_test_instance_name($name);
+        push @instances, $instance;
+    }
+
+    return @instances;
 }
 
 1;

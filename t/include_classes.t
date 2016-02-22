@@ -10,7 +10,14 @@ my $runner = Test::Class::Moose::Runner->new(
 );
 
 my %methods_for = (
-    'TestsFor::Basic' => [qw/test_me test_reporting test_this_baby/],
+    'TestsFor::Basic' => [
+        qw/
+          test_me
+          test_my_instance_name
+          test_reporting
+          test_this_baby
+          /
+    ],
 );
 my @test_classes = sort $runner->test_classes;
 eq_or_diff \@test_classes, [ sort keys %methods_for ],

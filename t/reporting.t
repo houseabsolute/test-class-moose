@@ -14,7 +14,7 @@ my $report = $runner->test_report;
 
 ok !$report->is_parallel, 'report is not parallel';
 is $report->num_test_instances, 2, '2 test instances';
-is $report->num_test_methods,   7, '7 test methods';
+is $report->num_test_methods,   9, '9 test methods';
 
 my @c = $report->all_test_classes;
 is_deeply
@@ -23,9 +23,23 @@ is_deeply
   'class reports have expected names';
 
 my %expected_methods = (
-    'TestsFor::Basic' => [qw( test_me test_reporting test_this_baby )],
-    'TestsFor::Basic::Subclass' =>
-      [qw( test_me test_reporting test_this_baby test_this_should_be_run )],
+    'TestsFor::Basic' => [
+        qw/
+          test_me
+          test_my_instance_name
+          test_reporting
+          test_this_baby
+          /
+    ],
+    'TestsFor::Basic::Subclass' => [
+        qw/
+          test_me
+          test_my_instance_name
+          test_reporting
+          test_this_baby
+          test_this_should_be_run
+          /
+    ],
 );
 
 foreach my $class (@c) {

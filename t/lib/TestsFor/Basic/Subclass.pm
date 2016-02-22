@@ -33,7 +33,7 @@ sub expected_test_events {
             {   name => 'TestsFor::Basic::Subclass',
                 pass => bool(1),
             },
-            Plan => { max     => 4 },
+            Plan => { max     => 5 },
             Note => { message => 'TestsFor::Basic::Subclass->test_me()' },
             Note => { message => 'test_me' },
             Subtest => [
@@ -44,6 +44,18 @@ sub expected_test_events {
                     pass => bool(1),
                     name =>
                       'I overrode my parent! (TestsFor::Basic::Subclass)',
+                },
+                Plan => { max => 1 },
+            ],
+            Note => { message => 'TestsFor::Basic::Subclass->test_my_instance_name()' },
+            Note => { message => 'test_my_instance_name' },
+            Subtest => [
+                {   name => 'test_my_instance_name',
+                    pass => bool(1),
+                },
+                Ok => {
+                    pass => bool(1),
+                    name => 'test_instance_name matches class name',
                 },
                 Plan => { max => 1 },
             ],
