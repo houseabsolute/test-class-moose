@@ -11,7 +11,7 @@ use Moose;
 use namespace::autoclean;
 with 'Test::Class::Moose::Role::HasTimeReport';
 
-use List::Util qw( sum );
+use List::Util qw( first sum );
 
 has 'num_test_methods' => (
     is      => 'rw',
@@ -68,6 +68,13 @@ sub _inc_tests {
     my ( $self, $tests ) = @_;
     $tests //= 1;
     $self->set_tests_run( $self->num_tests_run + $tests );
+}
+
+sub class_named {
+    my $self = shift;
+    my $name= shift;
+
+    return first { $_->name eq $name } $self->_all_test_classes;
 }
 
 sub current_class {

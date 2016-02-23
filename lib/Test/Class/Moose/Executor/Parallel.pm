@@ -11,14 +11,17 @@ use Carp;
 use namespace::autoclean;
 with 'Test::Class::Moose::Role::Executor';
 
+# Needs to come before we load other test tools
+use Test2::IPC;
+
 use List::SomeUtils qw(none);
 use Parallel::ForkManager;
-use TAP::Stream 0.44;
-use Test::Builder;
+use Scalar::Util qw(reftype);
+use Test2::API qw( context run_subtest test2_stack );
+use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Report::Class;
-
-use List::SomeUtils qw(uniq);
+use Try::Tiny;
 
 has 'jobs' => (
     is       => 'ro',
@@ -26,126 +29,167 @@ has 'jobs' => (
     required => 1,
 );
 
-has 'color_output' => (
+has '_fork_manager' => (
     is       => 'ro',
-    isa      => 'Bool',
-    required => 1,
-);
-
-has '_color' => (
-    is         => 'ro',
-    isa        => 'TAP::Formatter::Color',
-    lazy_build => 1,
+    isa      => 'Parallel::ForkManager',
+    init_arg => undef,
+    lazy     => 1,
+    builder  => '_build_fork_manager',
 );
 
 sub runtests {
     my $self = shift;
 
-    local $Test::Builder::Level = $Test::Builder::Level + 4;
-    my $jobs = $self->jobs;
+    my $report = $self->test_report;
+    $report->_start_benchmark;
+    my @test_classes = $self->test_classes;
 
-    # We need to fetch this output handle before forking off jobs. Otherwise,
-    # we lose our test builder output if we have a sequential job after the
-    # parallel jobs. This happens because we explicitly set the builder's
-    # output to a scalar ref in our $run_instance sub above.
-    my $test_builder_output = Test::Builder->new->output;
-    my $stream              = TAP::Stream->new;
+    my $ctx = context();
+    try {
+        $ctx->plan( scalar @test_classes );
 
-    my $fork = $self->_make_fork_manager($stream);
+        $self->_run_test_classes( $ctx, @test_classes );
 
-    my @sequential;
-    $self->_run_parallel_jobs( $fork, \@sequential );
+        $ctx->diag(<<"END") if $self->test_configuration->statistics;
+Test classes:    @{[ $report->num_test_classes ]}
+Test instances:  @{[ $report->num_test_instances ]}
+Test methods:    @{[ $report->num_test_methods ]}
+Total tests run: @{[ $report->num_tests_run ]}
+END
 
-    for my $pair (@sequential) {
-        my $output = $self->_run_instance( @{$pair} );
-        $stream->add_to_stream(
-            TAP::Stream::Text->new(
-                text => $output,
-                name =>
-                  "Sequential tests for $pair->[0] run after parallel tests",
-            )
-        );
+        $ctx->done_testing;
     }
+    catch {
+        die $_;
+    }
+    finally {
+        $ctx->release;
+    };
 
-    # this prevents overwriting the line of dots output from
-    # $RUN_TEST_CONTROL_METHOD
-    print STDERR "\n";
-
-    # this is where we print the TAP results
-    print $test_builder_output $stream->to_string;
-
+    $report->_end_benchmark;
     return $self;
 }
 
-sub _make_fork_manager {
-    my ( $self, $stream ) = @_;
+sub _run_test_classes {
+    my $self         = shift;
+    my $ctx          = shift;
+    my @test_classes = @_;
 
-    my $fork = Parallel::ForkManager->new( $self->jobs );
-    $fork->run_on_finish(
-        sub {
-            my ($pid, $exit_code, $ident, $exit_signal, $core_dump,
-                $result
-            ) = @_;
+    my @sequential = $self->_run_parallel_jobs(@test_classes);
 
-            if ( defined($result) ) {
-                my ( $job_num, $tap ) = @$result;
-                $stream->add_to_stream(
-                    TAP::Stream::Text->new(
-                        text => $tap, name => "Job #$job_num (pid: $pid)"
-                    )
-                );
-            }
-            else
-            { # problems occuring during storage or retrieval will throw a warning
-                carp("No TAP received from child process $pid!");
-            }
-        }
-    );
+    test2_stack()->top->cull;
 
-    return $fork;
+    for my $test_class (@sequential) {
+        $ctx->note("\nRunning tests for $test_class\n\n");
+        my $subtest = subtest_start($test_class);
+        subtest_run(
+            $subtest,
+            sub {
+                use Test::Class::Moose::Executor::Sequential;
+                $self
+                  ->Test::Class::Moose::Executor::Sequential::_tcm_run_test_class
+                  ($test_class);
+            },
+        );
+        subtest_finish($subtest);
+    }
+
+    return $ctx;
 }
 
 sub _run_parallel_jobs {
-    my ( $self, $fork, $sequential ) = @_;
+    my ( $self, $sequential ) = @_;
 
-    my @test_classes = $self->test_classes;
-
-    my $job_num = 0;
+    my @subtests;
+    my @sequential;
     foreach my $test_class ( $self->test_classes ) {
-        my $class_report
-          = Test::Class::Moose::Report::Class->new( name => $test_class );
-        $self->test_report->add_test_class($class_report);
-
-        my %test_instances = $test_class->_tcm_make_test_class_instances(
-            $self->test_configuration->args,
-            test_report => $self->test_report,
-        );
-
-        foreach my $test_instance_name ( sort keys %test_instances ) {
-            my $test_instance = $test_instances{$test_instance_name};
-            if ( $self->_test_instance_is_parallelizable($test_instance) ) {
-                $job_num++;
-                my $pid = $fork->start and next;
-                my $output = $self->_run_instance(
-                    $test_instance_name,
-                    $test_instance
-                );
-                $fork->finish( 0, [ $job_num, $output ] );
-            }
-            else {
-                push @{$sequential}, [ $test_instance_name, $test_instance ];
-            }
+        if ( $self->_test_class_is_parallelizable($test_class) ) {
+            push @subtests, $self->_tcm_run_test_class($test_class);
+        }
+        else {
+            push @sequential, $test_class;
         }
     }
-    $fork->wait_all_children;
 
-    return;
+    $self->_fork_manager->wait_all_children;
+
+    subtest_finish($_) for @subtests;
+
+    return @sequential;
 }
 
-sub _test_instance_is_parallelizable {
-    my ( $self, $test_instance ) = @_;
+sub _tcm_run_test_class {
+    my $self       = shift;
+    my $test_class = shift;
 
-    my $test_class = $test_instance->test_class;
+    my $class_report
+      = Test::Class::Moose::Report::Class->new( name => $test_class );
+    $self->test_report->add_test_class($class_report);
+
+    my @test_instances = $test_class->_tcm_make_test_class_instances(
+        $self->test_configuration->args,
+        test_report => $self->test_report,
+    );
+
+    my @subtests;
+    if ( @test_instances > 1 ) {
+        my $class_subtest = subtest_start($test_class);
+        subtest_run(
+            $class_subtest => sub {
+                push @subtests,
+                  $self->_run_test_instances_in_parallel(
+                    $class_report,
+                    @test_instances
+                  );
+            }
+        );
+        push @subtests, $class_subtest;
+    }
+    else {
+        push @subtests,
+          $self->_run_test_instances_in_parallel(
+            $class_report,
+            @test_instances
+          );
+    }
+
+    return @subtests;
+}
+
+sub _run_test_instances_in_parallel {
+    my $self           = shift;
+    my $class_report   = shift;
+    my @test_instances = @_;
+
+    my @subtests;
+    for my $test_instance (
+        sort { $a->test_instance_name cmp $b->test_instance_name }
+        @test_instances )
+    {
+        my $instance_subtest
+          = subtest_start( $test_instance->test_instance_name );
+        return $instance_subtest if $self->_fork_manager->start;
+
+        subtest_run(
+            $instance_subtest,
+            sub {
+                my $instance_report = $self->_tcm_run_test_instance(
+                    $class_report,
+                    $test_instance,
+                );
+
+                $self->_fork_manager->finish(
+                    0,
+                    [ $test_instance->test_class, $instance_report ]
+                );
+            }
+        );
+    }
+}
+
+sub _test_class_is_parallelizable {
+    my ( $self, $test_class ) = @_;
+
     return none {
         Test::Class::Moose::AttributeRegistry->method_has_tag(
             $test_class,
@@ -153,52 +197,29 @@ sub _test_instance_is_parallelizable {
             'noparallel'
         );
     }
-    $self->_tcm_test_methods_for_instance($test_instance);
+    $self->_tcm_test_methods_for($test_class);
 }
 
-sub _run_instance {
-    my ( $self, $test_instance_name, $test_instance ) = @_;
+sub _build_fork_manager {
+    my $self = shift;
 
-    my $builder = Test::Builder->new;
+    my $pfm = Parallel::ForkManager->new( $self->jobs );
+    $pfm->run_on_finish(
+        sub {
+            my ( $pid, $report_info ) = @_[ 0, 5 ];
 
-    my $output;
-    $builder->output( \$output );
-    $builder->failure_output( \$output );
-    $builder->todo_output( \$output );
+          # problems occuring during storage or retrieval will throw a warning
+            croak("Child process $pid failed!")
+              unless $report_info
+              && reftype($report_info) eq 'ARRAY'
+              && @{$report_info} == 2;
 
-    $self->_tcm_run_test_instance( $test_instance_name, $test_instance );
+            $self->test_report->class_named( $report_info->[0] )
+              ->add_test_instance( $report_info->[1] );
+        }
+    );
 
-    return $output;
-}
-
-after '_tcm_run_test_method' => sub {
-    my $self    = shift;
-    my $config  = $self->test_configuration;
-    my $builder = $config->builder;
-
-    # we're running under parallel testing, so rather than having
-    # the code look like it's stalled, we'll output a dot for
-    # every test method.
-    my ( $color, $text )
-      = ( $builder->details )[-1]{ok}
-      ? ( 'green', '.' )
-      : ( 'red', 'X' );
-
-    # The set_color() method from Test::Formatter::Color is just ugly.
-    if ( $self->color_output ) {
-        $self->_color->set_color(
-            sub { print STDERR shift, $text },
-            $color,
-        );
-        $self->_color->set_color( sub { print STDERR shift }, 'reset' );
-    }
-    else {
-        print STDERR $text;
-    }
-};
-
-sub _build__color {
-    return TAP::Formatter::Color->new;
+    return $pfm;
 }
 
 1;

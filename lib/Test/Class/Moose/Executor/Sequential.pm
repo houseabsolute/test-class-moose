@@ -12,7 +12,8 @@ use namespace::autoclean;
 with 'Test::Class::Moose::Role::Executor';
 
 use Test::Class::Moose::Report::Class;
-use Test2::API qw( context run_subtest );
+use Test2::API qw( context );
+use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
 use Try::Tiny;
 
 sub runtests {
@@ -28,10 +29,12 @@ sub runtests {
 
         foreach my $test_class (@test_classes) {
             $ctx->note("\nRunning tests for $test_class\n\n");
-            run_subtest(
-                $test_class,
+            my $subtest = subtest_start($test_class);
+            subtest_run(
+                $subtest,
                 sub { $self->_tcm_run_test_class($test_class) },
             );
+            subtest_finish($subtest);
         }
 
         $ctx->diag(<<"END") if $self->test_configuration->statistics;
@@ -86,8 +89,10 @@ sub _tcm_run_test_class {
         {
             my $instance_report;
             if ( @test_instances > 1 ) {
-                run_subtest(
-                    $test_instance->test_instance_name,
+                my $subtest
+                  = subtest_start( $test_instance->test_instance_name );
+                subtest_run(
+                    $subtest,
                     sub {
                         $instance_report = $self->_tcm_run_test_instance(
                             $class_report,
@@ -95,6 +100,7 @@ sub _tcm_run_test_class {
                         );
                     },
                 );
+                subtest_finish($subtest);
             }
             else {
                 $instance_report = $self->_tcm_run_test_instance(

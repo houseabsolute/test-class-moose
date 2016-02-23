@@ -12,7 +12,8 @@ use namespace::autoclean;
 
 use List::SomeUtils qw(uniq);
 use List::Util qw(shuffle);
-use Test2::API qw( context run_subtest test2_stack );
+use Test2::API qw( context test2_stack );
+use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
 use Test::Class::Moose::Report::Instance;
@@ -57,7 +58,7 @@ sub _tcm_run_test_instance {
     my $report = $self->test_report;
     $class_report->add_test_instance($instance_report);
 
-    my @test_methods = $self->_tcm_test_methods_for_instance($test_instance);
+    my @test_methods = $self->_tcm_test_methods_for($test_instance);
 
     my $ctx = context();
     try {
@@ -135,10 +136,10 @@ sub _tcm_run_test_instance {
     return $instance_report;
 }
 
-sub _tcm_test_methods_for_instance {
-    my ( $self, $test_instance ) = @_;
+sub _tcm_test_methods_for {
+    my ( $self, $thing ) = @_;
 
-    my @filtered = $self->_tcm_filtered_test_methods($test_instance);
+    my @filtered = $self->_tcm_filtered_test_methods($thing);
     return uniq(
         $self->test_configuration->randomize
         ? shuffle(@filtered)
@@ -147,9 +148,9 @@ sub _tcm_test_methods_for_instance {
 }
 
 sub _tcm_filtered_test_methods {
-    my ( $self, $test_instance ) = @_;
+    my ( $self, $thing ) = @_;
 
-    my @method_list = $test_instance->test_methods;
+    my @method_list = $thing->test_methods;
     if ( my $include = $self->test_configuration->include ) {
         @method_list = grep {/$include/} @method_list;
     }
@@ -157,8 +158,9 @@ sub _tcm_filtered_test_methods {
         @method_list = grep { !/$exclude/ } @method_list;
     }
 
+    my $test_class = ref $thing ? $thing->test_class : $thing;
     return $self->_tcm_filter_by_tag(
-        $test_instance->test_class,
+        $test_class,
         \@method_list
     );
 }
@@ -283,10 +285,11 @@ sub _tcm_run_test_method {
 
         $report->_start_benchmark;
 
+        my $subtest = subtest_start($test_method);
         # If the call to ->$test_method fails then this subtest will fail and
         # Test2::API will also include a diagnostic message with the error.
-        my $p = run_subtest(
-            $test_method,
+        my $p = subtest_run(
+            $subtest,
             sub {
                 my $hub = test2_stack()->top;
                 if ( my $message = $test_instance->test_skip ) {
@@ -302,6 +305,7 @@ sub _tcm_run_test_method {
                 $num_tests = $hub->count;
             },
         );
+        subtest_finish($subtest);
 
         $report->_end_benchmark;
         if ( $self->test_configuration->show_timing ) {

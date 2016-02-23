@@ -1,11 +1,16 @@
 #!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use lib 'lib';
+
 use Test::Requires {
     'Parallel::ForkManager' => 0,
 };
-
 use Test::Most;
-use lib 'lib';
-use Carp::Always;
+
+use Test2::API qw( intercept );
 use Test::Class::Moose::Load qw(t/parallellib);
 use Test::Class::Moose::Runner;
 
@@ -19,4 +24,6 @@ my $test_runner = Test::Class::Moose::Runner->new(
     statistics  => 0,
 );
 
-$test_runner->runtests;
+$test_runner->runtests;exit;
+use Devel::Dwarn;
+Dwarn intercept { $test_runner->runtests };
