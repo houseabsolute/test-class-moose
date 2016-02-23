@@ -1,15 +1,17 @@
 #!/usr/bin/env perl
 
-use lib 'lib';
+use lib 'lib', 't/lib';
 
 use Test2::Bundle::Extended;
+use Test::Events;
 
 use Test::Class::Moose::Load qw(t/skiplib);
 use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new;
 
-is( intercept { $runner->runtests },
+test_events(
+    intercept { $runner->runtests },
     array {
         event Plan => sub {
             call max => 2;

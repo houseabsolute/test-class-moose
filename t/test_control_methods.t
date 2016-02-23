@@ -1,8 +1,9 @@
 #!/usr/bin/env perl
 
-use lib 'lib';
+use lib 'lib', 't/lib';;
 
 use Test2::Bundle::Extended;
+use Test::Events;
 
 use Test::Class::Moose::Load 't/lib';
 use Test::Class::Moose::Runner;
@@ -17,7 +18,8 @@ _replace_subclass_method( test_startup => sub { my $test = shift } );
 subtest(
     'events when test_startup does not die or run tests',
     sub {
-        is( intercept { $runner->runtests },
+        test_events(
+            intercept { $runner->runtests },
             array {
                 event Plan => sub {
                     call max => 2;
@@ -34,7 +36,8 @@ _replace_subclass_method( test_startup => sub { die 'forced die' } );
 subtest(
     'events when test_startup dies',
     sub {
-        is( intercept { $runner->runtests },
+        test_events(
+            intercept { $runner->runtests },
             array {
                 event Plan => sub {
                     call max => 2;
@@ -85,7 +88,8 @@ _replace_subclass_method(
 subtest(
     'events when test_startup runs tests',
     sub {
-        is( intercept { $runner->runtests },
+        test_events(
+            intercept { $runner->runtests },
             array {
                 event Plan => sub {
                     call max => 2;

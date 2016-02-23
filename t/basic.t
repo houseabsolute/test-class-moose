@@ -1,8 +1,9 @@
 #!/usr/bin/env perl
 
-use lib 'lib';
+use lib 'lib', 't/lib';
 
 use Test2::Bundle::Extended;
+use Test::Events;
 
 use Test::Class::Moose::Load qw(t/lib);
 use Test::Class::Moose::Runner;
@@ -40,7 +41,8 @@ foreach my $class (@test_classes) {
 subtest(
     'events from runner',
     sub {
-        is( intercept { $runner->runtests },
+        test_events(
+            intercept { $runner->runtests },
             array {
                 event Plan => sub {
                     call max => 2;
@@ -60,7 +62,7 @@ TestsFor::Basic::Subclass->meta->add_method(
 subtest(
     'events from runner when a test dies',
     sub {
-        is( intercept { $runner->runtests },
+        test_events( intercept { $runner->runtests },
             array {
                 event Plan => sub {
                     call max => 2;

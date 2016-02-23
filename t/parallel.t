@@ -3,13 +3,14 @@
 use strict;
 use warnings;
 
-use lib 'lib';
+use lib 'lib', 't/lib';
 
 use Test::Requires {
     'Parallel::ForkManager' => 0,
 };
 
 use Test2::Bundle::Extended;
+use Test::Events;
 
 use Test::Class::Moose::Load qw(t/parallellib);
 use Test::Class::Moose::Runner;
@@ -24,7 +25,8 @@ my $test_runner = Test::Class::Moose::Runner->new(
     statistics  => 0,
 );
 
-is( intercept { $test_runner->runtests },
+test_events(
+    intercept { $test_runner->runtests },
     array {
         event Plan => sub {
             call max => 4;
@@ -226,7 +228,8 @@ is( intercept { $test_runner->runtests },
                     };
                 };
                 event Note => sub {
-                    call message => 'TestsFor::Sequential->test_sequential_second()';
+                    call message =>
+                      'TestsFor::Sequential->test_sequential_second()';
                 };
                 event Subtest => sub {
                     call name      => 'test_sequential_second';
