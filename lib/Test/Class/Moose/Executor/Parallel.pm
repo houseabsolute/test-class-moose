@@ -17,7 +17,7 @@ use Test2::IPC;
 use List::SomeUtils qw(none);
 use Parallel::ForkManager;
 use Scalar::Util qw(reftype);
-use Test2::API qw( context run_subtest test2_stack );
+use Test2::API qw( context_do test2_stack );
 use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Report::Class;
@@ -44,8 +44,9 @@ sub runtests {
     $report->_start_benchmark;
     my @test_classes = $self->test_classes;
 
-    my $ctx = context();
-    try {
+    context_do {
+        my $ctx = shift;
+
         $ctx->plan( scalar @test_classes );
 
         $self->_run_test_classes( $ctx, @test_classes );
@@ -58,12 +59,6 @@ Total tests run: @{[ $report->num_tests_run ]}
 END
 
         $ctx->done_testing;
-    }
-    catch {
-        die $_;
-    }
-    finally {
-        $ctx->release;
     };
 
     $report->_end_benchmark;
@@ -126,10 +121,9 @@ sub _run_test_class {
       = Test::Class::Moose::Report::Class->new( name => $test_class );
     $self->test_report->add_test_class($class_report);
 
-    my @test_instances = $test_class->_tcm_make_test_class_instances(
-        $self->test_configuration->args,
-        test_report => $self->test_report,
-    );
+    my @test_instances
+      = $self->_make_test_instances( $test_class, $class_report )
+      or return;
 
     my @subtests;
     if ( @test_instances > 1 ) {

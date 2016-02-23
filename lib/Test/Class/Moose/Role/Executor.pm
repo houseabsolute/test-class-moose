@@ -12,7 +12,7 @@ use namespace::autoclean;
 
 use List::SomeUtils qw(uniq);
 use List::Util qw(shuffle);
-use Test2::API qw( context test2_stack );
+use Test2::API qw( context_do test2_stack );
 use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
@@ -46,6 +46,30 @@ sub _build_test_report {
     );
 }
 
+sub _make_test_instances {
+    my $self         = shift;
+    my $test_class   = shift;
+    my $class_report = shift;
+
+    my @instances = $test_class->_tcm_make_test_class_instances(
+        $self->test_configuration->args,
+        test_report => $self->test_report,
+    );
+
+    return @instances if @instances;
+
+    context_do {
+        my $ctx = shift;
+
+        my $message = "Skipping '$test_class': no test instances found";
+        $class_report->skipped($message);
+        $class_report->passed(1);
+        $ctx->plan( 0, 'SKIP' => $message );
+    };
+
+    return;
+}
+
 sub _run_test_instance {
     my ( $self, $class_report, $test_instance ) = @_;
 
@@ -55,13 +79,16 @@ sub _run_test_instance {
         }
     );
 
+    $instance_report->_start_benchmark;
+
     my $report = $self->test_report;
     $class_report->add_test_instance($instance_report);
 
     my @test_methods = $self->_test_methods_for($test_instance);
 
-    my $ctx = context();
-    try {
+    context_do {
+        my $ctx = shift;
+
         unless (@test_methods) {
             my $message
               = "Skipping '$test_instance_name': no test methods found";
@@ -70,7 +97,6 @@ sub _run_test_instance {
             $ctx->plan( 0, SKIP => $message );
             return;
         }
-        $instance_report->_start_benchmark;
 
         $report->_inc_test_methods( scalar @test_methods );
 
@@ -125,12 +151,6 @@ sub _run_test_instance {
             my $time = $instance_report->time->duration;
             $ctx->diag("$test_instance_name: $time");
         }
-    }
-    catch {
-        die $_;
-    }
-    finally {
-        $ctx->release;
     };
 
     return $instance_report;
@@ -235,23 +255,22 @@ sub _run_test_control_method {
     # happen inside the try block.
     $phase_method_report->_start_benchmark;
 
-    my $ctx = context();
+    my $success = context_do {
+        my $ctx = shift;
 
-    my $success = try {
-        my $count = $ctx->hub->count;
-        $test_instance->$phase($report_object);
-        croak "Tests may not be run in test control methods ($phase)"
-            unless $count == $ctx->hub->count;
-        1;
-    }
-    catch {
-        my $error = $_;
-        my $class = $test_instance->test_class;
-        $ctx->ok( 0, "$class->$phase failed", [$error] );
-        0;
-    }
-    finally {
-        $ctx->release;
+        return try {
+            my $count = $ctx->hub->count;
+            $test_instance->$phase($report_object);
+            croak "Tests may not be run in test control methods ($phase)"
+              unless $count == $ctx->hub->count;
+            1;
+        }
+        catch {
+            my $error = $_;
+            my $class = $test_instance->test_class;
+            $ctx->ok( 0, "$class->$phase failed", [$error] );
+            0;
+        };
     };
 
     $phase_method_report->_end_benchmark;
@@ -262,28 +281,27 @@ sub _run_test_control_method {
 sub _run_test_method {
     my ( $self, $test_instance, $test_method, $instance_report ) = @_;
 
-    my $report = Test::Class::Moose::Report::Method->new(
+    my $method_report = Test::Class::Moose::Report::Method->new(
         { name => $test_method, instance => $instance_report } );
 
-    $instance_report->add_test_method($report);
+    $instance_report->add_test_method($method_report);
 
     $test_instance->test_skip_clear;
     $self->_run_test_control_method(
         $test_instance,
         'test_setup',
-        $report,
+        $method_report,
     );
+
+    $method_report->_start_benchmark;
 
     my $num_tests = 0;
     my $test_class = $test_instance->test_class;
-    my $ctx = context();
 
-    my $plan = $ctx->hub->plan;
+    my $passed = context_do {
+        my $ctx = shift;
 
-    my $passed = try {
         $ctx->note("$test_class->$test_method()");
-
-        $report->_start_benchmark;
 
         my $subtest = subtest_start($test_method);
         # If the call to ->$test_method fails then this subtest will fail and
@@ -293,52 +311,49 @@ sub _run_test_method {
             sub {
                 my $hub = test2_stack()->top;
                 if ( my $message = $test_instance->test_skip ) {
-                    $report->skipped($message);
+                    $method_report->skipped($message);
                     # I can't figure out how to get our current context in
                     # order to call $ctx->plan instead.
-                    my $sub_ctx = context( level => -1 );
-                    $sub_ctx->plan( 0, SKIP => $message );
+                    context_do {
+                        shift->plan( 0, SKIP => $message );
+                    };
                     return;
                 }
 
-                $test_instance->$test_method($report);
+                $test_instance->$test_method($method_report);
                 $num_tests = $hub->count;
             },
         );
         subtest_finish($subtest);
 
-        $report->_end_benchmark;
+        $method_report->_end_benchmark;
         if ( $self->test_configuration->show_timing ) {
-            my $time = $report->time->duration;
-            $ctx->diag( $report->name . ": $time" );
+            my $time = $method_report->time->duration;
+            $ctx->diag( $method_report->name . ": $time" );
         }
 
         return $p;
-    }
-    catch {
-        die $_;
-    }
-    finally {
-        $ctx->release;
     };
 
     # $passed will be undef if the tests failed but we want to stick to 0 or
     # 1.
-    $report->passed( $passed ? 1 : 0 );
+    $method_report->passed( $passed ? 1 : 0 );
+
+    $method_report->_end_benchmark;
 
     $self->_run_test_control_method(
         $test_instance,
         'test_teardown',
-        $report,
-    ) or $report->passed(0);
+        $method_report,
+    ) or $method_report->passed(0);
 
-    return $report unless $num_tests && !$report->is_skipped;
+    return $method_report unless $num_tests && !$method_report->is_skipped;
 
-    $report->num_tests_run($num_tests);
-    $report->tests_planned($num_tests)
-      unless $report->has_plan;
+    $method_report->num_tests_run($num_tests);
+    $method_report->tests_planned($num_tests)
+      unless $method_report->has_plan;
 
-    return $report;
+    return $method_report;
 }
 
 sub test_classes {

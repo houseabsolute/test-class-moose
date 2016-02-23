@@ -12,7 +12,7 @@ use namespace::autoclean;
 with 'Test::Class::Moose::Role::Executor';
 
 use Test::Class::Moose::Report::Class;
-use Test2::API qw( context );
+use Test2::API qw( context_do );
 use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
 use Try::Tiny;
 
@@ -23,19 +23,12 @@ sub runtests {
     $report->_start_benchmark;
     my @test_classes = $self->test_classes;
 
-    my $ctx = context();
-    try {
+    context_do {
+        my $ctx = shift;
+
         $ctx->plan( scalar @test_classes );
 
-        foreach my $test_class (@test_classes) {
-            $ctx->note("\nRunning tests for $test_class\n\n");
-            my $subtest = subtest_start($test_class);
-            subtest_run(
-                $subtest,
-                sub { $self->_run_test_class($test_class) },
-            );
-            subtest_finish($subtest);
-        }
+        $self->_run_test_classes(@test_classes);
 
         $ctx->diag(<<"END") if $self->test_configuration->statistics;
 Test classes:    @{[ $report->num_test_classes ]}
@@ -45,16 +38,29 @@ Total tests run: @{[ $report->num_tests_run ]}
 END
 
         $ctx->done_testing;
-    }
-    catch {
-        die $_;
-    }
-    finally {
-        $ctx->release;
     };
 
     $report->_end_benchmark;
     return $self;
+}
+
+sub _run_test_classes {
+    my $self = shift;
+    my @test_classes = @_;
+
+    context_do {
+        my $ctx = shift;
+
+        for my $test_class (@test_classes) {
+            $ctx->note("\nRunning tests for $test_class\n\n");
+            my $subtest = subtest_start($test_class);
+            subtest_run(
+                $subtest,
+                sub { $self->_run_test_class($test_class) },
+            );
+            subtest_finish($subtest);
+        }
+    };
 }
 
 sub _run_test_class {
@@ -64,24 +70,15 @@ sub _run_test_class {
       = Test::Class::Moose::Report::Class->new( name => $test_class );
     $self->test_report->add_test_class($class_report);
 
-    my $ctx = context();
+    $class_report->_start_benchmark;
 
     my $passed = 1;
-    try {
-        my @test_instances = $test_class->_tcm_make_test_class_instances(
-            $self->test_configuration->args,
-            test_report => $self->test_report,
-        );
+    context_do {
+        my $ctx = shift;
 
-        unless (@test_instances) {
-            my $message = "Skipping '$test_class': no test instances found";
-            $class_report->skipped($message);
-            $class_report->passed(1);
-            $ctx->plan( 0, 'SKIP' => $message );
-            return;
-        }
-
-        $class_report->_start_benchmark;
+        my @test_instances
+          = $self->_make_test_instances( $test_class, $class_report )
+          or return;
 
         foreach my $test_instance (
             sort { $a->test_instance_name cmp $b->test_instance_name }
@@ -111,12 +108,6 @@ sub _run_test_class {
 
             $passed = 0 if not $instance_report->passed;
         }
-    }
-    catch {
-        die $_;
-    }
-    finally {
-        $ctx->release;
     };
 
     $class_report->passed($passed);
