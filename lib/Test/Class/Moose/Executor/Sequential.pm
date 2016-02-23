@@ -32,7 +32,7 @@ sub runtests {
             my $subtest = subtest_start($test_class);
             subtest_run(
                 $subtest,
-                sub { $self->_tcm_run_test_class($test_class) },
+                sub { $self->_run_test_class($test_class) },
             );
             subtest_finish($subtest);
         }
@@ -57,7 +57,7 @@ END
     return $self;
 }
 
-sub _tcm_run_test_class {
+sub _run_test_class {
     my ( $self, $test_class ) = @_;
 
     my $class_report
@@ -94,7 +94,7 @@ sub _tcm_run_test_class {
                 subtest_run(
                     $subtest,
                     sub {
-                        $instance_report = $self->_tcm_run_test_instance(
+                        $instance_report = $self->_run_test_instance(
                             $class_report,
                             $test_instance,
                         );
@@ -103,7 +103,7 @@ sub _tcm_run_test_class {
                 subtest_finish($subtest);
             }
             else {
-                $instance_report = $self->_tcm_run_test_instance(
+                $instance_report = $self->_run_test_instance(
                     $class_report,
                     $test_instance,
                 );

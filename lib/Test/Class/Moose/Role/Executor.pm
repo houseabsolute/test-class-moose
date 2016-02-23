@@ -46,7 +46,7 @@ sub _build_test_report {
     );
 }
 
-sub _tcm_run_test_instance {
+sub _run_test_instance {
     my ( $self, $class_report, $test_instance ) = @_;
 
     my $test_instance_name = $test_instance->test_instance_name;
@@ -58,7 +58,7 @@ sub _tcm_run_test_instance {
     my $report = $self->test_report;
     $class_report->add_test_instance($instance_report);
 
-    my @test_methods = $self->_tcm_test_methods_for($test_instance);
+    my @test_methods = $self->_test_methods_for($test_instance);
 
     my $ctx = context();
     try {
@@ -75,7 +75,7 @@ sub _tcm_run_test_instance {
         $report->_inc_test_methods( scalar @test_methods );
 
         unless (
-            $self->_tcm_run_test_control_method(
+            $self->_run_test_control_method(
                 $test_instance, 'test_startup', $instance_report,
             )
           )
@@ -97,7 +97,7 @@ sub _tcm_run_test_instance {
 
         my $all_passed = 1;
         foreach my $test_method (@test_methods) {
-            my $method_report = $self->_tcm_run_test_method(
+            my $method_report = $self->_run_test_method(
                 $test_instance,
                 $test_method,
                 $instance_report,
@@ -111,7 +111,7 @@ sub _tcm_run_test_instance {
 
         # shutdown
         unless (
-            $self->_tcm_run_test_control_method(
+            $self->_run_test_control_method(
                 $test_instance, 'test_shutdown', $instance_report,
             )
           )
@@ -136,10 +136,10 @@ sub _tcm_run_test_instance {
     return $instance_report;
 }
 
-sub _tcm_test_methods_for {
+sub _test_methods_for {
     my ( $self, $thing ) = @_;
 
-    my @filtered = $self->_tcm_filtered_test_methods($thing);
+    my @filtered = $self->_filtered_test_methods($thing);
     return uniq(
         $self->test_configuration->randomize
         ? shuffle(@filtered)
@@ -147,7 +147,7 @@ sub _tcm_test_methods_for {
     );
 }
 
-sub _tcm_filtered_test_methods {
+sub _filtered_test_methods {
     my ( $self, $thing ) = @_;
 
     my @method_list = $thing->test_methods;
@@ -159,13 +159,13 @@ sub _tcm_filtered_test_methods {
     }
 
     my $test_class = ref $thing ? $thing->test_class : $thing;
-    return $self->_tcm_filter_by_tag(
+    return $self->_filter_by_tag(
         $test_class,
         \@method_list
     );
 }
 
-sub _tcm_filter_by_tag {
+sub _filter_by_tag {
     my ( $self, $class, $methods ) = @_;
 
     my @filtered_methods = @$methods;
@@ -210,7 +210,7 @@ my %TEST_CONTROL_METHODS = map { $_ => 1 } qw/
   test_shutdown
   /;
 
-sub _tcm_run_test_control_method {
+sub _run_test_control_method {
     my ( $self, $test_instance, $phase, $report_object ) = @_;
 
     $TEST_CONTROL_METHODS{$phase}
@@ -259,7 +259,7 @@ sub _tcm_run_test_control_method {
     return $success;
 }
 
-sub _tcm_run_test_method {
+sub _run_test_method {
     my ( $self, $test_instance, $test_method, $instance_report ) = @_;
 
     my $report = Test::Class::Moose::Report::Method->new(
@@ -268,7 +268,7 @@ sub _tcm_run_test_method {
     $instance_report->add_test_method($report);
 
     $test_instance->test_skip_clear;
-    $self->_tcm_run_test_control_method(
+    $self->_run_test_control_method(
         $test_instance,
         'test_setup',
         $report,
@@ -326,7 +326,7 @@ sub _tcm_run_test_method {
     # 1.
     $report->passed( $passed ? 1 : 0 );
 
-    $self->_tcm_run_test_control_method(
+    $self->_run_test_control_method(
         $test_instance,
         'test_teardown',
         $report,

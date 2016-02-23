@@ -87,7 +87,7 @@ sub _run_test_classes {
             sub {
                 use Test::Class::Moose::Executor::Sequential;
                 $self
-                  ->Test::Class::Moose::Executor::Sequential::_tcm_run_test_class
+                  ->Test::Class::Moose::Executor::Sequential::_run_test_class
                   ($test_class);
             },
         );
@@ -104,7 +104,7 @@ sub _run_parallel_jobs {
     my @sequential;
     foreach my $test_class ( $self->test_classes ) {
         if ( $self->_test_class_is_parallelizable($test_class) ) {
-            push @subtests, $self->_tcm_run_test_class($test_class);
+            push @subtests, $self->_run_test_class($test_class);
         }
         else {
             push @sequential, $test_class;
@@ -118,7 +118,7 @@ sub _run_parallel_jobs {
     return @sequential;
 }
 
-sub _tcm_run_test_class {
+sub _run_test_class {
     my $self       = shift;
     my $test_class = shift;
 
@@ -173,7 +173,7 @@ sub _run_test_instances_in_parallel {
         subtest_run(
             $instance_subtest,
             sub {
-                my $instance_report = $self->_tcm_run_test_instance(
+                my $instance_report = $self->_run_test_instance(
                     $class_report,
                     $test_instance,
                 );
@@ -197,7 +197,7 @@ sub _test_class_is_parallelizable {
             'noparallel'
         );
     }
-    $self->_tcm_test_methods_for($test_class);
+    $self->_test_methods_for($test_class);
 }
 
 sub _build_fork_manager {
