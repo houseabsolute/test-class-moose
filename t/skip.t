@@ -1,77 +1,102 @@
 #!/usr/bin/env perl
 
-use lib 'lib', 't/lib';
+use lib 'lib';
 
-use Test::Deep qw( bool );
-use Test::Events;
-use Test::Most;
+use Test2::Bundle::Extended;
 
-use Test2::API qw( intercept );
 use Test::Class::Moose::Load qw(t/skiplib);
 use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new;
 
-is_events(
-    intercept { $runner->runtests },
-    Plan => { max     => 2 },
-    Note => { message => "\nRunning tests for TestsFor::Basic\n\n" },
-    Note => { message => 'TestsFor::Basic' },
-    Subtest => [
-        {   name => 'TestsFor::Basic',
-            pass => bool(1),
-        },
-        Plan => {
-            directive => 'SKIP',
-            reason    => 'all methods should be skipped',
-            max       => 0,
-        },
-    ],
-    Note =>
-      { message => "\nRunning tests for TestsFor::SkipSomeMethods\n\n" },
-    Note => { message => 'TestsFor::SkipSomeMethods' },
-    Subtest => [
-        {   name => 'TestsFor::SkipSomeMethods',
-            pass => bool(1),
-        },
-        Plan => { max     => 3 },
-        Note => { message => 'TestsFor::SkipSomeMethods->test_again()' },
-        Note => { message => 'test_again' },
-        Subtest => [
-            {   name => 'test_again',
-                pass => bool(1),
-            },
-            Ok => {
-                name => 'in test_again',
-                pass => bool(1),
-            },
-            Plan => { max => 1 },
-        ],
-        Note => { message => 'TestsFor::SkipSomeMethods->test_me()' },
-        Note => { message => 'test_me' },
-        Subtest => [
-            {   name => 'test_me',
-                pass => bool(1),
-            },
-            Plan => {
-                directive => 'SKIP',
-                reason => 'only methods listed as skipped should be skipped',
-                max    => 0,
-            },
-        ],
-        Note => { message => 'TestsFor::SkipSomeMethods->test_this_baby()' },
-        Note => { message => 'test_this_baby' },
-        Subtest => [
-            {   name => 'test_this_baby',
-                pass => bool(1),
-            },
-            Ok => {
-                name => 'whee! (TestsFor::SkipSomeMethods)',
-                pass => bool(1),
-            },
-            Plan => { max => 1 },
-        ],
-    ],
+is( intercept { $runner->runtests },
+    array {
+        event Plan => sub {
+            call max => 2;
+        };
+        event Note => sub {
+            call message => "\nRunning tests for TestsFor::Basic\n\n";
+        };
+        event Subtest => sub {
+            call name      => 'TestsFor::Basic';
+            call pass      => T();
+            call subevents => array {
+                event Plan => sub {
+                    call directive => 'SKIP';
+                    call reason    => 'all methods should be skipped';
+                    call max       => 0;
+                };
+                end();
+            };
+        };
+        event Note => sub {
+            call message =>
+              "\nRunning tests for TestsFor::SkipSomeMethods\n\n";
+        };
+        event Subtest => sub {
+            call name      => 'TestsFor::SkipSomeMethods';
+            call pass      => T();
+            call subevents => array {
+                event Plan => sub {
+                    call max => 3;
+                };
+                event Note => sub {
+                    call message => 'TestsFor::SkipSomeMethods->test_again()';
+                };
+                event Subtest => sub {
+                    call name      => 'test_again';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call name => 'in test_again';
+                            call pass => T();
+                        };
+                        event Plan => sub {
+                            call max => 1;
+                        };
+                        end();
+                    };
+                };
+                event Note => sub {
+                    call message => 'TestsFor::SkipSomeMethods->test_me()';
+                };
+                event Subtest => sub {
+                    call name      => 'test_me';
+                    call pass      => T();
+                    call subevents => array {
+                        event Plan => sub {
+                            call directive => 'SKIP';
+                            call reason =>
+                              'only methods listed as skipped should be skipped';
+                            call max => 0;
+                        };
+                        end();
+                    };
+                };
+                event Note => sub {
+                    call message =>
+                      'TestsFor::SkipSomeMethods->test_this_baby()';
+                };
+                event Subtest => sub {
+                    call name      => 'test_this_baby';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call name => 'whee! (TestsFor::SkipSomeMethods)';
+                            call pass => T();
+                        };
+                        event Plan => sub {
+                            call max => 1;
+                        };
+                        end();
+                    };
+                };
+                end();
+            };
+        };
+        end();
+    },
+    'got expected events for skip tests'
 );
 
 my $classes = $runner->test_report->test_classes;
@@ -84,7 +109,6 @@ my $classes = $runner->test_report->test_classes;
 
     ok $instances->[0]->is_skipped, '... and it should be listed as skipped';
     ok $instances->[0]->passed, '... and it is reported as passed';
-    explain $instances->[0]->skipped;    # the skip reason
 }
 
 {

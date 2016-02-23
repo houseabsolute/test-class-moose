@@ -1,7 +1,8 @@
 package TestsFor::Basic;
+
 use Test::Class::Moose;
 
-use Test::Deep qw( bool );
+use Test2::Tools::Compare qw( array call end event T );
 
 has [ 'setup_class_found', 'setup_method_found' ] => (
     is  => 'rw',
@@ -58,98 +59,124 @@ sub test_reporting {
 }
 
 sub expected_test_events {
-    return (
-        Note => { message => "\nRunning tests for TestsFor::Basic\n\n" },
-        Note => { message => 'TestsFor::Basic' },
-        Subtest => [
-            {   name => 'TestsFor::Basic',
-                pass => bool(1),
-            },
-            Plan => { max     => 4 },
-            Note => { message => 'TestsFor::Basic->test_me()' },
-            Note => { message => 'test_me' },
-            Subtest => [
-                {   name => 'test_me',
-                    pass => bool(1),
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => 'test_me() ran (TestsFor::Basic)',
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => 'this is another test (TestsFor::Basic)',
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => 'test_setup() should know our current class name',
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => '... and our current method name',
-                },
-                Plan => { max => 4 },
-            ],
-            Note => { message => 'TestsFor::Basic->test_my_instance_name()' },
-            Note => { message => 'test_my_instance_name' },
-            Subtest => [
-                {   name => 'test_my_instance_name',
-                    pass => bool(1),
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => 'test_instance_name matches class name',
-                },
-                Plan => { max => 1 },
-            ],
-            Note => { message => 'TestsFor::Basic->test_reporting()' },
-            Note => { message => 'test_reporting' },
-            Subtest => [
-                {   name => 'test_reporting',
-                    pass => bool(1),
-                },
-                Ok => {
-                    pass => bool(1),
-                    name =>
-                      'current_instance() should report the correct class name',
-                },
-                Ok => {
-                    pass => bool(1),
-                    name =>
-                      '... and we should also be able to get the current method name',
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => 'test_setup() should know our current class name',
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => '... and our current method name',
-                },
-                Plan => { max => 4 },
-            ],
-            Note => { message => 'TestsFor::Basic->test_this_baby()' },
-            Note => { message => 'test_this_baby' },
-            Subtest => [
-                {   name => 'test_this_baby',
-                    pass => bool(1),
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => 'whee! (TestsFor::Basic)',
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => 'test_setup() should know our current class name',
-                },
-                Ok => {
-                    pass => bool(1),
-                    name => '... and our current method name',
-                },
-                Plan => { max => 3 },
-            ],
-        ],
-    );
+    event Note => sub {
+        call message => "\nRunning tests for TestsFor::Basic\n\n";
+    };
+    event Subtest => sub {
+        call name      => 'TestsFor::Basic';
+        call pass      => T();
+        call subevents => array {
+            event Plan => sub {
+                call max => 4;
+            };
+            event Note => sub {
+                call message => 'TestsFor::Basic->test_me()';
+            };
+            event Subtest => sub {
+                call name      => 'test_me';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call pass => T();
+                        call name => 'test_me() ran (TestsFor::Basic)';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name => 'this is another test (TestsFor::Basic)';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          'test_setup() should know our current class name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name => '... and our current method name';
+                    };
+                    event Plan => sub {
+                        call max => 4;
+                    };
+                    end();
+                };
+            };
+            event Note => sub {
+                call message => 'TestsFor::Basic->test_my_instance_name()';
+            };
+            event Subtest => sub {
+                call name      => 'test_my_instance_name';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call pass => T();
+                        call name => 'test_instance_name matches class name';
+                    };
+                    event Plan => sub {
+                        call max => 1;
+                    };
+                    end();
+                };
+            };
+            event Note => sub {
+                call message => 'TestsFor::Basic->test_reporting()';
+            };
+            event Subtest => sub {
+                call name      => 'test_reporting';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          'current_instance() should report the correct class name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          '... and we should also be able to get the current method name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          'test_setup() should know our current class name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name => '... and our current method name';
+                    };
+                    event Plan => sub {
+                        call max => 4;
+                    };
+                    end();
+                };
+            };
+            event Note => sub {
+                call message => 'TestsFor::Basic->test_this_baby()';
+            };
+            event Subtest => sub {
+                call name      => 'test_this_baby';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call pass => T();
+                        call name => 'whee! (TestsFor::Basic)';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          'test_setup() should know our current class name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name => '... and our current method name';
+                    };
+                    event Plan => sub {
+                        call max => 3;
+                    };
+                    end();
+                };
+            };
+            end();
+        };
+    };
 }
 
 1;
