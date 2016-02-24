@@ -14,7 +14,7 @@ with 'Test::Class::Moose::Role::Executor';
 # Needs to come before we load other test tools
 use Test2::IPC;
 
-use List::SomeUtils qw(none);
+use List::SomeUtils qw( none part );
 use Parallel::ForkManager;
 use Scalar::Util qw(reftype);
 use Test2::API qw( context_do test2_stack );
@@ -37,83 +37,53 @@ has '_fork_manager' => (
     builder  => '_build_fork_manager',
 );
 
-sub runtests {
-    my $self = shift;
-
-    my $report = $self->test_report;
-    $report->_start_benchmark;
-    my @test_classes = $self->test_classes;
-
-    context_do {
-        my $ctx = shift;
-
-        $ctx->plan( scalar @test_classes );
-
-        $self->_run_test_classes( $ctx, @test_classes );
-
-        $ctx->diag(<<"END") if $self->test_configuration->statistics;
-Test classes:    @{[ $report->num_test_classes ]}
-Test instances:  @{[ $report->num_test_instances ]}
-Test methods:    @{[ $report->num_test_methods ]}
-Total tests run: @{[ $report->num_tests_run ]}
-END
-
-        $ctx->done_testing;
-    };
-
-    $report->_end_benchmark;
-    return $self;
-}
-
-sub _run_test_classes {
+around _run_test_classes => sub {
+    my $orig         = shift;
     my $self         = shift;
-    my $ctx          = shift;
     my @test_classes = @_;
 
-    my @sequential = $self->_run_parallel_jobs(@test_classes);
+    my ( $seq, $par )
+      = part { $self->_test_class_is_parallelizable($_) } @test_classes;
+
+    $self->_run_test_classes_in_parallel( @{$par} );
 
     test2_stack()->top->cull;
 
-    for my $test_class (@sequential) {
-        $ctx->note("\nRunning tests for $test_class\n\n");
-        my $subtest = subtest_start($test_class);
-        subtest_run(
-            $subtest,
-            sub {
-                use Test::Class::Moose::Executor::Sequential;
-                $self
-                  ->Test::Class::Moose::Executor::Sequential::_run_test_class
-                  ($test_class);
-            },
-        );
-        subtest_finish($subtest);
-    }
+    $self->$orig( @{$seq} );
 
-    return $ctx;
+    return;
+};
+
+sub _test_class_is_parallelizable {
+    my ( $self, $test_class ) = @_;
+
+    return none {
+        Test::Class::Moose::AttributeRegistry->method_has_tag(
+            $test_class,
+            $_,
+            'noparallel'
+        );
+    }
+    $self->_test_methods_for($test_class);
 }
 
-sub _run_parallel_jobs {
-    my ( $self, $sequential ) = @_;
+sub _run_test_classes_in_parallel {
+    my $self         = shift;
+    my @test_classes = @_;
 
     my @subtests;
-    my @sequential;
-    foreach my $test_class ( $self->test_classes ) {
-        if ( $self->_test_class_is_parallelizable($test_class) ) {
-            push @subtests, $self->_run_test_class($test_class);
-        }
-        else {
-            push @sequential, $test_class;
-        }
+    foreach my $test_class (@test_classes) {
+        push @subtests, $self->_run_test_class_in_parallel($test_class);
     }
 
     $self->_fork_manager->wait_all_children;
 
     subtest_finish($_) for @subtests;
 
-    return @sequential;
+    return;
 }
 
-sub _run_test_class {
+sub _run_test_class_in_parallel {
     my $self       = shift;
     my $test_class = shift;
 
@@ -126,26 +96,19 @@ sub _run_test_class {
       or return;
 
     my @subtests;
-    if ( @test_instances > 1 ) {
-        my $class_subtest = subtest_start($test_class);
-        subtest_run(
-            $class_subtest => sub {
-                push @subtests,
-                  $self->_run_test_instances_in_parallel(
-                    $class_report,
-                    @test_instances
-                  );
-            }
-        );
-        push @subtests, $class_subtest;
-    }
-    else {
-        push @subtests,
-          $self->_run_test_instances_in_parallel(
-            $class_report,
-            @test_instances
-          );
-    }
+
+    my $class_subtest = subtest_start($test_class);
+    subtest_run(
+        $class_subtest,
+        sub {
+            push @subtests,
+              $self->_run_test_instances_in_parallel(
+                $class_report,
+                @test_instances,
+              );
+        }
+    );
+    push @subtests, $class_subtest;
 
     return @subtests;
 }
@@ -160,38 +123,52 @@ sub _run_test_instances_in_parallel {
         sort { $a->test_instance_name cmp $b->test_instance_name }
         @test_instances )
     {
-        my $instance_subtest
-          = subtest_start( $test_instance->test_instance_name );
-        return $instance_subtest if $self->_fork_manager->start;
-
-        subtest_run(
-            $instance_subtest,
-            sub {
-                my $instance_report = $self->_run_test_instance(
-                    $class_report,
-                    $test_instance,
-                );
-
-                $self->_fork_manager->finish(
-                    0,
-                    [ $test_instance->test_class, $instance_report ]
-                );
-            }
+        return $self->_run_test_instance_in_parallel(
+            $class_report,
+            $test_instance,
+            @test_instances > 1,
         );
     }
 }
 
-sub _test_class_is_parallelizable {
-    my ( $self, $test_class ) = @_;
+sub _run_test_instance_in_parallel {
+    my $self          = shift;
+    my $class_report  = shift;
+    my $test_instance = shift;
+    my $in_subtest    = shift;
 
-    return none {
-        Test::Class::Moose::AttributeRegistry->method_has_tag(
-            $test_class,
-            $_,
-            'noparallel'
+    unless ($in_subtest) {
+        return if $self->_fork_manager->start;
+
+        my $instance_report = $self->_run_test_instance(
+            $class_report,
+            $test_instance,
+        );
+
+        $self->_fork_manager->finish(
+            0,
+            [ $test_instance->test_class, $instance_report ]
         );
     }
-    $self->_test_methods_for($test_class);
+
+    my $instance_subtest
+      = subtest_start( $test_instance->test_instance_name );
+    return $instance_subtest if $self->_fork_manager->start;
+
+    subtest_run(
+        $instance_subtest,
+        sub {
+            my $instance_report = $self->_run_test_instance(
+                $class_report,
+                $test_instance,
+            );
+
+            $self->_fork_manager->finish(
+                0,
+                [ $test_instance->test_class, $instance_report ]
+            );
+        }
+    );
 }
 
 sub _build_fork_manager {

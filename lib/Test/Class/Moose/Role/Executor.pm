@@ -21,8 +21,6 @@ use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::Report;
 use Try::Tiny;
 
-requires 'runtests';
-
 has 'test_configuration' => (
     is  => 'ro',
     isa => 'Test::Class::Moose::Config',
@@ -35,6 +33,53 @@ has 'test_report' => (
     builder => '_build_test_report',
 );
 
+sub runtests {
+    my $self = shift;
+
+    my $report = $self->test_report;
+    $report->_start_benchmark;
+    my @test_classes = $self->test_classes;
+
+    context_do {
+        my $ctx = shift;
+
+        $ctx->plan( scalar @test_classes );
+
+        $self->_run_test_classes(@test_classes);
+
+        $ctx->diag(<<"END") if $self->test_configuration->statistics;
+Test classes:    @{[ $report->num_test_classes ]}
+Test instances:  @{[ $report->num_test_instances ]}
+Test methods:    @{[ $report->num_test_methods ]}
+Total tests run: @{[ $report->num_tests_run ]}
+END
+
+        $ctx->done_testing;
+    };
+
+    $report->_end_benchmark;
+    return $self;
+}
+
+sub _run_test_classes {
+    my $self = shift;
+    my @test_classes = @_;
+
+    context_do {
+        my $ctx = shift;
+
+        for my $test_class (@test_classes) {
+            $ctx->note("\nRunning tests for $test_class\n\n");
+            my $subtest = subtest_start($test_class);
+            subtest_run(
+                $subtest,
+                sub { $self->_run_test_class($test_class) },
+            );
+            subtest_finish($subtest);
+        }
+    };
+}
+
 sub _build_test_report {
     my $self = shift;
 
@@ -44,6 +89,30 @@ sub _build_test_report {
     return Test::Class::Moose::Report->new(
         is_parallel => ( ref $self ) =~ /::Parallel$/ ? 1 : 0,
     );
+}
+
+sub _run_test_class {
+    my $self       = shift;
+    my $test_class = shift;
+
+    my $class_report
+      = Test::Class::Moose::Report::Class->new( name => $test_class );
+    $self->test_report->add_test_class($class_report);
+
+    $class_report->_start_benchmark;
+
+    my $passed = context_do {
+        my $ctx = shift;
+
+        my @test_instances
+          = $self->_make_test_instances( $test_class, $class_report )
+          or return 1;
+
+        return $self->_run_test_instances( $class_report, @test_instances );
+    };
+
+    $class_report->passed($passed);
+    $class_report->_end_benchmark;
 }
 
 sub _make_test_instances {
@@ -68,6 +137,54 @@ sub _make_test_instances {
     };
 
     return;
+}
+
+sub _run_test_instances {
+    my $self           = shift;
+    my $class_report   = shift;
+    my @test_instances = @_;
+
+    my $passed = 1;
+    for my $test_instance (
+        sort { $a->test_instance_name cmp $b->test_instance_name }
+        @test_instances )
+    {
+        my $instance_report = $self->_maybe_wrap_test_instance(
+            $class_report,
+            $test_instance,
+            @test_instances > 1,
+        );
+        $passed = 0 if not $instance_report->passed;
+    }
+
+    return $passed;
+}
+
+sub _maybe_wrap_test_instance {
+    my $self          = shift;
+    my $class_report  = shift;
+    my $test_instance = shift;
+    my $in_subtest    = shift;
+
+    return $self->_run_test_instance(
+        $class_report,
+        $test_instance,
+    ) unless $in_subtest;
+
+    my $instance_report;
+    my $subtest = subtest_start( $test_instance->test_instance_name );
+    subtest_run(
+        $subtest,
+        sub {
+            $instance_report = $self->_run_test_instance(
+                $class_report,
+                $test_instance,
+            );
+        },
+    );
+    subtest_finish($subtest);
+
+    return $instance_report;
 }
 
 sub _run_test_instance {
