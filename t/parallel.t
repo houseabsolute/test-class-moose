@@ -12,7 +12,7 @@ use Test::Requires {
 use Test2::Bundle::Extended;
 use Test::Events;
 
-use Test::Class::Moose::Load qw(t/parallellib);
+use Test::Class::Moose::Load qw( t/parallellib );
 use Test::Class::Moose::Runner;
 
 plan skip_all =>
@@ -198,9 +198,6 @@ test_events(
                 };
                 end();
             };
-        };
-        event Note => sub {
-            call message => "\nRunning tests for TestsFor::Sequential\n\n";
         };
         event Subtest => sub {
             call name      => 'TestsFor::Sequential';

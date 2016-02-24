@@ -59,9 +59,6 @@ sub test_reporting {
 }
 
 sub expected_test_events {
-    event Note => sub {
-        call message => "\nRunning tests for TestsFor::Basic\n\n";
-    };
     event Subtest => sub {
         call name      => 'TestsFor::Basic';
         call pass      => T();

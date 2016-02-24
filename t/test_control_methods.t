@@ -43,10 +43,6 @@ subtest(
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
-                event Note => sub {
-                    call message =>
-                      "\nRunning tests for TestsFor::Basic::Subclass\n\n";
-                };
                 event Subtest => sub {
                     call name      => 'TestsFor::Basic::Subclass';
                     call pass      => F();
@@ -95,10 +91,6 @@ subtest(
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
-                event Note => sub {
-                    call message =>
-                      "\nRunning tests for TestsFor::Basic::Subclass\n\n";
-                };
                 event Subtest => sub {
                     call name      => 'TestsFor::Basic::Subclass';
                     call pass      => F();

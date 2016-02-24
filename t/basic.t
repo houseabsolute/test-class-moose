@@ -62,16 +62,13 @@ TestsFor::Basic::Subclass->meta->add_method(
 subtest(
     'events from runner when a test dies',
     sub {
-        test_events( intercept { $runner->runtests },
+        test_events(
+            intercept { $runner->runtests },
             array {
                 event Plan => sub {
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
-                event Note => sub {
-                    call message =>
-                      "\nRunning tests for TestsFor::Basic::Subclass\n\n";
-                };
                 event Subtest => sub {
                     call name      => 'TestsFor::Basic::Subclass';
                     call pass      => F();

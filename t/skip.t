@@ -16,9 +16,6 @@ test_events(
         event Plan => sub {
             call max => 2;
         };
-        event Note => sub {
-            call message => "\nRunning tests for TestsFor::Basic\n\n";
-        };
         event Subtest => sub {
             call name      => 'TestsFor::Basic';
             call pass      => T();
@@ -30,10 +27,6 @@ test_events(
                 };
                 end();
             };
-        };
-        event Note => sub {
-            call message =>
-              "\nRunning tests for TestsFor::SkipSomeMethods\n\n";
         };
         event Subtest => sub {
             call name      => 'TestsFor::SkipSomeMethods';

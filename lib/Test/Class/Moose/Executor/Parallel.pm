@@ -71,7 +71,7 @@ sub _run_test_classes_in_parallel {
     my $test_classes = shift;
 
     my @subtests;
-    foreach my $test_class ( @{$test_classes} ) {
+    for my $test_class ( @{$test_classes} ) {
         push @subtests, subtest_start($test_class);
         next if $self->_fork_manager->start;
 

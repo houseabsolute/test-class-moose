@@ -69,7 +69,6 @@ sub _run_test_classes {
         my $ctx = shift;
 
         for my $test_class (@test_classes) {
-            $ctx->note("\nRunning tests for $test_class\n\n");
             my $subtest = subtest_start($test_class);
             subtest_run(
                 $subtest,
