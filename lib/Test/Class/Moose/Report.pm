@@ -70,13 +70,6 @@ sub _inc_tests {
     $self->set_tests_run( $self->num_tests_run + $tests );
 }
 
-sub class_named {
-    my $self = shift;
-    my $name= shift;
-
-    return first { $_->name eq $name } $self->_all_test_classes;
-}
-
 sub current_class {
     my $self = shift;
     return $self->test_classes->[-1];
