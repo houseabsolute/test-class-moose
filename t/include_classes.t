@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Test::Most;
 use lib 'lib';
-use Test::Class::Moose::Load qw(t/lib);
+use Test::Class::Moose::Load qw(t/basiclib);
 use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new(

@@ -5,7 +5,7 @@ use lib 'lib', 't/lib';;
 use Test2::Bundle::Extended;
 use Test::Events;
 
-use Test::Class::Moose::Load 't/lib';
+use Test::Class::Moose::Load 't/basiclib';
 use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new(
