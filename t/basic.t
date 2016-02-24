@@ -76,10 +76,6 @@ subtest(
                         event Plan => sub {
                             call max => 6;
                         };
-                        event Note => sub {
-                            call message =>
-                              'TestsFor::Basic::Subclass->test_me()';
-                        };
                         event Subtest => sub {
                             call name      => 'test_me';
                             call pass      => T();
@@ -95,10 +91,6 @@ subtest(
                                 end();
                             };
                         };
-                        event Note => sub {
-                            call message =>
-                              'TestsFor::Basic::Subclass->test_my_instance_name()';
-                        };
                         event Subtest => sub {
                             call name      => 'test_my_instance_name';
                             call pass      => T();
@@ -113,10 +105,6 @@ subtest(
                                 };
                                 end();
                             };
-                        };
-                        event Note => sub {
-                            call message =>
-                              'TestsFor::Basic::Subclass->test_reporting()';
                         };
                         event Subtest => sub {
                             call name      => 'test_reporting';
@@ -148,10 +136,6 @@ subtest(
                                 end();
                             };
                         };
-                        event Note => sub {
-                            call message =>
-                              'TestsFor::Basic::Subclass->test_this_baby()';
-                        };
                         event Subtest => sub {
                             call name      => 'test_this_baby';
                             call pass      => T();
@@ -181,10 +165,6 @@ subtest(
                                 };
                                 end();
                             };
-                        };
-                        event Note => sub {
-                            call message =>
-                              'TestsFor::Basic::Subclass->test_this_should_be_run()';
                         };
                         event Subtest => sub {
                             call name      => 'test_this_should_be_run';
@@ -220,10 +200,6 @@ subtest(
                                 };
                                 end();
                             };
-                        };
-                        event Note => sub {
-                            call message =>
-                              'TestsFor::Basic::Subclass->test_this_will_die()';
                         };
                         event Subtest => sub {
                             call name      => 'test_this_will_die';

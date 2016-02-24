@@ -35,9 +35,6 @@ sub expected_test_events {
             event Plan => sub {
                 call max => 5;
             };
-            event Note => sub {
-                call message => 'TestsFor::Basic::Subclass->test_me()';
-            };
             event Subtest => sub {
                 call name      => 'test_me';
                 call pass      => T();
@@ -53,10 +50,6 @@ sub expected_test_events {
                     end();
                 };
             };
-            event Note => sub {
-                call message =>
-                  'TestsFor::Basic::Subclass->test_my_instance_name()';
-            };
             event Subtest => sub {
                 call name      => 'test_my_instance_name';
                 call pass      => T();
@@ -70,9 +63,6 @@ sub expected_test_events {
                     };
                     end();
                 };
-            };
-            event Note => sub {
-                call message => 'TestsFor::Basic::Subclass->test_reporting()';
             };
             event Subtest => sub {
                 call name      => 'test_reporting';
@@ -103,9 +93,6 @@ sub expected_test_events {
                     end();
                 };
             };
-            event Note => sub {
-                call message => 'TestsFor::Basic::Subclass->test_this_baby()';
-            };
             event Subtest => sub {
                 call name      => 'test_this_baby';
                 call pass      => T();
@@ -133,10 +120,6 @@ sub expected_test_events {
                     };
                     end();
                 };
-            };
-            event Note => sub {
-                call message =>
-                  'TestsFor::Basic::Subclass->test_this_should_be_run()';
             };
             event Subtest => sub {
                 call name      => 'test_this_should_be_run';

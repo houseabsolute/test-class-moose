@@ -17,7 +17,7 @@ use Test2::IPC;
 use List::SomeUtils qw( none part );
 use Parallel::ForkManager;
 use Scalar::Util qw(reftype);
-use Test2::API qw( context_do test2_stack );
+use Test2::API qw( test2_stack );
 use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Report::Class;

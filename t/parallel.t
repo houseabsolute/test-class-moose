@@ -38,9 +38,6 @@ test_events(
                 event Plan => sub {
                     call max => 2;
                 };
-                event Note => sub {
-                    call message => 'TestsFor::Alpha->test_alpha_first()';
-                };
                 event Subtest => sub {
                     call name      => 'test_alpha_first';
                     call pass      => T();
@@ -58,9 +55,6 @@ test_events(
                         };
                         end();
                     };
-                };
-                event Note => sub {
-                    call message => 'TestsFor::Alpha->test_second()';
                 };
                 event Subtest => sub {
                     call name      => 'test_second';
@@ -86,10 +80,6 @@ test_events(
                 event Plan => sub {
                     call max => 3;
                 };
-                event Note => sub {
-                    call message =>
-                      'TestsFor::Alpha::Subclass->test_alpha_first()';
-                };
                 event Subtest => sub {
                     call name      => 'test_alpha_first';
                     call pass      => T();
@@ -108,10 +98,6 @@ test_events(
                         end();
                     };
                 };
-                event Note => sub {
-                    call message =>
-                      'TestsFor::Alpha::Subclass->test_another()';
-                };
                 event Subtest => sub {
                     call name      => 'test_another';
                     call pass      => T();
@@ -125,10 +111,6 @@ test_events(
                         };
                         end();
                     };
-                };
-                event Note => sub {
-                    call message =>
-                      'TestsFor::Alpha::Subclass->test_second()';
                 };
                 event Subtest => sub {
                     call name      => 'test_second';
@@ -154,9 +136,6 @@ test_events(
                 event Plan => sub {
                     call max => 2;
                 };
-                event Note => sub {
-                    call message => 'TestsFor::Beta->test_beta_first()';
-                };
                 event Subtest => sub {
                     call name      => 'test_beta_first';
                     call pass      => T();
@@ -174,9 +153,6 @@ test_events(
                         };
                         end();
                     };
-                };
-                event Note => sub {
-                    call message => 'TestsFor::Beta->test_second()';
                 };
                 event Subtest => sub {
                     call name      => 'test_second';
@@ -206,10 +182,6 @@ test_events(
                 event Plan => sub {
                     call max => 2;
                 };
-                event Note => sub {
-                    call message =>
-                      'TestsFor::Sequential->test_sequential_first()';
-                };
                 event Subtest => sub {
                     call name      => 'test_sequential_first';
                     call pass      => T();
@@ -223,10 +195,6 @@ test_events(
                         };
                         end();
                     };
-                };
-                event Note => sub {
-                    call message =>
-                      'TestsFor::Sequential->test_sequential_second()';
                 };
                 event Subtest => sub {
                     call name      => 'test_sequential_second';

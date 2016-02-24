@@ -65,18 +65,14 @@ sub _run_test_classes {
     my $self         = shift;
     my @test_classes = @_;
 
-    context_do {
-        my $ctx = shift;
-
-        for my $test_class (@test_classes) {
-            my $subtest = subtest_start($test_class);
-            subtest_run(
-                $subtest,
-                sub { $self->_run_test_class($test_class) },
-            );
-            subtest_finish($subtest);
-        }
-    };
+    for my $test_class (@test_classes) {
+        my $subtest = subtest_start($test_class);
+        subtest_run(
+            $subtest,
+            sub { $self->_run_test_class($test_class) },
+        );
+        subtest_finish($subtest);
+    }
 }
 
 sub _build_test_report {
@@ -100,15 +96,10 @@ sub _run_test_class {
 
     $class_report->_start_benchmark;
 
-    my $passed = context_do {
-        my $ctx = shift;
+    my @test_instances
+      = $self->_make_test_instances( $test_class, $class_report );
 
-        my @test_instances
-          = $self->_make_test_instances( $test_class, $class_report )
-          or return 1;
-
-        return $self->_run_test_instances( $class_report, @test_instances );
-    };
+    my $passed = $self->_run_test_instances( $class_report, @test_instances );
 
     $class_report->passed($passed);
     $class_report->_end_benchmark;
@@ -144,6 +135,8 @@ sub _run_test_instances {
     my $self           = shift;
     my $class_report   = shift;
     my @test_instances = @_;
+
+    return 1 unless @test_instances;
 
     my $passed = 1;
     for my $test_instance (
@@ -418,8 +411,6 @@ sub _run_test_method {
 
     my $passed = context_do {
         my $ctx = shift;
-
-        $ctx->note("$test_class->$test_method()");
 
         my $subtest = subtest_start($test_method);
 

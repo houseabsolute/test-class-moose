@@ -35,9 +35,6 @@ test_events(
                 event Plan => sub {
                     call max => 3;
                 };
-                event Note => sub {
-                    call message => 'TestsFor::SkipSomeMethods->test_again()';
-                };
                 event Subtest => sub {
                     call name      => 'test_again';
                     call pass      => T();
@@ -52,9 +49,6 @@ test_events(
                         end();
                     };
                 };
-                event Note => sub {
-                    call message => 'TestsFor::SkipSomeMethods->test_me()';
-                };
                 event Subtest => sub {
                     call name      => 'test_me';
                     call pass      => T();
@@ -67,10 +61,6 @@ test_events(
                         };
                         end();
                     };
-                };
-                event Note => sub {
-                    call message =>
-                      'TestsFor::SkipSomeMethods->test_this_baby()';
                 };
                 event Subtest => sub {
                     call name      => 'test_this_baby';
