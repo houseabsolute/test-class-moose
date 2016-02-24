@@ -10,7 +10,7 @@ use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new;
 
-test_events(
+test_events_is(
     intercept { $runner->runtests },
     array {
         event Plan => sub {

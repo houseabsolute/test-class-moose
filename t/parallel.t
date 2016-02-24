@@ -12,6 +12,8 @@ use Test::Requires {
 use Test2::Bundle::Extended;
 use Test::Events;
 
+use List::MoreUtils qw( first_index);
+use Scalar::Util qw( blessed );
 use Test::Class::Moose::Load qw( t/basiclib t/parallellib );
 use Test::Class::Moose::Runner;
 
@@ -25,199 +27,51 @@ my $test_runner = Test::Class::Moose::Runner->new(
     statistics  => 0,
 );
 
-test_events(
-    intercept { $test_runner->runtests },
+my $events = intercept { $test_runner->runtests };
+
+test_events_is(
+    $events,
     array {
         event Plan => sub {
             call max => 6;
         };
-        event Subtest => sub {
-            call name      => 'TestsFor::Alpha';
-            call pass      => T();
-            call subevents => array {
-                event Plan => sub {
-                    call max => 2;
-                };
-                event Subtest => sub {
-                    call name      => 'test_alpha_first';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 2;
-                        };
-                        end();
-                    };
-                };
-                event Subtest => sub {
-                    call name      => 'test_second';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => 'make sure plans work';
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 1;
-                        };
-                        end();
-                    };
-                };
-                end();
-            };
-        };
-        event Subtest => sub {
-            call name      => 'TestsFor::Alpha::Subclass';
-            call pass      => T();
-            call subevents => array {
-                event Plan => sub {
-                    call max => 3;
-                };
-                event Subtest => sub {
-                    call name      => 'test_alpha_first';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 2;
-                        };
-                        end();
-                    };
-                };
-                event Subtest => sub {
-                    call name      => 'test_another';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 1;
-                        };
-                        end();
-                    };
-                };
-                event Subtest => sub {
-                    call name      => 'test_second';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => 'make sure plans work';
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 1;
-                        };
-                        end();
-                    };
-                };
-                end();
-            };
-        };
-        TestsFor::Basic->expected_test_events;
-        TestsFor::Basic::Subclass->expected_test_events;
-        event Subtest => sub {
-            call name      => 'TestsFor::Beta';
-            call pass      => T();
-            call subevents => array {
-                event Plan => sub {
-                    call max => 2;
-                };
-                event Subtest => sub {
-                    call name      => 'test_beta_first';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 2;
-                        };
-                        end();
-                    };
-                };
-                event Subtest => sub {
-                    call name      => 'test_second';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 2;
-                        };
-                        end();
-                    };
-                };
-                end();
-            };
-        };
-        event Subtest => sub {
-            call name      => 'TestsFor::Sequential';
-            call pass      => T();
-            call subevents => array {
-                event Plan => sub {
-                    call max => 2;
-                };
-                event Subtest => sub {
-                    call name      => 'test_sequential_first';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 1;
-                        };
-                        end();
-                    };
-                };
-                event Subtest => sub {
-                    call name      => 'test_sequential_second';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => undef;
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 1;
-                        };
-                        end();
-                    };
-                };
-                end();
-            };
-        };
+        event 'Subtest';
+        event 'Subtest';
+        event 'Subtest';
+        event 'Subtest';
+        event 'Subtest';
+        event 'Subtest';
         end();
     },
-    'parallel tests produce the expected events'
+    'parallel tests produces a plan followed by 6 subtests events'
 );
+
+my @classes = qw(
+  TestsFor::Alpha
+  TestsFor::Alpha::Subclass
+  TestsFor::Basic
+  TestsFor::Basic::Subclass
+  TestsFor::Beta
+  TestsFor::Sequential
+);
+
+for my $class (@classes) {
+    test_events_like(
+        $events,
+        array {
+            filter_items {
+                my $i = first_index {
+                    blessed($_)
+                      && $_->isa('Test2::Event::Subtest')
+                      && $_->name eq $class;
+                }
+                @_;
+                return @_[ $i .. $#_ ];
+            };
+            $class->expected_test_events;
+        },
+        "parallel tests produce the events for $class"
+    );
+}
 
 done_testing();

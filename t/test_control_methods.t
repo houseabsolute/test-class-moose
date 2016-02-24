@@ -18,7 +18,7 @@ _replace_subclass_method( test_startup => sub { my $test = shift } );
 subtest(
     'events when test_startup does not die or run tests',
     sub {
-        test_events(
+        test_events_is(
             intercept { $runner->runtests },
             array {
                 event Plan => sub {
@@ -36,7 +36,7 @@ _replace_subclass_method( test_startup => sub { die 'forced die' } );
 subtest(
     'events when test_startup dies',
     sub {
-        test_events(
+        test_events_is(
             intercept { $runner->runtests },
             array {
                 event Plan => sub {
@@ -84,7 +84,7 @@ _replace_subclass_method(
 subtest(
     'events when test_startup runs tests',
     sub {
-        test_events(
+        test_events_is(
             intercept { $runner->runtests },
             array {
                 event Plan => sub {

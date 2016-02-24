@@ -41,7 +41,7 @@ foreach my $class (@test_classes) {
 subtest(
     'events from runner',
     sub {
-        test_events(
+        test_events_is(
             intercept { $runner->runtests },
             array {
                 event Plan => sub {
@@ -62,7 +62,7 @@ TestsFor::Basic::Subclass->meta->add_method(
 subtest(
     'events from runner when a test dies',
     sub {
-        test_events(
+        test_events_is(
             intercept { $runner->runtests },
             array {
                 event Plan => sub {

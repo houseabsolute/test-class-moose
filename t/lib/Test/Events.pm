@@ -5,15 +5,25 @@ use warnings;
 
 use Exporter qw( import );
 
-our @EXPORT = qw( test_events );
+our @EXPORT = qw( test_events_is test_events_like );
 
 use Test2::Bundle::Extended;
 
-sub test_events {
+sub test_events_is {
     my $events = shift;
     my $expect = shift;
 
-    is( $events, $expect )
+    is( $events, $expect, shift )
+      or _diag_exception_events($events);
+
+    return;
+}
+
+sub test_events_like {
+    my $events = shift;
+    my $expect = shift;
+
+    like( $events, $expect, shift )
       or _diag_exception_events($events);
 
     return;
