@@ -40,7 +40,8 @@ sub dump_events {
     for my $event ( @{$events} ) {
         if ( $event->isa('Test2::Event::Subtest') ) {
             _d(     'Subtest(name: '
-                  . $event->name . ', pass:'
+                  . $event->name
+                  . ', pass:'
                   . $event->pass
                   . ') {' );
             {
@@ -50,10 +51,10 @@ sub dump_events {
             _d('}');
         }
         elsif ( $event->isa('Test2::Event::Diag') ) {
-            _d( 'Diag(' . _e($event->message) . ')' );
+            _d( 'Diag(' . _e( $event->message ) . ')' );
         }
         elsif ( $event->isa('Test2::Event::Note') ) {
-            _d( 'Note(' . _e($event->message) . ')' );
+            _d( 'Note(' . _e( $event->message ) . ')' );
         }
         elsif ( $event->isa('Test2::Event::Exception') ) {
             _d( 'Exception(' . $event->error . ')' );

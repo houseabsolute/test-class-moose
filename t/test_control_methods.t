@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use lib 'lib', 't/lib';;
+use lib 'lib', 't/lib';
 
 use Test2::Bundle::Extended;
 use Test::Events;

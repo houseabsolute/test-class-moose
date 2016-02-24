@@ -37,7 +37,7 @@ use Test::Class::Moose::Runner;
 use Test::Class::Moose::Load qw(t/planlib);
 
 my $runner = Test::Class::Moose::Runner->new;
-intercept{    $runner->runtests };
+intercept { $runner->runtests };
 
 my $report = $runner->test_report;
 

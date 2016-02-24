@@ -18,7 +18,7 @@ explain $report->time->duration;
 # TODO test.
 my %expect = (
     'TestsFor::Fail' => {
-        passed   => 0,
+        passed    => 0,
         instances => {
             'TestsFor::Fail' => {
                 passed  => 0,

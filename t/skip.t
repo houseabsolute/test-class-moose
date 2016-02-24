@@ -93,7 +93,7 @@ my $classes = $runner->test_report->test_classes;
     my $instances = $classes->[0]->test_instances;
 
     ok $instances->[0]->is_skipped, '... and it should be listed as skipped';
-    ok $instances->[0]->passed, '... and it is reported as passed';
+    ok $instances->[0]->passed,     '... and it is reported as passed';
 }
 
 {

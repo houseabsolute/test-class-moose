@@ -112,9 +112,7 @@ sub _run_tests {
     my @test_classes = sort $runner->test_classes;
 
     foreach my $class (@test_classes) {
-        eq_or_diff [
-            $runner->_executor->_test_methods_for( $class->new )
-          ],
+        eq_or_diff [ $runner->_executor->_test_methods_for( $class->new ) ],
           $methods_for->{$class},
           "$class should have the correct test methods";
     }
