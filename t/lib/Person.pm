@@ -1,4 +1,4 @@
-package PersonTest;
+package Person;
 
 use Moose;
 

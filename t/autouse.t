@@ -6,13 +6,13 @@ use Test::Class::Moose::Runner;
 use lib 't/lib';
 {
 
-    package TestsFor::PersonTest;
+    package TestsFor::Person;
     use Test::Class::Moose;
     with 'Test::Class::Moose::Role::AutoUse';
 
     sub test_basic {
         my $test = shift;
-        is $test->class_name, 'PersonTest',
+        is $test->class_name, 'Person',
           'The classname should be correctly returned';
         ok my $person = $test->class_name->new(
             first_name => 'Bob',
