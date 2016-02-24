@@ -37,6 +37,17 @@ has '_fork_manager' => (
     builder  => '_build_fork_manager',
 );
 
+has '_subtests' => (
+    traits   => ['Hash'],
+    is       => 'bare',
+    isa      => 'HashRef[Test2::AsyncSubtest]',
+    init_arg => sub { {} },
+    handles  => {
+        _save_subtest  => 'set',
+        _saved_subtest => 'get',
+    },
+);
+
 around _run_test_classes => sub {
     my $orig         = shift;
     my $self         = shift;
@@ -70,15 +81,17 @@ sub _run_test_classes_in_parallel {
     my $self         = shift;
     my $test_classes = shift;
 
-    my @subtests;
     for my $test_class ( @{$test_classes} ) {
-        push @subtests, subtest_start($test_class);
-        next if $self->_fork_manager->start;
+        my $subtest = subtest_start($test_class);
+        if ( my $pid = $self->_fork_manager->start ) {
+            $self->_save_subtest( $pid => $subtest );
+            next;
+        }
 
         # This chunk of code only runs in child processes
         my $class_report;
         subtest_run(
-            $subtests[-1],
+            $subtest,
             sub {
                 $class_report = $self->_run_test_class($test_class);
             }
@@ -89,7 +102,6 @@ sub _run_test_classes_in_parallel {
 
     $self->_fork_manager->wait_all_children;
     test2_stack()->top->cull;
-    subtest_finish($_) for @subtests;
 
     return;
 }
@@ -108,6 +120,14 @@ sub _build_fork_manager {
             catch {
                 warn $_;
             };
+
+            my $subtest = $self->_saved_subtest($pid);
+            unless ($subtest) {
+                warn "Child process $pid ended but there is no active subtest for that pid!";
+                return;
+            }
+
+            subtest_finish($subtest);
         }
     );
 
