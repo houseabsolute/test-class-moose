@@ -59,7 +59,7 @@ around _run_test_classes => sub {
     $self->_run_test_classes_in_parallel($par);
 
     $self->$orig( @{$seq} )
-      if @{$seq};
+      if $seq && @{$seq};
 
     return;
 };
