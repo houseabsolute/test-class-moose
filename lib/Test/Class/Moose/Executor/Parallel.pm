@@ -45,11 +45,10 @@ around _run_test_classes => sub {
     my ( $seq, $par )
       = part { $self->_test_class_is_parallelizable($_) } @test_classes;
 
-    $self->_run_test_classes_in_parallel( @{$par} );
+    $self->_run_test_classes_in_parallel($par);
 
-    test2_stack()->top->cull;
-
-    $self->$orig( @{$seq} );
+    $self->$orig( @{$seq} )
+        if @{$seq};
 
     return;
 };
@@ -69,106 +68,30 @@ sub _test_class_is_parallelizable {
 
 sub _run_test_classes_in_parallel {
     my $self         = shift;
-    my @test_classes = @_;
+    my $test_classes = shift;
 
     my @subtests;
-    foreach my $test_class (@test_classes) {
-        push @subtests, $self->_run_test_class_in_parallel($test_class);
+    foreach my $test_class ( @{$test_classes} ) {
+        push @subtests, subtest_start($test_class);
+        next if $self->_fork_manager->start;
+
+        # This chunk of code only runs in child processes
+        my $class_report;
+        subtest_run(
+            $subtests[-1],
+            sub {
+                $class_report = $self->_run_test_class($test_class);
+            }
+        );
+
+        $self->_fork_manager->finish( 0, \$class_report );
     }
 
     $self->_fork_manager->wait_all_children;
-
+    test2_stack()->top->cull;
     subtest_finish($_) for @subtests;
 
     return;
-}
-
-sub _run_test_class_in_parallel {
-    my $self       = shift;
-    my $test_class = shift;
-
-    my $class_report
-      = Test::Class::Moose::Report::Class->new( name => $test_class );
-    $self->test_report->add_test_class($class_report);
-
-    my @test_instances
-      = $self->_make_test_instances( $test_class, $class_report )
-      or return;
-
-    my @subtests;
-
-    my $class_subtest = subtest_start($test_class);
-    subtest_run(
-        $class_subtest,
-        sub {
-            push @subtests,
-              $self->_run_test_instances_in_parallel(
-                $class_report,
-                @test_instances,
-              );
-        }
-    );
-    push @subtests, $class_subtest;
-
-    return @subtests;
-}
-
-sub _run_test_instances_in_parallel {
-    my $self           = shift;
-    my $class_report   = shift;
-    my @test_instances = @_;
-
-    my @subtests;
-    for my $test_instance (
-        sort { $a->test_instance_name cmp $b->test_instance_name }
-        @test_instances )
-    {
-        return $self->_run_test_instance_in_parallel(
-            $class_report,
-            $test_instance,
-            @test_instances > 1,
-        );
-    }
-}
-
-sub _run_test_instance_in_parallel {
-    my $self          = shift;
-    my $class_report  = shift;
-    my $test_instance = shift;
-    my $in_subtest    = shift;
-
-    unless ($in_subtest) {
-        return if $self->_fork_manager->start;
-
-        my $instance_report = $self->_run_test_instance(
-            $class_report,
-            $test_instance,
-        );
-
-        $self->_fork_manager->finish(
-            0,
-            [ $test_instance->test_class, $instance_report ]
-        );
-    }
-
-    my $instance_subtest
-      = subtest_start( $test_instance->test_instance_name );
-    return $instance_subtest if $self->_fork_manager->start;
-
-    subtest_run(
-        $instance_subtest,
-        sub {
-            my $instance_report = $self->_run_test_instance(
-                $class_report,
-                $test_instance,
-            );
-
-            $self->_fork_manager->finish(
-                0,
-                [ $test_instance->test_class, $instance_report ]
-            );
-        }
-    );
 }
 
 sub _build_fork_manager {
@@ -177,16 +100,14 @@ sub _build_fork_manager {
     my $pfm = Parallel::ForkManager->new( $self->jobs );
     $pfm->run_on_finish(
         sub {
-            my ( $pid, $report_info ) = @_[ 0, 5 ];
+            my ( $pid, $class_report ) = @_[ 0, 5 ];
 
-          # problems occuring during storage or retrieval will throw a warning
-            croak("Child process $pid failed!")
-              unless $report_info
-              && reftype($report_info) eq 'ARRAY'
-              && @{$report_info} == 2;
-
-            $self->test_report->class_named( $report_info->[0] )
-              ->add_test_instance( $report_info->[1] );
+            try {
+                $self->test_report->add_test_class( ${$class_report} );
+            }
+            catch {
+                warn $_;
+            };
         }
     );
 

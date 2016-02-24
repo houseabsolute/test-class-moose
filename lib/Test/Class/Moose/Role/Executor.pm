@@ -62,7 +62,7 @@ END
 }
 
 sub _run_test_classes {
-    my $self = shift;
+    my $self         = shift;
     my @test_classes = @_;
 
     context_do {
@@ -113,6 +113,8 @@ sub _run_test_class {
 
     $class_report->passed($passed);
     $class_report->_end_benchmark;
+
+    return $class_report;
 }
 
 sub _make_test_instances {
@@ -191,7 +193,7 @@ sub _run_test_instance {
     my ( $self, $class_report, $test_instance ) = @_;
 
     my $test_instance_name = $test_instance->test_instance_name;
-    my $instance_report = Test::Class::Moose::Report::Instance->new(
+    my $instance_report    = Test::Class::Moose::Report::Instance->new(
         {   name => $test_instance_name,
         }
     );
@@ -412,7 +414,7 @@ sub _run_test_method {
 
     $method_report->_start_benchmark;
 
-    my $num_tests = 0;
+    my $num_tests  = 0;
     my $test_class = $test_instance->test_class;
 
     my $passed = context_do {
@@ -421,6 +423,7 @@ sub _run_test_method {
         $ctx->note("$test_class->$test_method()");
 
         my $subtest = subtest_start($test_method);
+
         # If the call to ->$test_method fails then this subtest will fail and
         # Test2::API will also include a diagnostic message with the error.
         my $p = subtest_run(
@@ -429,6 +432,7 @@ sub _run_test_method {
                 my $hub = test2_stack()->top;
                 if ( my $message = $test_instance->test_skip ) {
                     $method_report->skipped($message);
+
                     # I can't figure out how to get our current context in
                     # order to call $ctx->plan instead.
                     context_do {
