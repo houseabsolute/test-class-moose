@@ -12,7 +12,7 @@ use Test::Requires {
 use Test2::Bundle::Extended;
 use Test::Events;
 
-use Test::Class::Moose::Load qw( t/parallellib );
+use Test::Class::Moose::Load qw( t/basiclib t/parallellib );
 use Test::Class::Moose::Runner;
 
 plan skip_all =>
@@ -29,7 +29,7 @@ test_events(
     intercept { $test_runner->runtests },
     array {
         event Plan => sub {
-            call max => 4;
+            call max => 6;
         };
         event Subtest => sub {
             call name      => 'TestsFor::Alpha';
@@ -129,6 +129,8 @@ test_events(
                 end();
             };
         };
+        TestsFor::Basic->expected_test_events;
+        TestsFor::Basic::Subclass->expected_test_events;
         event Subtest => sub {
             call name      => 'TestsFor::Beta';
             call pass      => T();
