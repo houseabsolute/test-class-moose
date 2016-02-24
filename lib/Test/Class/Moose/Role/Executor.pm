@@ -96,62 +96,57 @@ sub _run_test_class {
 
     $class_report->_start_benchmark;
 
-    my @test_instances
-      = $self->_make_test_instances( $test_class, $class_report );
-
-    my $passed = $self->_run_test_instances( $class_report, @test_instances );
-
+    my $passed = $self->_run_test_instances( $test_class, $class_report );
     $class_report->passed($passed);
+
     $class_report->_end_benchmark;
 
     return $class_report;
 }
 
-sub _make_test_instances {
+sub _run_test_instances {
     my $self         = shift;
     my $test_class   = shift;
     my $class_report = shift;
 
-    my @instances = $test_class->_tcm_make_test_class_instances(
+    my @test_instances = $test_class->_tcm_make_test_class_instances(
         $self->test_configuration->args,
         test_report => $self->test_report,
     );
 
-    return @instances if @instances;
+    unless (@test_instances) {
+        context_do {
+            my $ctx = shift;
 
-    context_do {
-        my $ctx = shift;
-
-        my $message = "Skipping '$test_class': no test instances found";
-        $class_report->skipped($message);
-        $class_report->passed(1);
-        $ctx->plan( 0, 'SKIP' => $message );
-    };
-
-    return;
-}
-
-sub _run_test_instances {
-    my $self           = shift;
-    my $class_report   = shift;
-    my @test_instances = @_;
-
-    return 1 unless @test_instances;
-
-    my $passed = 1;
-    for my $test_instance (
-        sort { $a->test_instance_name cmp $b->test_instance_name }
-        @test_instances )
-    {
-        my $instance_report = $self->_maybe_wrap_test_instance(
-            $class_report,
-            $test_instance,
-            @test_instances > 1,
-        );
-        $passed = 0 if not $instance_report->passed;
+            my $message = "Skipping '$test_class': no test instances found";
+            $class_report->skipped($message);
+            $class_report->passed(1);
+            $ctx->plan( 0, 'SKIP' => $message );
+        };
+        return 1;
     }
 
-    return $passed;
+    return context_do {
+        my $ctx = shift;
+
+        $ctx->plan( scalar @test_instances )
+          if @test_instances > 1;
+
+        my $passed = 1;
+        for my $test_instance (
+            sort { $a->test_instance_name cmp $b->test_instance_name }
+            @test_instances )
+        {
+            my $instance_report = $self->_maybe_wrap_test_instance(
+                $class_report,
+                $test_instance,
+                @test_instances > 1,
+            );
+            $passed = 0 if not $instance_report->passed;
+        }
+
+        return $passed;
+    };
 }
 
 sub _maybe_wrap_test_instance {
