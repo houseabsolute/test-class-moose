@@ -9,6 +9,7 @@ our $VERSION = '0.68';
 use Moose 2.0000;
 use Carp;
 use namespace::autoclean;
+use Import::Into;
 use Sub::Attribute;
 
 use Test::Class::Moose::AttributeRegistry;
@@ -130,23 +131,24 @@ has '_config_p' => (
 );
 
 sub import {
-    my ( $class, %arg_for ) = @_;
+    my $class = shift;
+    my %args  = @_;
+
     my $caller = caller;
 
-    my $preamble = <<"END";
-package $caller;
-use Moose;
-use Test::Most;
-use Sub::Attribute;
-END
+    my @imports = qw(
+      Moose
+      Sub::Attribute
+      strict
+      warnings
+    );
 
-    eval $preamble;
-    croak($@) if $@;
-    strict->import;
-    warnings->import;
-    if ( my $parent
-        = ( delete $arg_for{parent} || delete $arg_for{extends} ) )
-    {
+    push @imports, 'Test::Most'
+      unless $args{bare};
+
+    $_->import::into($caller) for @imports;
+
+    if ( my $parent = ( delete $args{parent} || delete $args{extends} ) ) {
         my @parents = 'ARRAY' eq ref $parent ? @$parent : $parent;
         $caller->meta->superclasses(@parents);
     }
@@ -406,6 +408,51 @@ List it as the C<extends> in the import list.
  }
 
  1;
+
+=head2 Skipping Test::Most
+
+By default, when you C<use Test::Class::Moose> in your own test class, it
+exports all the subs from L<Test::Most> into your class. If you'd prefer to
+import a different set of test tools, you can pass C<< bare => 1 >> when using
+C<Test::Class::Moose>:
+
+ use Test::Class::Moose bare => 1;
+
+When you pass this, C<Test::Class::Moose> will not export L<Test::Most>'s subs
+into your class. You will have to explicitly import something like
+L<Test::More> or L<Test2::Tools::Compare> in order to actually perform tests.
+
+=head2 Custom Test Toolkits
+
+If you'd like to provide a custom set of test modules to all of your test
+classes, this is easily done with L<Import::Into>:
+
+  package MM::Test::Class::Moose;
+
+  use strict;
+  use warnings;
+  use namespace::autoclean ();
+
+  use Import::Into;
+  use Test::Class::Moose ();
+  use Test::Fatal;
+  use Test::More;
+
+  sub import {
+      my @imports = qw(
+        Test::Class::Moose
+        namespace::autoclean
+        Test::Fatal
+        Test::More
+      );
+
+      my $caller_level = 1;
+      $_->import::into($caller_level) for @imports;
+  }
+
+You could also create a kit in a separate module like C<My::Test::Kit> using
+L<Test::Kit> and then simply export that from your C<My::Test::Class::Moose>
+module with L<Import::Into>.
 
 =head1 TEST CONTROL METHODS
 
