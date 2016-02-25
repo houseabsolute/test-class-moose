@@ -1,6 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * If you "use Test::Class::Moose bare => 1" you will no longer get
+          Test::Most exported into your class. Instead, you can load the
+          testing module(s) of your choice.
 
 0.69     2016-04-28
         * Explicitly load Test::Most in Test::Class::Moose. Earlier versions
