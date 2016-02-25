@@ -1,8 +1,9 @@
 package TestsFor::Basic::Subclass;
 
-use Test::Class::Moose extends => 'TestsFor::Basic';
+use Test::Class::Moose extends => 'TestsFor::Basic', bare => 1;
 
-use Test2::Tools::Compare qw( array call end event T );
+use Test2::Tools::Basic qw( fail ok pass );
+use Test2::Tools::Compare qw( array call end event is T );
 
 sub test_me {
     my $test  = shift;

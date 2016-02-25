@@ -1,8 +1,9 @@
 package TestsFor::Beta;
 
-use Test::Class::Moose;
+use Test::Class::Moose bare => 1;
 
-use Test2::Tools::Compare qw( array call end event T );
+use Test2::Tools::Basic qw( ok );
+use Test2::Tools::Compare qw( array call end event is T );
 
 sub test_beta_first {
     my $test = shift;

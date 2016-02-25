@@ -1,8 +1,9 @@
 package TestsFor::Alpha::Subclass;
 
-use Test::Class::Moose extends => 'TestsFor::Alpha';
+use Test::Class::Moose extends => 'TestsFor::Alpha', bare => 1;
 
-use Test2::Tools::Compare qw( array call end event T );
+use Test2::Tools::Basic qw( ok );
+use Test2::Tools::Compare qw( array call end event is T );
 
 sub test_another {
     ok 1;

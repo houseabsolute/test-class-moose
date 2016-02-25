@@ -2,7 +2,10 @@
 
 use lib 'lib', 't/lib';
 
-use Test2::Bundle::Extended;
+use Test2::API qw( intercept );
+use Test2::Tools::Basic qw( done_testing fail ok pass );
+use Test2::Tools::Compare qw( array call end event F is match T );
+use Test2::Tools::Subtest qw( subtest_streamed );
 use Test::Events;
 
 use Test::Class::Moose::Load qw(t/basiclib);
@@ -38,7 +41,7 @@ foreach my $class (@test_classes) {
       "$class should have the correct test methods";
 }
 
-subtest(
+subtest_streamed(
     'events from runner',
     sub {
         test_events_is(
@@ -59,7 +62,7 @@ TestsFor::Basic::Subclass->meta->add_method(
     'test_this_will_die' => sub { die 'forced die' },
 );
 
-subtest(
+subtest_streamed(
     'events from runner when a test dies',
     sub {
         test_events_is(
