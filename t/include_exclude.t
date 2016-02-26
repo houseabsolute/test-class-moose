@@ -1,6 +1,13 @@
 #!/usr/bin/env perl
-use Test::Most;
-use lib 'lib';
+
+use lib 'lib', 't/lib';
+
+use Test2::API qw( intercept );
+use Test2::Tools::Basic qw( done_testing ok );
+use Test2::Tools::Class qw( isa_ok );
+use Test2::Tools::Compare qw( array call end event is T );
+use Test::Events;
+
 use Test::Class::Moose::Load qw(t/basiclib);
 use Test::Class::Moose::Runner;
 
@@ -18,20 +25,99 @@ my %methods_for = (
 my @test_classes = sort $runner->test_classes;
 
 foreach my $class (@test_classes) {
-    eq_or_diff
+    is
       [ $runner->_executor->_test_methods_for( $class->new ) ],
       $methods_for{$class},
       "$class should have the correct test methods";
 }
 
-subtest 'runtests' => sub {
-    $runner->runtests;
-};
+test_events_is(
+    intercept { $runner->runtests },
+    array {
+        event Plan => sub {
+            call max => 2;
+        };
+        event Subtest => sub {
+            call name      => 'TestsFor::Basic';
+            call pass      => T();
+            call subevents => array {
+                event Plan => sub {
+                    call max => 1;
+                };
+                event Subtest => sub {
+                    call name      => 'test_this_baby';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name => 'whee! (TestsFor::Basic)';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'test_setup() should know our current class name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name => '... and our current method name';
+                        };
+                        event Plan => sub {
+                            call max => 3;
+                        };
+                        end();
+                    };
+                };
+                end();
+            };
+            end();
+        };
+        event Subtest => sub {
+            call name      => 'TestsFor::Basic::Subclass';
+            call pass      => T();
+            call subevents => array {
+                event Plan => sub {
+                    call max => 1;
+                };
+                event Subtest => sub {
+                    call name      => 'test_this_baby';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'This should run before my parent method (TestsFor::Basic::Subclass)';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name => 'whee! (TestsFor::Basic::Subclass)';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'test_setup() should know our current class name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name => '... and our current method name';
+                        };
+                        event Plan => sub {
+                            call max => 4;
+                        };
+                        end();
+                    };
+                };
+                end();
+            };
+            end();
+        };
+        end();
+    },
+    'events when only one method is included'
+);
 
 ok my $report = $runner->test_report,
   'We should be able to fetch reporting information from the test suite';
-isa_ok $report, 'Test::Class::Moose::Report',
-  '... and the object it returns';
+isa_ok $report, 'Test::Class::Moose::Report';
 is $report->num_test_instances, 2,
   '... and it should return the correct number of test class instances';
 is $report->num_test_methods, 2,
@@ -64,19 +150,212 @@ $runner = Test::Class::Moose::Runner->new(
 );
 
 foreach my $class (@test_classes) {
-    eq_or_diff
+    is
       [ $runner->_executor->_test_methods_for( $class->new ) ],
       $methods_for{$class},
       "$class should have the correct test methods";
 }
-subtest 'runtests' => sub {
-    $runner->runtests;
-};
+
+test_events_is(
+    intercept { $runner->runtests },
+    array {
+        event Plan => sub {
+            call max => 2;
+        };
+        event Subtest => sub {
+            call name      => 'TestsFor::Basic';
+            call pass      => T();
+            call subevents => array {
+                event Plan => sub {
+                    call max => 3;
+                };
+                event Subtest => sub {
+                    call name      => 'test_me';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name => 'test_me() ran (TestsFor::Basic)';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'this is another test (TestsFor::Basic)';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'test_setup() should know our current class name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name => '... and our current method name';
+                        };
+                        event Plan => sub {
+                            call max => 4;
+                        };
+                        end();
+                    };
+                };
+                event Subtest => sub {
+                    call name      => 'test_my_instance_name';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'test_instance_name matches class name';
+                        };
+                        event Plan => sub {
+                            call max => 1;
+                        };
+                        end();
+                    };
+                };
+                event Subtest => sub {
+                    call name      => 'test_reporting';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'current_instance() should report the correct class name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              '... and we should also be able to get the current method name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'test_setup() should know our current class name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name => '... and our current method name';
+                        };
+                        event Plan => sub {
+                            call max => 4;
+                        };
+                        end();
+                    };
+                };
+                end();
+            };
+        };
+        event Subtest => sub {
+            call name      => 'TestsFor::Basic::Subclass';
+            call pass      => T();
+            call subevents => array {
+                event Plan => sub {
+                    call max => 4;
+                };
+                event Subtest => sub {
+                    call name      => 'test_me';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'I overrode my parent! (TestsFor::Basic::Subclass)';
+                        };
+                        event Plan => sub {
+                            call max => 1;
+                        };
+                        end();
+                    };
+                };
+                event Subtest => sub {
+                    call name      => 'test_my_instance_name';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'test_instance_name matches class name';
+                        };
+                        event Plan => sub {
+                            call max => 1;
+                        };
+                        end();
+                    };
+                };
+                event Subtest => sub {
+                    call name      => 'test_reporting';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'current_instance() should report the correct class name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              '... and we should also be able to get the current method name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'test_setup() should know our current class name';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name => '... and our current method name';
+                        };
+                        event Plan => sub {
+                            call max => 4;
+                        };
+                        end();
+                    };
+                };
+                event Subtest => sub {
+                    call name      => 'test_this_should_be_run';
+                    call pass      => T();
+                    call subevents => array {
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'This is test number 1 in this method';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'This is test number 2 in this method';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'This is test number 3 in this method';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'This is test number 4 in this method';
+                        };
+                        event Ok => sub {
+                            call pass => T();
+                            call name =>
+                              'This is test number 5 in this method';
+                        };
+                        event Plan => sub {
+                            call max => 5;
+                        };
+                        end();
+                    };
+                };
+                end();
+            };
+        };
+        end();
+    },
+    'events when one method is excluded'
+);
 
 ok $report = $runner->test_report,
   'We should be able to fetch reporting information from the test suite';
-isa_ok $report, 'Test::Class::Moose::Report',
-  '... and the object it returns';
+isa_ok $report, 'Test::Class::Moose::Report';
 is $report->num_test_instances, 2,
   '... and it should return the correct number of test class instances';
 is $report->num_test_methods, 7,
