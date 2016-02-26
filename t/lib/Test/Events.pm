@@ -7,7 +7,8 @@ use Exporter qw( import );
 
 our @EXPORT = qw( test_events_is test_events_like );
 
-use Test2::Bundle::Extended;
+use Test2::Tools::Basic qw( diag );
+use Test2::Tools::Compare qw( is like );
 
 sub test_events_is {
     my $events = shift;

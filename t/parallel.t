@@ -9,7 +9,9 @@ use Test::Requires {
     'Parallel::ForkManager' => 0,
 };
 
-use Test2::Bundle::Extended;
+use Test2::API qw( intercept );
+use Test2::Tools::Basic qw( done_testing plan );
+use Test2::Tools::Compare qw( array call end event filter_items is );
 use Test::Events;
 
 use List::MoreUtils qw( first_index);

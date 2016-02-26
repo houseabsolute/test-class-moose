@@ -3,7 +3,7 @@
 use lib 'lib', 't/lib';
 
 use Test2::API qw( intercept );
-use Test2::Tools::Basic qw( done_testing fail ok pass );
+use Test2::Tools::Basic qw( done_testing );
 use Test2::Tools::Compare qw( array call end event F is match T );
 use Test2::Tools::Subtest qw( subtest_streamed );
 use Test::Events;

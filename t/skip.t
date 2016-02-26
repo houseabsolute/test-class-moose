@@ -2,7 +2,9 @@
 
 use lib 'lib', 't/lib';
 
-use Test2::Bundle::Extended;
+use Test2::API qw( intercept );
+use Test2::Tools::Basic qw( done_testing fail ok pass );
+use Test2::Tools::Compare qw( array call end event F is match T );
 use Test::Events;
 
 use Test::Class::Moose::Load qw(t/skiplib);

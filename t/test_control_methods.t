@@ -2,7 +2,10 @@
 
 use lib 'lib', 't/lib';
 
-use Test2::Bundle::Extended;
+use Test2::API qw( intercept );
+use Test2::Tools::Basic qw( done_testing pass );
+use Test2::Tools::Compare qw( array call end event F match T );
+use Test2::Tools::Subtest qw( subtest_streamed );
 use Test::Events;
 
 use Test::Class::Moose::Load 't/basiclib';
@@ -15,7 +18,7 @@ my $runner = Test::Class::Moose::Runner->new(
 );
 
 _replace_subclass_method( test_startup => sub { my $test = shift } );
-subtest(
+subtest_streamed(
     'events when test_startup does not die or run tests',
     sub {
         test_events_is(
@@ -33,7 +36,7 @@ subtest(
 );
 
 _replace_subclass_method( test_startup => sub { die 'forced die' } );
-subtest(
+subtest_streamed(
     'events when test_startup dies',
     sub {
         test_events_is(
@@ -81,7 +84,7 @@ _replace_subclass_method(
         pass();
     },
 );
-subtest(
+subtest_streamed(
     'events when test_startup runs tests',
     sub {
         test_events_is(
