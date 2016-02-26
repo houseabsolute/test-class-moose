@@ -1,9 +1,11 @@
 #!/usr/bin/env perl
 
-use lib 'lib';
+use lib 'lib', 't/lib';
 
 use Test2::API qw( intercept );
-use Test::Most;
+use Test2::Tools::Basic qw( done_testing );
+use Test2::Tools::Compare qw( array call end event is );
+use Test::Events;
 
 use Test::Class::Moose::Runner;
 
@@ -37,7 +39,21 @@ use Test::Class::Moose::Runner;
 use Test::Class::Moose::Load qw(t/planlib);
 
 my $runner = Test::Class::Moose::Runner->new;
-intercept { $runner->runtests };
+
+test_events_is(
+    intercept { $runner->runtests },
+    array {
+        event Plan => sub {
+            call max => 4;
+        };
+        TestsFor::Attributes->expected_test_events;
+        TestsFor::Attributes::Subclass->expected_test_events;
+        TestsFor::Person->expected_test_events;
+        TestsFor::Person::Employee->expected_test_events;
+        end();
+    },
+    'got expected test events'
+);
 
 my $report = $runner->test_report;
 
@@ -100,14 +116,14 @@ foreach my $class ( $report->all_test_classes ) {
     }
 }
 
-is_deeply(
+is(
     [ sort keys %got ],
     [ sort keys %expected ],
     'reports include the expected test methods',
 );
 
 for my $name ( sort keys %expected ) {
-    is_deeply(
+    is(
         $got{$name},
         $expected{$name},
         "planned tests and number of tests run match for $name",
