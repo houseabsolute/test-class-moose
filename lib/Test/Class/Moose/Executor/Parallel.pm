@@ -11,14 +11,14 @@ use Carp;
 use namespace::autoclean;
 with 'Test::Class::Moose::Role::Executor';
 
-use List::MoreUtils qw(none);
+use List::SomeUtils qw(none);
 use Parallel::ForkManager;
 use TAP::Stream 0.44;
 use Test::Builder;
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Report::Class;
 
-use List::MoreUtils qw(uniq);
+use List::SomeUtils qw(uniq);
 
 has 'jobs' => (
     is       => 'ro',

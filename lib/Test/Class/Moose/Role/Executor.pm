@@ -11,7 +11,7 @@ use Carp;
 use namespace::autoclean;
 
 use List::Util qw(shuffle);
-use List::MoreUtils qw(uniq);
+use List::SomeUtils qw(uniq);
 use Test::Builder;
 use Test::Most;
 use Try::Tiny;

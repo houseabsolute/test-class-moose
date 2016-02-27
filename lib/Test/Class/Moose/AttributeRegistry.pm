@@ -9,7 +9,7 @@ our $VERSION = '0.68';
 
 use Carp;
 use Class::MOP;
-use List::MoreUtils qw( any uniq );
+use List::SomeUtils qw( any uniq );
 
 my %BY_METHOD = (
     tags  => {},    # {$method}{$test_class}
