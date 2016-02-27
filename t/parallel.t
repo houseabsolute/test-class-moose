@@ -14,7 +14,7 @@ use Test2::Tools::Basic qw( done_testing plan );
 use Test2::Tools::Compare qw( array call end event filter_items is );
 use Test::Events;
 
-use List::MoreUtils qw( first_index );
+use List::SomeUtils qw( first_index );
 use Scalar::Util qw( blessed );
 use Test::Class::Moose::Load qw( t/basiclib t/parallellib );
 use Test::Class::Moose::Runner;
