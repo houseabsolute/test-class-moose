@@ -123,7 +123,8 @@ sub _build_fork_manager {
 
             my $subtest = $self->_saved_subtest($pid);
             unless ($subtest) {
-                warn "Child process $pid ended but there is no active subtest for that pid!";
+                warn
+                  "Child process $pid ended but there is no active subtest for that pid!";
                 return;
             }
 

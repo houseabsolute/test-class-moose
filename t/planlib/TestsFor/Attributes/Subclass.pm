@@ -115,11 +115,13 @@ sub expected_test_events {
                     };
                     event Ok => sub {
                         call pass => T();
-                        call name => q{Overriding and calling parent, but we don't have a plan and parent does: 1},
+                        call name =>
+                          q{Overriding and calling parent, but we don't have a plan and parent does: 1},
                     };
                     event Ok => sub {
                         call pass => T();
-                        call name => q{Overriding and calling parent, but we don't have a plan and parent does: 2},
+                        call name =>
+                          q{Overriding and calling parent, but we don't have a plan and parent does: 2},
                     };
                     event Plan => sub {
                         call max => 5;

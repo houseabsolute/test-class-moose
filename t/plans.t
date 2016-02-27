@@ -116,15 +116,13 @@ foreach my $class ( $report->all_test_classes ) {
     }
 }
 
-is(
-    [ sort keys %got ],
+is( [ sort keys %got ],
     [ sort keys %expected ],
     'reports include the expected test methods',
 );
 
 for my $name ( sort keys %expected ) {
-    is(
-        $got{$name},
+    is( $got{$name},
         $expected{$name},
         "planned tests and number of tests run match for $name",
     );
