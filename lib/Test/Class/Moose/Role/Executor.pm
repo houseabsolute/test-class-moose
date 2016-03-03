@@ -16,6 +16,7 @@ use Test2::API qw( context_do test2_stack );
 use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
+use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Instance;
 use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::Report;
