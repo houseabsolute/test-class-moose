@@ -11,11 +11,6 @@ use Carp;
 use namespace::autoclean;
 with 'Test::Class::Moose::Role::Executor';
 
-use Test::Class::Moose::Report::Class;
-use Test2::API qw( context_do );
-use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
-use Try::Tiny;
-
 __PACKAGE__->meta->make_immutable;
 
 1;
