@@ -81,9 +81,11 @@ sub dump_events {
         }
         else {
             my ($type) = ( ref $event ) =~ /Test2::Event::(.+)/;
-            _d($type);
+            _d( $type // ref $event );
         }
     }
+
+    return $events;
 }
 
 sub _e {
