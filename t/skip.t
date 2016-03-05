@@ -18,69 +18,8 @@ test_events_is(
         event Plan => sub {
             call max => 2;
         };
-        event Subtest => sub {
-            call name      => 'TestsFor::Basic';
-            call pass      => T();
-            call subevents => array {
-                event Plan => sub {
-                    call directive => 'SKIP';
-                    call reason    => 'all methods should be skipped';
-                    call max       => 0;
-                };
-                end();
-            };
-        };
-        event Subtest => sub {
-            call name      => 'TestsFor::SkipSomeMethods';
-            call pass      => T();
-            call subevents => array {
-                event Plan => sub {
-                    call max => 3;
-                };
-                event Subtest => sub {
-                    call name      => 'test_again';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => 'in test_again';
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 1;
-                        };
-                        end();
-                    };
-                };
-                event Subtest => sub {
-                    call name      => 'test_me';
-                    call pass      => T();
-                    call subevents => array {
-                        event Plan => sub {
-                            call directive => 'SKIP';
-                            call reason =>
-                              'only methods listed as skipped should be skipped';
-                            call max => 0;
-                        };
-                        end();
-                    };
-                };
-                event Subtest => sub {
-                    call name      => 'test_this_baby';
-                    call pass      => T();
-                    call subevents => array {
-                        event Ok => sub {
-                            call name => 'whee! (TestsFor::SkipSomeMethods)';
-                            call pass => T();
-                        };
-                        event Plan => sub {
-                            call max => 1;
-                        };
-                        end();
-                    };
-                };
-                end();
-            };
-        };
+        TestsFor::SkipAll->expected_test_events;
+        TestsFor::SkipSomeMethods->expected_test_events;
         end();
     },
     'got expected events for skip tests'
@@ -89,7 +28,7 @@ test_events_is(
 my $classes = $runner->test_report->test_classes;
 
 {
-    is $classes->[0]->name, 'TestsFor::Basic',
+    is $classes->[0]->name, 'TestsFor::SkipAll',
       'Our first class should be listed in reporting';
 
     my $instances = $classes->[0]->test_instances;

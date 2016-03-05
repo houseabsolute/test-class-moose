@@ -29,10 +29,14 @@ sub test_this_should_be_run {
 }
 
 sub expected_test_events {
+    my $include_async = $_[1];
+
     event Subtest => sub {
         call name      => 'TestsFor::Basic::Subclass';
         call pass      => T();
         call subevents => array {
+            event '+Test2::AsyncSubtest::Event::Attach'
+                if $include_async;
             event Plan => sub {
                 call max => 5;
             };
@@ -152,6 +156,8 @@ sub expected_test_events {
                     end();
                 };
             };
+            event '+Test2::AsyncSubtest::Event::Detach'
+                if $include_async;
             end();
         };
     };

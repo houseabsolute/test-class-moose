@@ -13,7 +13,7 @@ use namespace::autoclean;
 use List::SomeUtils qw(uniq);
 use List::Util qw(shuffle);
 use Test2::API qw( context_do test2_stack );
-use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
+use Test2::Tools::AsyncSubtest qw( async_subtest );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
 use Test::Class::Moose::Report::Class;
@@ -67,12 +67,10 @@ sub _run_test_classes {
     my @test_classes = @_;
 
     for my $test_class (@test_classes) {
-        my $subtest = subtest_start($test_class);
-        subtest_run(
-            $subtest,
+        async_subtest(
+            $test_class,
             sub { $self->_run_test_class($test_class) },
-        );
-        subtest_finish($subtest);
+        )->finish;
     }
 }
 
@@ -162,17 +160,15 @@ sub _maybe_wrap_test_instance {
     ) unless $in_subtest;
 
     my $instance_report;
-    my $subtest = subtest_start( $test_instance->test_instance_name );
-    subtest_run(
-        $subtest,
+    async_subtest(
+        $test_instance->test_instance_name,
         sub {
             $instance_report = $self->_run_test_instance(
                 $class_report,
                 $test_instance,
             );
         },
-    );
-    subtest_finish($subtest);
+    )->finish;
 
     return $instance_report;
 }
@@ -197,6 +193,7 @@ sub _run_test_instance {
         my $ctx = shift;
 
         unless (@test_methods) {
+
             my $message
               = "Skipping '$test_instance_name': no test methods found";
             $instance_report->skipped($message);
@@ -408,12 +405,10 @@ sub _run_test_method {
     my $passed = context_do {
         my $ctx = shift;
 
-        my $subtest = subtest_start($test_method);
-
         # If the call to ->$test_method fails then this subtest will fail and
         # Test2::API will also include a diagnostic message with the error.
-        my $p = subtest_run(
-            $subtest,
+        my $p = async_subtest(
+            $test_method,
             sub {
                 my $hub = test2_stack()->top;
                 if ( my $message = $test_instance->test_skip ) {
@@ -430,8 +425,7 @@ sub _run_test_method {
                 $test_instance->$test_method($method_report);
                 $num_tests = $hub->count;
             },
-        );
-        subtest_finish($subtest);
+        )->finish;
 
         $method_report->_end_benchmark;
         if ( $self->test_configuration->show_timing ) {

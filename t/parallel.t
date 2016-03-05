@@ -70,7 +70,7 @@ for my $class (@classes) {
                 @_;
                 return @_[ $i .. $#_ ];
             };
-            $class->expected_test_events;
+            $class->expected_test_events('include async');
         },
         "parallel tests produce the events for $class"
     );

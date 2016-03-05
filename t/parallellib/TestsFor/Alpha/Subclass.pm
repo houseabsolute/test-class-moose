@@ -14,6 +14,7 @@ sub expected_test_events {
         call name      => 'TestsFor::Alpha::Subclass';
         call pass      => T();
         call subevents => array {
+            event '+Test2::AsyncSubtest::Event::Attach';
             event Plan => sub {
                 call max => 3;
             };
@@ -63,6 +64,7 @@ sub expected_test_events {
                     end();
                 };
             };
+            event '+Test2::AsyncSubtest::Event::Detach';
             end();
         };
     };

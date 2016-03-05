@@ -18,7 +18,8 @@ use List::SomeUtils qw( none part );
 use Parallel::ForkManager;
 use Scalar::Util qw(reftype);
 use Test2::API qw( test2_stack );
-use Test2::Tools::AsyncSubtest qw( subtest_start subtest_run subtest_finish );
+use Test2::AsyncSubtest 0.000002 ();
+use Test2::Tools::AsyncSubtest qw( async_subtest );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Report::Class;
 use Try::Tiny;
@@ -82,7 +83,8 @@ sub _run_test_classes_in_parallel {
     my $test_classes = shift;
 
     for my $test_class ( @{$test_classes} ) {
-        my $subtest = subtest_start($test_class);
+        my $subtest = async_subtest($test_class);
+        my $id = $subtest->cleave;
         if ( my $pid = $self->_fork_manager->start ) {
             $self->_save_subtest( $pid => $subtest );
             next;
@@ -90,13 +92,13 @@ sub _run_test_classes_in_parallel {
 
         # This chunk of code only runs in child processes
         my $class_report;
-        subtest_run(
-            $subtest,
+        $subtest->attach($id);
+        $subtest->run(
             sub {
                 $class_report = $self->_run_test_class($test_class);
             }
         );
-
+        $subtest->detach;
         $self->_fork_manager->finish( 0, \$class_report );
     }
 
@@ -128,7 +130,7 @@ sub _build_fork_manager {
                 return;
             }
 
-            subtest_finish($subtest);
+            $subtest->finish;
         }
     );
 
