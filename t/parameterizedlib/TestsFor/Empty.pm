@@ -1,5 +1,10 @@
 package TestsFor::Empty;
-use Test::Class::Moose;
+
+use Test::Class::Moose bare => 1;
+
+use Test2::Tools::Basic qw( fail );
+use Test2::Tools::Compare qw( array call end event T );
+
 with 'Test::Class::Moose::Role::ParameterizedInstances';
 
 sub _constructor_parameter_sets {
@@ -12,6 +17,28 @@ sub _constructor_parameter_sets {
 sub test_one_set {
     my $self = shift;
     fail('this test should never be called');
+}
+
+sub expected_test_events {
+    my $include_async = $_[1];
+
+    event Subtest => sub {
+        call name      => 'TestsFor::Empty';
+        call pass      => T();
+        call subevents => array {
+            event '+Test2::AsyncSubtest::Event::Attach'
+              if $include_async;
+            event '+Test2::AsyncSubtest::Event::Detach'
+              if $include_async;
+            event Plan => sub {
+                call directive => 'SKIP';
+                call reason =>
+                  q{Skipping 'TestsFor::Empty': no test instances found};
+                call max => 0;
+            };
+            end();
+        };
+    };
 }
 
 1;
