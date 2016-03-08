@@ -12,7 +12,7 @@ use namespace::autoclean;
 
 use List::SomeUtils qw(uniq);
 use List::Util qw(shuffle);
-use Test2::API qw( context_do test2_stack );
+use Test2::API qw( test2_stack );
 use Test2::Tools::AsyncSubtest qw( async_subtest );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
@@ -20,6 +20,7 @@ use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Instance;
 use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::Report;
+use Test::Class::Moose::Util qw( context_do );
 use Try::Tiny;
 
 has 'test_configuration' => (
@@ -67,7 +68,11 @@ sub _run_test_classes {
     my @test_classes = @_;
 
     for my $test_class (@test_classes) {
-        $self->_run_test_class($test_class);
+        async_subtest(
+            $test_class,
+            { manual_skip_all => 1 },
+            sub { $self->_run_test_class($test_class) }
+        )->finish;
     }
 }
 
@@ -93,11 +98,7 @@ sub _run_test_class {
 
     $class_report->_start_benchmark;
 
-    my $passed = async_subtest(
-        $test_class,
-        { manual_skip_all => 1 },
-        sub { $self->_run_test_instances( $test_class, $class_report ) }
-    )->finish;
+    my $passed = $self->_run_test_instances( $test_class, $class_report );
 
     $class_report->passed($passed);
 

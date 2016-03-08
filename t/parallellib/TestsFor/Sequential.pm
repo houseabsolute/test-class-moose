@@ -3,7 +3,7 @@ package TestsFor::Sequential;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( ok );
-use Test2::Tools::Compare qw( array call end event is T );
+use Test2::Tools::Compare qw( array call end event filter_items is T );
 
 sub test_sequential_first : Tags(noparallel) {
     my $test = shift;

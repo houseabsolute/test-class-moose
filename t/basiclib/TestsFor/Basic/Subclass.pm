@@ -3,7 +3,7 @@ package TestsFor::Basic::Subclass;
 use Test::Class::Moose extends => 'TestsFor::Basic', bare => 1;
 
 use Test2::Tools::Basic qw( fail ok pass );
-use Test2::Tools::Compare qw( array call end event is T );
+use Test2::Tools::Compare qw( array call end event filter_items is T );
 
 sub test_me {
     my $test  = shift;
@@ -29,14 +29,16 @@ sub test_this_should_be_run {
 }
 
 sub expected_test_events {
-    my $include_async = $_[1];
-
     event Subtest => sub {
         call name      => 'TestsFor::Basic::Subclass';
         call pass      => T();
         call subevents => array {
-            event '+Test2::AsyncSubtest::Event::Attach'
-                if $include_async;
+            filter_items {
+                grep {
+                         !$_->isa('Test2::AsyncSubtest::Event::Attach')
+                      && !$_->isa('Test2::AsyncSubtest::Event::Detach')
+                } @_;
+            };
             event Plan => sub {
                 call max => 5;
             };
@@ -156,8 +158,6 @@ sub expected_test_events {
                     end();
                 };
             };
-            event '+Test2::AsyncSubtest::Event::Detach'
-                if $include_async;
             end();
         };
     };

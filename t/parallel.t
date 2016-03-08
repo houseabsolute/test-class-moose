@@ -16,7 +16,7 @@ use Test::Events;
 
 use List::SomeUtils qw( first_index );
 use Scalar::Util qw( blessed );
-use Test::Class::Moose::Load qw( t/basiclib t/parallellib );
+use Test::Class::Moose::Load qw( t/basiclib t/parallellib t/parameterizedlib t/skiplib );
 use Test::Class::Moose::Runner;
 
 plan skip_all =>
@@ -35,8 +35,12 @@ test_events_is(
     $events,
     array {
         event Plan => sub {
-            call max => 6;
+            call max => 10;
         };
+        event 'Subtest';
+        event 'Subtest';
+        event 'Subtest';
+        event 'Subtest';
         event 'Subtest';
         event 'Subtest';
         event 'Subtest';
@@ -54,6 +58,10 @@ my @classes = qw(
   TestsFor::Basic
   TestsFor::Basic::Subclass
   TestsFor::Beta
+  TestsFor::Empty
+  TestsFor::Parameterized
+  TestsFor::SkipAll
+  TestsFor::SkipSomeMethods
   TestsFor::Sequential
 );
 
@@ -70,7 +78,7 @@ for my $class (@classes) {
                 @_;
                 return @_[ $i .. $#_ ];
             };
-            $class->expected_test_events('include async');
+            $class->expected_test_events;
         },
         "parallel tests produce the events for $class"
     );
