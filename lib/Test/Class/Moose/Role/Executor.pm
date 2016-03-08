@@ -67,10 +67,7 @@ sub _run_test_classes {
     my @test_classes = @_;
 
     for my $test_class (@test_classes) {
-        async_subtest(
-            $test_class,
-            sub { $self->_run_test_class($test_class) },
-        )->finish;
+        $self->_run_test_class($test_class);
     }
 }
 
@@ -91,11 +88,17 @@ sub _run_test_class {
 
     my $class_report
       = Test::Class::Moose::Report::Class->new( name => $test_class );
+
     $self->test_report->add_test_class($class_report);
 
     $class_report->_start_benchmark;
 
-    my $passed = $self->_run_test_instances( $test_class, $class_report );
+    my $passed = async_subtest(
+        $test_class,
+        { manual_skip_all => 1 },
+        sub { $self->_run_test_instances( $test_class, $class_report ) }
+    )->finish;
+
     $class_report->passed($passed);
 
     $class_report->_end_benchmark;
@@ -162,6 +165,7 @@ sub _maybe_wrap_test_instance {
     my $instance_report;
     async_subtest(
         $test_instance->test_instance_name,
+        { manual_skip_all => 1 },
         sub {
             $instance_report = $self->_run_test_instance(
                 $class_report,
@@ -409,6 +413,7 @@ sub _run_test_method {
         # Test2::API will also include a diagnostic message with the error.
         my $p = async_subtest(
             $test_method,
+            { manual_skip_all => 1 },
             sub {
                 my $hub = test2_stack()->top;
                 if ( my $message = $test_instance->test_skip ) {
