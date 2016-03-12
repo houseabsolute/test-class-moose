@@ -189,7 +189,6 @@ sub _run_test_instance {
 
     $instance_report->_start_benchmark;
 
-    my $report = $self->test_report;
     $class_report->add_test_instance($instance_report);
 
     my @test_methods = $self->_test_methods_for($test_instance);
@@ -207,7 +206,7 @@ sub _run_test_instance {
             return;
         }
 
-        $report->_inc_test_methods( scalar @test_methods );
+        my $report = $self->test_report;
 
         unless (
             $self->_run_test_control_method(
@@ -240,6 +239,8 @@ sub _run_test_instance {
             );
             $report->_inc_tests( $method_report->num_tests_run )
               if $method_report->num_tests_run;
+            $report->_inc_test_methods(1)
+              unless $method_report->is_skipped;
             $all_passed = 0 if not $method_report->passed;
         }
         $instance_report->passed($all_passed);

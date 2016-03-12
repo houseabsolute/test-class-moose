@@ -14,6 +14,10 @@ Revision history for Perl distribution Test-Class-Moose
         * If you "use Test::Class::Moose bare => 1" you will no longer get
           Test::Most exported into your class. Instead, you can load the
           testing module(s) of your choice.
+        * Fixed a bug in how test methods were counted. When a test class or
+          method was entirely skipped by setting $self->test_skip, the method
+          or classes were still included in the count returned by the report
+          object's num_test_methods method.
 
 0.67     2015-11-30
         * Same as 0.66, but repeating changes from 0.63 since there's a bunch
