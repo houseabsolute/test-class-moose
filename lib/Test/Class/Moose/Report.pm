@@ -53,9 +53,6 @@ sub num_tests_run {
 
 sub all_test_classes {
     my $self = shift;
-    warn
-      "When running tests in parallel we are unable to store test classes\n"
-      if $self->is_parallel;
     return $self->_all_test_classes;
 }
 
