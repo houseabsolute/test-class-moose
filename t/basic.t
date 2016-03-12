@@ -4,7 +4,7 @@ use lib 'lib', 't/lib';
 
 use Test2::API qw( intercept );
 use Test2::Tools::Basic qw( done_testing );
-use Test2::Tools::Compare qw( array call end event F is match T );
+use Test2::Tools::Compare qw( array call end event F is match object T );
 use Test2::Tools::Subtest qw( subtest_streamed );
 use Test::Events;
 use Test::Reporting qw( test_report );
@@ -49,7 +49,13 @@ subtest_streamed(
             intercept { $runner->runtests },
             array {
                 event Plan => sub {
-                    call max => 2;
+                    call max   => 2;
+                    call trace => object {
+                        call package => 'Moose::Meta::Method::Delegation';
+                        call line    => 110;
+                        call subname =>
+                          'Test::Class::Moose::Role::Executor::runtests';
+                    };
                 };
                 TestsFor::Basic->expected_test_events;
                 TestsFor::Basic::Subclass->expected_test_events;

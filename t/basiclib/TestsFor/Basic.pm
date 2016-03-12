@@ -3,7 +3,8 @@ package TestsFor::Basic;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( ok );
-use Test2::Tools::Compare qw( array call end event filter_items F is T );
+use Test2::Tools::Compare
+  qw( array call end event filter_items F is object T );
 
 has [ 'setup_class_found', 'setup_method_found' ] => (
     is  => 'rw',
@@ -71,15 +72,26 @@ sub expected_test_events {
                 } @_;
             };
             event Plan => sub {
-                call max => 4;
+                call max   => 4;
+                call trace => object {
+                    call package => 'Test::Class::Moose::Role::Executor';
+                    call line    => 100;
+                    call subname =>
+                      'Test::Class::Moose::Role::Executor::_run_test_instances';
+                };
             };
             event Subtest => sub {
                 call name      => 'test_me';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
-                        call pass => T();
-                        call name => 'test_me() ran (TestsFor::Basic)';
+                        call pass  => T();
+                        call name  => 'test_me() ran (TestsFor::Basic)';
+                        call trace => object {
+                            call package => 'TestsFor::Basic';
+                            call line    => 31;
+                            call subname => 'Test2::Tools::Basic::ok';
+                        };
                     };
                     event Ok => sub {
                         call pass => T();
