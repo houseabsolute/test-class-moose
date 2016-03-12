@@ -17,6 +17,7 @@ use Test2::IPC;
 use List::SomeUtils qw( none part );
 use Parallel::ForkManager;
 use Scalar::Util qw(reftype);
+use TAP::Formatter::Color;
 use Test2::API qw( test2_stack );
 use Test2::AsyncSubtest 0.000005 ();
 use Test::Class::Moose::AttributeRegistry;
@@ -27,6 +28,12 @@ has 'jobs' => (
     is       => 'ro',
     isa      => 'Int',
     required => 1,
+);
+
+has color_output => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 1,
 );
 
 has '_fork_manager' => (
@@ -46,6 +53,13 @@ has '_subtests' => (
         _save_subtest  => 'set',
         _saved_subtest => 'get',
     },
+);
+
+has '_color' => (
+    is      => 'ro',
+    isa     => 'TAP::Formatter::Color',
+    lazy    => 1,
+    builder => '_build_color',
 );
 
 around _run_test_classes => sub {
@@ -137,6 +151,39 @@ sub _build_fork_manager {
     );
 
     return $pfm;
+}
+
+around _run_test_method => sub {
+    my $orig = shift;
+    my $self = shift;
+
+    my $method_report = $self->$orig(@_);
+
+    # we're running under parallel testing, so rather than having
+    # the code look like it's stalled, we'll output a dot for
+    # every test method.
+    my ( $color, $text )
+      = $method_report->passed
+      ? ( 'green', '.' )
+      : ( 'red', 'X' );
+
+    # The set_color() method from TAP::Formatter::Color is just ugly.
+    if ( $self->color_output ) {
+        $self->_color->set_color(
+            sub { print STDERR shift, $text },
+            $color,
+        );
+        $self->_color->set_color( sub { print STDERR shift }, 'reset' );
+    }
+    else {
+        print STDERR $text;
+    }
+
+    return $method_report;
+};
+
+sub _build_color {
+    return TAP::Formatter::Color->new;
 }
 
 1;
