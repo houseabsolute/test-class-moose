@@ -49,7 +49,7 @@ sub expected_report {
         'TestsFor::SkipAll' => {
             is_skipped => F(),
             passed     => T(),
-            instances   => {
+            instances  => {
                 'TestsFor::SkipAll' => {
                     is_skipped => T(),
                     passed     => T(),

@@ -13,8 +13,7 @@ use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new;
 
-is(
-    [   sort  { $a cmp $b }
+is( [   sort  { $a cmp $b }
           map { $_->test_instance_name }
           TestsFor::Parameterized->_tcm_make_test_class_instances
     ],
@@ -34,7 +33,6 @@ is( intercept { $runner->runtests },
     },
     'got expected test events'
 );
-
 
 my %expect = (
     is_parallel        => F(),
