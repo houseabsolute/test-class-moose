@@ -1,16 +1,22 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
-        * Rewrote the internals of Test::Class::Moose to use Test2 test
-          events. This led to several changes and cleanups. Notably, parallel
-          testing is now much simpler and more like sequential testing.
-        * Test reporting works entirely correctly when tests are run in
-          parallel.
+
+[BACKWARDS INCOMPATIBILITIES]
         * Parallel testing now parallelizes test classes rather than
           individual test instances. This is only relevant if your test suite
           contains parameterized test classes. This is slightly less
           efficient, but made the internal test running code much, much
           simpler, and made it possible to fix reporting.
+        * The Test::Class::Moose::Config->builder method has been removed.
+        * The Test::Class::Moose::Runner->builder method has been removed.
+
+[ENHANCEMENTS]
+        * Rewrote the internals of Test::Class::Moose to use Test2 test
+          events. This led to several changes and cleanups. Notably, parallel
+          testing is now much simpler and more like sequential testing.
+        * Test reporting works entirely correctly when tests are run in
+          parallel.
         * If you "use Test::Class::Moose bare => 1" you will no longer get
           Test::Most exported into your class. Instead, you can load the
           testing module(s) of your choice.
@@ -25,6 +31,8 @@ Revision history for Perl distribution Test-Class-Moose
           Test::Most exported into your class. Instead, you can load the
           testing module(s) of your choice.
         * Test class instances now have a $self->test_instance_name method.
+
+[BUG FIXES]
         * Fixed a bug in how test methods were counted. When a test class or
           method was entirely skipped by setting $self->test_skip, the method
           or classes were still included in the count returned by the report
