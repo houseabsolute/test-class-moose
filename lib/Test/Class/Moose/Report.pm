@@ -13,20 +13,6 @@ with 'Test::Class::Moose::Role::HasTimeReport';
 
 use List::Util qw( first sum );
 
-has 'num_test_methods' => (
-    is      => 'rw',
-    isa     => 'Int',
-    writer  => 'set_num_test_methods',
-    default => 0,
-);
-
-has 'num_tests_run' => (
-    is      => 'rw',
-    isa     => 'Int',
-    writer  => 'set_tests_run',
-    default => 0,
-);
-
 has 'is_parallel' => (
     is      => 'ro',
     isa     => 'Bool',
@@ -50,24 +36,27 @@ sub num_test_instances {
     return sum map { $_->num_test_instances } $self->all_test_classes;
 }
 
+sub num_test_methods {
+    my $self = shift;
+    return scalar grep { !$_->is_skipped }
+      map              { $_->all_test_methods }
+      map              { $_->all_test_instances } $self->all_test_classes;
+}
+
+sub num_tests_run {
+    my $self = shift;
+    return sum map { $_->num_tests_run }
+      grep         { !$_->is_skipped }
+      map          { $_->all_test_methods }
+      map          { $_->all_test_instances } $self->all_test_classes;
+}
+
 sub all_test_classes {
     my $self = shift;
     warn
       "When running tests in parallel we are unable to store test classes\n"
       if $self->is_parallel;
     return $self->_all_test_classes;
-}
-
-sub _inc_test_methods {
-    my ( $self, $test_methods ) = @_;
-    $test_methods //= 1;
-    $self->set_num_test_methods( $self->num_test_methods + $test_methods );
-}
-
-sub _inc_tests {
-    my ( $self, $tests ) = @_;
-    $tests //= 1;
-    $self->set_tests_run( $self->num_tests_run + $tests );
 }
 
 sub current_class {

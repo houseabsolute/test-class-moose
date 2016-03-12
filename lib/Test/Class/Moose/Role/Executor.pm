@@ -237,10 +237,6 @@ sub _run_test_instance {
                 $instance_report,
                 $ctx,
             );
-            $report->_inc_tests( $method_report->num_tests_run )
-              if $method_report->num_tests_run;
-            $report->_inc_test_methods(1)
-              unless $method_report->is_skipped;
             $all_passed = 0 if not $method_report->passed;
         }
         $instance_report->passed($all_passed);
