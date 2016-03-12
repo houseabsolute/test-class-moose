@@ -1,6 +1,16 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Rewrote the internals of Test::Class::Moose to use Test2 test
+          events. This led to several changes and cleanups. Notably, parallel
+          testing is now much simpler and more like sequential testing.
+        * Test reporting works entirely correctly when tests are run in
+          parallel.
+        * Parallel testing now parallelizes test classes rather than
+          individual test instances. This is only relevant if your test suite
+          contains parameterized test classes. This is slightly less
+          efficient, but made the internal test running code much, much
+          simpler, and made it possible to fix reporting.
         * If you "use Test::Class::Moose bare => 1" you will no longer get
           Test::Most exported into your class. Instead, you can load the
           testing module(s) of your choice.
