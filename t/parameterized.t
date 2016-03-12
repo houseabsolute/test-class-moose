@@ -4,9 +4,9 @@ use lib 'lib', 't/lib';
 
 use Test2::API qw( intercept );
 use Test2::Tools::Basic qw( done_testing );
-use Test2::Tools::Compare qw( array call end event is );
-use Test2::Tools::Compare qw( is );
+use Test2::Tools::Compare qw( array call end event F is T );
 use Test::Events;
+use Test::Reporting qw( test_report );
 
 use Test::Class::Moose::Load qw(t/parameterizedlib);
 use Test::Class::Moose::Runner;
@@ -35,44 +35,18 @@ is( intercept { $runner->runtests },
     'got expected test events'
 );
 
-my $report = $runner->test_report;
 
-my %expected = (
-    'TestsFor::Parameterized with foo::test_one_set' => {
-        planned => 1,
-        ran     => 1,
-    },
-    'TestsFor::Parameterized with bar::test_one_set' => {
-        planned => 1,
-        ran     => 1,
+my %expect = (
+    is_parallel        => F(),
+    num_tests_run      => 2,
+    num_test_instances => 2,
+    num_test_methods   => 2,
+    classes            => {
+        TestsFor::Empty->expected_report,
+        TestsFor::Parameterized->expected_report,
     },
 );
 
-my %got;
-foreach my $class ( $report->all_test_classes ) {
-    foreach my $instance ( $class->all_test_instances ) {
-        foreach my $method ( $instance->all_test_methods ) {
-            my $fq_name = join '::' => $instance->name, $method->name;
-            $got{$fq_name} = {
-                planned => $method->tests_planned,
-                ran     => $method->num_tests_run,
-            };
-        }
-    }
-}
-
-is(
-    [ sort keys %got ],
-    [ sort keys %expected ],
-    'reports include the expected test methods',
-);
-
-for my $name ( sort keys %expected ) {
-    is(
-        $got{$name},
-        $expected{$name},
-        "planned tests and number of tests run match for $name",
-    );
-}
+test_report( $runner->test_report, \%expect );
 
 done_testing;

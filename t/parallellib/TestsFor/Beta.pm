@@ -3,7 +3,7 @@ package TestsFor::Beta;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( ok );
-use Test2::Tools::Compare qw( array call end event is T );
+use Test2::Tools::Compare qw( array call end event F is T );
 
 sub test_beta_first {
     my $test = shift;
@@ -66,6 +66,35 @@ sub expected_test_events {
             end();
         };
     };
+}
+
+sub expected_report {
+    return (
+        'TestsFor::Beta' => {
+            is_skipped => F(),
+            passed     => T(),
+            instances  => {
+                'TestsFor::Beta' => {
+                    is_skipped => F(),
+                    passed     => T(),
+                    methods    => {
+                        test_beta_first => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 2,
+                            tests_planned => 2,
+                        },
+                        test_second => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 2,
+                            tests_planned => 2,
+                        },
+                    },
+                },
+            },
+        },
+    );
 }
 
 1

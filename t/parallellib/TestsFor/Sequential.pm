@@ -3,7 +3,7 @@ package TestsFor::Sequential;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( ok );
-use Test2::Tools::Compare qw( array call end event filter_items is T );
+use Test2::Tools::Compare qw( array call end event filter_items F is T );
 
 sub test_sequential_first : Tags(noparallel) {
     my $test = shift;
@@ -54,6 +54,35 @@ sub expected_test_events {
             end();
         };
     };
+}
+
+sub expected_report {
+    return (
+        'TestsFor::Sequential' => {
+            is_skipped => F(),
+            passed     => T(),
+            instances  => {
+                'TestsFor::Sequential' => {
+                    is_skipped => F(),
+                    passed     => T(),
+                    methods    => {
+                        test_sequential_first => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                        test_sequential_second => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                    },
+                },
+            },
+        },
+    );
 }
 
 1

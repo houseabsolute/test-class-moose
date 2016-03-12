@@ -3,7 +3,7 @@ package TestsFor::Empty;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( fail );
-use Test2::Tools::Compare qw( array call end event filter_items T );
+use Test2::Tools::Compare qw( array call end event filter_items F T );
 
 with 'Test::Class::Moose::Role::ParameterizedInstances';
 
@@ -39,6 +39,15 @@ sub expected_test_events {
             end();
         };
     };
+}
+
+sub expected_report {
+    return (
+        'TestsFor::Empty' => {
+            is_skipped => T(),
+            passed     => T(),
+        },
+    );
 }
 
 1;

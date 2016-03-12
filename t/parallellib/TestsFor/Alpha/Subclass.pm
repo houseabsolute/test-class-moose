@@ -3,7 +3,7 @@ package TestsFor::Alpha::Subclass;
 use Test::Class::Moose extends => 'TestsFor::Alpha', bare => 1;
 
 use Test2::Tools::Basic qw( ok );
-use Test2::Tools::Compare qw( array call end event is T );
+use Test2::Tools::Compare qw( array call end event F is T );
 
 sub test_another {
     ok 1;
@@ -68,6 +68,41 @@ sub expected_test_events {
             end();
         };
     };
+}
+
+sub expected_report {
+    return (
+        'TestsFor::Alpha::Subclass' => {
+            is_skipped => F(),
+            passed     => T(),
+            instances  => {
+                'TestsFor::Alpha::Subclass' => {
+                    is_skipped => F(),
+                    passed     => T(),
+                    methods    => {
+                        test_alpha_first => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 2,
+                            tests_planned => 2,
+                        },
+                        test_another => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                        test_second => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                    },
+                },
+            },
+        },
+    );
 }
 
 1;

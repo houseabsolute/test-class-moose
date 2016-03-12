@@ -7,6 +7,7 @@ use Test2::Tools::Basic qw( done_testing );
 use Test2::Tools::Compare qw( array call end event F is match T );
 use Test2::Tools::Subtest qw( subtest_streamed );
 use Test::Events;
+use Test::Reporting qw( test_report );
 
 use Test::Class::Moose::Load qw(t/basiclib);
 use Test::Class::Moose::Runner;
@@ -57,6 +58,19 @@ subtest_streamed(
         );
     }
 );
+
+my %expect = (
+    is_parallel        => F(),
+    num_tests_run      => 27,
+    num_test_instances => 2,
+    num_test_methods   => 9,
+    classes            => {
+        TestsFor::Basic->expected_report,
+        TestsFor::Basic::Subclass->expected_report,
+    },
+);
+
+test_report( $runner->test_report, \%expect );
 
 TestsFor::Basic::Subclass->meta->add_method(
     'test_this_will_die' => sub { die 'forced die' },

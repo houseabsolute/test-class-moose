@@ -3,7 +3,7 @@ package TestsFor::SkipSomeMethods;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( ok );
-use Test2::Tools::Compare qw( array call end event filter_items is T );
+use Test2::Tools::Compare qw( array call end event filter_items F is T );
 
 sub test_setup {
     my $test = shift;
@@ -85,6 +85,40 @@ sub expected_test_events {
             end();
         };
     };
+}
+
+sub expected_report {
+    return (
+        'TestsFor::SkipSomeMethods' => {
+            is_skipped => F(),
+            passed     => T(),
+            instances  => {
+                'TestsFor::SkipSomeMethods' => {
+                    is_skipped => F(),
+                    passed     => T(),
+                    methods    => {
+                        test_again => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                        test_me => {
+                            is_skipped    => T(),
+                            passed        => T(),
+                            num_tests_run => 0,
+                        },
+                        test_this_baby => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                    },
+                },
+            },
+        },
+    );
 }
 
 1;

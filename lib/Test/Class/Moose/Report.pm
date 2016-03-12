@@ -135,6 +135,46 @@ __END__
 
 =for Pod::Coverage plan
 
+=begin comment
+
+This is the code I used to generate the example in this module (plus a little
+manual editing to move the time key to the top of each nested hashref). This
+is based on the timing data from running basic.t.
+
+my $t = $report->timing_data;
+delete $t->{class}{'TestsFor::Basic::Subclass'};
+delete $t->{class}{'TestsFor::Basic'}{instance}{'TestsFor::Basic'}{method}{test_reporting};
+delete $t->{class}{'TestsFor::Basic'}{instance}{'TestsFor::Basic'}{method}{test_this_baby};
+use Devel::Dwarn; Dwarn _fudge($t);
+
+sub _fudge {
+    my $t = shift;
+
+    use Data::Visitor::Callback;
+
+    Data::Visitor::Callback->new(
+        hash => sub {
+            shift;
+            my $h = shift;
+
+            for my $k ( grep { exists $h->{$_} } qw( real system user ) ) {
+                if ($h->{$k} ) {
+                    $h->{$k} *= 10_000;
+                }
+                else {
+                    $h->{$k} = $h->{real} * ($k eq 'system' ? 0.15 : 0.85);
+                }
+            }
+
+            return $h;
+        },
+    )->visit($t);
+
+    return $t;
+}
+
+=end comment
+
 =head1 SYNOPSIS
 
     use Test::Class::Moose::Runner;

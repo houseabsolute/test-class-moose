@@ -3,7 +3,7 @@ package TestsFor::Basic::Subclass;
 use Test::Class::Moose extends => 'TestsFor::Basic', bare => 1;
 
 use Test2::Tools::Basic qw( fail ok pass );
-use Test2::Tools::Compare qw( array call end event filter_items is T );
+use Test2::Tools::Compare qw( array call end event filter_items F is T );
 
 sub test_me {
     my $test  = shift;
@@ -161,6 +161,53 @@ sub expected_test_events {
             end();
         };
     };
+}
+
+sub expected_report {
+    return (
+        'TestsFor::Basic::Subclass' => {
+            is_skipped => F(),
+            passed     => T(),
+            instances  => {
+                'TestsFor::Basic::Subclass' => {
+                    is_skipped => F(),
+                    passed     => T(),
+                    methods    => {
+                        test_me => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                        test_my_instance_name => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                        test_reporting => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 4,
+                            tests_planned => 4,
+                        },
+                        test_this_baby => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 4,
+                            tests_planned => 4,
+                        },
+                        test_this_should_be_run => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 5,
+                            tests_planned => 5,
+                        },
+                    },
+                },
+            },
+        },
+    );
 }
 
 1;

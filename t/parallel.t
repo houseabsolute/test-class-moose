@@ -11,8 +11,9 @@ use Test::Requires {
 
 use Test2::API qw( intercept );
 use Test2::Tools::Basic qw( done_testing plan );
-use Test2::Tools::Compare qw( array call end event filter_items is );
+use Test2::Tools::Compare qw( array call end event filter_items F T is );
 use Test::Events;
+use Test::Reporting qw( test_report );
 
 use List::SomeUtils qw( first_index );
 use Scalar::Util qw( blessed );
@@ -23,13 +24,13 @@ plan skip_all =>
   'These tests currently fail on Windows for reasons we do not understand. Patches welcome.'
   if $^O =~ /Win32/;
 
-my $test_runner = Test::Class::Moose::Runner->new(
+my $runner = Test::Class::Moose::Runner->new(
     show_timing => 0,
     jobs        => 2,
     statistics  => 0,
 );
 
-my $events = intercept { $test_runner->runtests };
+my $events = intercept { $runner->runtests };
 
 test_events_is(
     $events,
@@ -83,5 +84,17 @@ for my $class (@classes) {
         "parallel tests produce the events for $class"
     );
 }
+
+my %expect = (
+    is_parallel        => T(),
+    num_tests_run      => 44,
+    num_test_instances => 10,
+    num_test_methods   => 22,
+    classes            => {
+        map { $_->expected_report } @classes,
+    },
+);
+
+test_report( $runner->test_report, \%expect );
 
 done_testing();

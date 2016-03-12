@@ -3,7 +3,7 @@ package TestsFor::SkipAll;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( ok );
-use Test2::Tools::Compare qw( array call end event filter_items is T );
+use Test2::Tools::Compare qw( array call end event filter_items F is T );
 
 sub test_startup {
     my $test = shift;
@@ -44,5 +44,19 @@ sub expected_test_events {
     };
 }
 
+sub expected_report {
+    return (
+        'TestsFor::SkipAll' => {
+            is_skipped => F(),
+            passed     => T(),
+            instances   => {
+                'TestsFor::SkipAll' => {
+                    is_skipped => T(),
+                    passed     => T(),
+                },
+            },
+        },
+    );
+}
 
 1;

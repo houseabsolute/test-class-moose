@@ -3,7 +3,7 @@ package TestsFor::Basic;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( ok );
-use Test2::Tools::Compare qw( array call end event filter_items is T );
+use Test2::Tools::Compare qw( array call end event filter_items F is T );
 
 has [ 'setup_class_found', 'setup_method_found' ] => (
     is  => 'rw',
@@ -169,6 +169,47 @@ sub expected_test_events {
             end();
         };
     };
+}
+
+sub expected_report {
+    return (
+        'TestsFor::Basic' => {
+            is_skipped => F(),
+            passed     => T(),
+            instances  => {
+                'TestsFor::Basic' => {
+                    is_skipped => F(),
+                    passed     => T(),
+                    methods    => {
+                        test_me => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 4,
+                            tests_planned => 4,
+                        },
+                        test_my_instance_name => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                        test_reporting => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 4,
+                            tests_planned => 4,
+                        },
+                        test_this_baby => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 3,
+                            tests_planned => 3,
+                        },
+                    },
+                },
+            },
+        },
+    );
 }
 
 1;

@@ -3,7 +3,7 @@ package TestsFor::Parameterized;
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( fail );
-use Test2::Tools::Compare qw( array call end event filter_items is T );
+use Test2::Tools::Compare qw( array call end event filter_items F is T );
 
 with 'Test::Class::Moose::Role::ParameterizedInstances';
 
@@ -97,6 +97,41 @@ sub expected_test_events {
             end();
         };
     };
+}
+
+sub expected_report {
+    return (
+        'TestsFor::Parameterized' => {
+            is_skipped => F(),
+            passed     => T(),
+            instances  => {
+                'TestsFor::Parameterized with bar' => {
+                    is_skipped => F(),
+                    passed     => T(),
+                    methods    => {
+                        test_one_set => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                    },
+                },
+                'TestsFor::Parameterized with foo' => {
+                    is_skipped => F(),
+                    passed     => T(),
+                    methods    => {
+                        test_one_set => {
+                            is_skipped    => F(),
+                            passed        => T(),
+                            num_tests_run => 1,
+                            tests_planned => 1,
+                        },
+                    },
+                },
+            },
+        },
+    );
 }
 
 1;

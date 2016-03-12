@@ -6,6 +6,7 @@ use Test2::API qw( intercept );
 use Test2::Tools::Basic qw( done_testing fail ok pass );
 use Test2::Tools::Compare qw( array call end event F is match T );
 use Test::Events;
+use Test::Reporting qw( test_report );
 
 use Test::Class::Moose::Load qw(t/skiplib);
 use Test::Class::Moose::Runner;
@@ -25,37 +26,17 @@ test_events_is(
     'got expected events for skip tests'
 );
 
-my $classes = $runner->test_report->test_classes;
+my %expect = (
+    is_parallel        => F(),
+    num_tests_run      => 2,
+    num_test_instances => 2,
+    num_test_methods   => 2,
+    classes            => {
+        TestsFor::SkipAll->expected_report,
+        TestsFor::SkipSomeMethods->expected_report,
+    },
+);
 
-{
-    is $classes->[0]->name, 'TestsFor::SkipAll',
-      'Our first class should be listed in reporting';
-
-    my $instances = $classes->[0]->test_instances;
-
-    ok $instances->[0]->is_skipped, '... and it should be listed as skipped';
-    ok $instances->[0]->passed,     '... and it is reported as passed';
-}
-
-{
-    is $classes->[1]->name, 'TestsFor::SkipSomeMethods',
-      'Our second class should be listed in reporting';
-
-    my $instances = $classes->[1]->test_instances;
-    ok !$instances->[0]->is_skipped,
-      '... and it should NOT be listed as skipped';
-    ok $instances->[0]->passed, '... and it is reported as passed';
-    my $methods = $instances->[0]->test_methods;
-
-    is @$methods, 3, '... and it should have three test methods';
-
-    my @skipped = grep { $_->is_skipped } @$methods;
-    is scalar @skipped, 1,
-      '... and the correct number of methods should be skipped';
-    is $skipped[0]->name, 'test_me',
-      '... and they should be the correct methods';
-    is $skipped[0]->num_tests_run, 0,
-      '... and we should have 0 tests run';
-}
+test_report( $runner->test_report, \%expect );
 
 done_testing;

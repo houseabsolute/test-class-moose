@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::Tools::Basic qw( ok );
 use Test2::Tools::Class qw( can_ok isa_ok );
-use Test2::Tools::Compare qw( field hash is validator );
+use Test2::Tools::Compare qw( field hash is T validator );
 use Test2::Tools::Subtest qw( subtest_streamed );
 
 use Scalar::Util 'looks_like_number';
@@ -19,7 +19,7 @@ sub test_report {
     my $expect = shift;
 
     is( $report->timing_data,
-        _timing_report_struct($expect),
+        _test_timing_data($expect),
         'timing data for entire report'
     );
 
@@ -55,7 +55,7 @@ sub test_report {
     }
 }
 
-sub _timing_report_struct {
+sub _test_timing_data {
     my $expect = shift;
 
     my $pos_or_zero
@@ -75,83 +75,58 @@ sub _timing_report_struct {
             for my $class ( keys %{ $expect->{classes} } ) {
                 field $class => hash {
                     $time_field->();
-                    field instance => hash {
-                        for my $instance (
-                            keys %{ $expect->{classes}{$class}{instances} } )
-                        {
-                            field $instance => hash {
-                                $time_field->();
-                                field control => hash {
-                                    field test_startup => hash {
-                                        $time_field->();
-                                    };
-                                    field test_shutdown => hash {
-                                        $time_field->();
-                                    };
-                                };
-                                field method => hash {
-                                    for my $method (
-                                        keys %{
-                                            $expect->{classes}{$class}
-                                              {instances}{$instance}{methods}
-                                        }
-                                      )
-                                    {
-                                        field $method => hash {
+                    if ( $expect->{classes}{$class}{instances} ) {
+                        field instance => hash {
+                            for my $instance (
+                                keys %{ $expect->{classes}{$class}{instances}
+                                } )
+                            {
+                                next
+                                  if $expect->{classes}{$class}{instances}
+                                  {$instance}{is_skipped} eq T();
+
+                                field $instance => hash {
+                                    $time_field->();
+                                    field control => hash {
+                                        field test_startup => hash {
                                             $time_field->();
-                                            field control => hash {
-                                                field test_setup => hash {
-                                                    $time_field->();
-                                                };
-                                                field test_teardown => hash {
-                                                    $time_field->();
+                                        };
+                                        field test_shutdown => hash {
+                                            $time_field->();
+                                        };
+                                    };
+                                    field method => hash {
+                                        for my $method (
+                                            keys %{
+                                                $expect->{classes}{$class}
+                                                  {instances}{$instance}
+                                                  {methods}
+                                            }
+                                          )
+                                        {
+                                            field $method => hash {
+                                                $time_field->();
+                                                field control => hash {
+                                                    field test_setup => hash {
+                                                        $time_field->();
+                                                    };
+                                                    field test_teardown =>
+                                                      hash {
+                                                        $time_field->();
+                                                      };
                                                 };
                                             };
-                                        };
-                                    }
+                                        }
+                                    };
                                 };
-                            };
-                        }
-                    };
+                            }
+                        };
+                    }
                 };
             }
         };
     };
 }
-
-# sub _class_cmp_deeply {
-#     my $class = shift;
-
-#     my %instance_control_cmp = (
-#         control => {
-#             test_startup  => \%time_cmp,
-#             test_shutdown => \%time_cmp,
-#         },
-#     );
-
-#     my %method_control_cmp = (
-#         control => {
-#             test_setup    => \%time_cmp,
-#             test_teardown => \%time_cmp,
-#         },
-#     );
-
-#     return (
-#         $class => {
-#             %time_cmp,
-#             instance => {
-#                 $class => {
-#                     %time_cmp,
-#                     %instance_control_cmp,
-#                     method => {
-#                         map { $_ => { %time_cmp, %method_control_cmp } }
-#                           @{ $expected_methods{$class} },
-#                     },
-#                 },
-#             },
-#         }
-#     );
-# }
 
 sub _test_class_report {
     my $class_report = shift;
@@ -198,9 +173,12 @@ sub _test_instance_report {
         );
     }
 
+    my @control = 'test_startup';
+    push @control, 'test_shutdown'
+      unless $instance_report->is_skipped;
     _test_control_methods(
         $instance_report,
-        qw( test_startup test_shutdown )
+        @control,
     );
 
     my @methods = $instance_report->all_test_methods;
