@@ -2,6 +2,10 @@ package Test::Class::Moose::Role::AutoUse;
 
 # ABSTRACT: Automatically load the classes you're testing
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.10.0;
 
 our $VERSION = '0.68';

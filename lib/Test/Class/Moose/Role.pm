@@ -2,6 +2,10 @@ package Test::Class::Moose::Role;
 
 # ABSTRACT: Test::Class::Moose for roles
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.10.0;
 
 our $VERSION = '0.68';

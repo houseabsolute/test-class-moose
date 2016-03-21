@@ -4,6 +4,7 @@ package Test::Class::Moose::Load;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 our $VERSION = '0.68';
 
