@@ -10,7 +10,7 @@ use 5.10.0;
 
 our $VERSION = '0.68';
 
-use Package::DeprecationManager -deprecations => {
+use Package::DeprecationManager 0.16 -deprecations => {
     'Test::Class::Moose->runtests' => '0.55',
 };
 
