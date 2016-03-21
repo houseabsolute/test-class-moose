@@ -29,8 +29,7 @@ Revision history for Perl distribution Test-Class-Moose
           methods, which don't include a "_report" suffix.
         * Removed the long-deprecated tests_run methods from TCM::Report and
           TCM::Report::Method.
-        * Removed the long-deprecated tests_run methods from
-          TCM::Report::Method->add_to_plan method.
+        * Removed the long-deprecated TCM::Report::Method->add_to_plan method.
 
 0.66     2015-11-30 (TRIAL RELEASE)
         * On some systems it seems that Benchmark can report negative run
