@@ -652,7 +652,7 @@ marked C<deprecated>:
         exclude_tags => 'deprecated',
     )->runtests;
 
-You can also inspect tags withing your test classes:
+You can also inspect tags within your test classes:
 
     sub test_setup {
         my $test          = shift;
