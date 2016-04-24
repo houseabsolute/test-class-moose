@@ -844,6 +844,17 @@ for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 DEPRECATIONS
 
+=head2 Version 0.67
+
+=over 4
+
+=item * The L<Test::Class::Moose::Report> class's C<test_classes> method is un-deprecated
+
+This method now returns a list of L<Test::Class::Moose::Report::Class>
+objects. A class report contains one or more instance reports.
+
+=back
+
 =head2 Version 0.55
 
 =over 4
