@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.62
+version 0.68
 
 # SYNOPSIS
 
@@ -413,7 +413,7 @@ marked `deprecated`:
         exclude_tags => 'deprecated',
     )->runtests;
 
-You can also inspect tags withing your test classes:
+You can also inspect tags within your test classes:
 
     sub test_setup {
         my $test          = shift;
@@ -580,6 +580,7 @@ wrong).
         my $system = $time->system;
         # do with these as you will
     }
+    diag "Number of test classes: "   . $report->num_test_classes;
     diag "Number of test instances: " . $report->num_test_instances;
     diag "Number of test methods: "   . $report->num_test_methods;
     diag "Number of tests:        "   . $report->num_tests;
@@ -603,6 +604,13 @@ If you would like [Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moo
 for you, see [Test::Class::Moose::Role::AutoUse](https://metacpan.org/pod/Test::Class::Moose::Role::AutoUse) in this distribution.
 
 # DEPRECATIONS
+
+## Version 0.67
+
+- The [Test::Class::Moose::Report](https://metacpan.org/pod/Test::Class::Moose::Report) class's `test_classes` method is un-deprecated
+
+    This method now returns a list of [Test::Class::Moose::Report::Class](https://metacpan.org/pod/Test::Class::Moose::Report::Class)
+    objects. A class report contains one or more instance reports.
 
 ## Version 0.55
 
@@ -689,14 +697,6 @@ for you, see [Test::Class::Moose::Role::AutoUse](https://metacpan.org/pod/Test::
 - Callbacks for tags (for example, 'critical' tags could bailout)
 - New test phases - start and end suite, not just start and end class/method
 
-# BUGS
-
-Please report any bugs or feature requests to `bug-test-class-moose at rt.cpan.org`,
-or through the web interface at
-[http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose](http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose).  I will be
-notified, and then you'll automatically be notified of progress on your bug as
-I make changes.
-
 # SUPPORT
 
 You can find documentation for this module with the perldoc command.
@@ -742,36 +742,49 @@ You can also look for information at:
 
     [Test::Class](https://metacpan.org/pod/Test::Class) + [Test::Most](https://metacpan.org/pod/Test::Most).
 
+# BUGS
+
+Please report any bugs or feature requests to `bug-test-class-moose at rt.cpan.org`,
+or through the web interface at
+[http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose](http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose).  I will be
+notified, and then you'll automatically be notified of progress on your bug as
+I make changes.
+
+bugs may be submitted through [https://github.com/test-class-moose/test-class-moose/issues](https://github.com/test-class-moose/test-class-moose/issues).
+
+I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
+
 # AUTHORS
 
-- Curtis "Ovid" Poe <ovid@cpan.org>
-- Dave Rolsky <autarch@urth.org>
+- Curtis "Ovid" Poe &lt;ovid@cpan.org>
+- Dave Rolsky &lt;autarch@urth.org>
 
 # CONTRIBUTORS
 
-- Andy Jack <github@veracity.ca>
-- Doug Bell <madcityzen@gmail.com>
-- Gregory Oschwald <goschwald@maxmind.com>
+- Andy Jack &lt;github@veracity.ca>
+- Denny de la Haye &lt;denny@users.noreply.github.com>
+- Doug Bell &lt;madcityzen@gmail.com>
+- Gregory Oschwald &lt;goschwald@maxmind.com>
 - Jeremy Krieg <Jeremy.Krieg@YourAmigo.com>
-- Jonathan C. Otsuka <djgoku@gmail.com>
-- Jonathan Stowe <jns@gellyfish.co.uk>
-- Karen Etheridge <ether@cpan.org>
-- mark-5 <maflick88@gmail.com>
-- mephinet <mephinet@gmx.net>
-- Neil Bowers <neil@bowers.com>
-- Olaf Alders <olaf@wundersolutions.com>
-- Paul Boyd <pboyd@dev3l.net>
-- Petrea Corneliu Stefan <stefan@garage-coding.com>
-- Steven Humphrey <catchgithub@33k.co.uk>
-- Stuckdownawell <stuckdownawell@gmail.com>
-- Tim Vroom <vroom@blockstackers.com>
-- Tom Beresford <tom.beresford@bskyb.com>
-- Tom Heady <tom@punch.net>
+- Jonathan C. Otsuka &lt;djgoku@gmail.com>
+- Jonathan Stowe &lt;jns@gellyfish.co.uk>
+- Karen Etheridge &lt;ether@cpan.org>
+- mark-5 &lt;maflick88@gmail.com>
+- mephinet &lt;mephinet@gmx.net>
+- Neil Bowers &lt;neil@bowers.com>
+- Olaf Alders &lt;olaf@wundersolutions.com>
+- Paul Boyd &lt;pboyd@dev3l.net>
+- Petrea Corneliu Stefan &lt;stefan@garage-coding.com>
+- Steven Humphrey &lt;catchgithub@33k.co.uk>
+- Stuckdownawell &lt;stuckdownawell@gmail.com>
+- Tim Vroom &lt;vroom@blockstackers.com>
+- Tom Beresford &lt;tom.beresford@bskyb.com>
+- Tom Heady &lt;tom@punch.net>
 - Udo Oji <Velti@signor.com>
 
-# COPYRIGHT AND LICENSE
+# COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2014 by Curtis "Ovid" Poe.
+This software is copyright (c) 2012 - 2016 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
