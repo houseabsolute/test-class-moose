@@ -168,6 +168,51 @@ List it as the `extends` in the import list.
 
     1;
 
+## Skipping Test::Most
+
+By default, when you `use Test::Class::Moose` in your own test class, it
+exports all the subs from [Test::Most](https://metacpan.org/pod/Test::Most) into your class. If you'd prefer to
+import a different set of test tools, you can pass `bare => 1` when using
+`Test::Class::Moose`:
+
+    use Test::Class::Moose bare => 1;
+
+When you pass this, `Test::Class::Moose` will not export [Test::Most](https://metacpan.org/pod/Test::Most)'s subs
+into your class. You will have to explicitly import something like
+[Test::More](https://metacpan.org/pod/Test::More) or [Test2::Tools::Compare](https://metacpan.org/pod/Test2::Tools::Compare) in order to actually perform tests.
+
+## Custom Test Toolkits
+
+If you'd like to provide a custom set of test modules to all of your test
+classes, this is easily done with [Import::Into](https://metacpan.org/pod/Import::Into):
+
+    package MM::Test::Class::Moose;
+
+    use strict;
+    use warnings;
+    use namespace::autoclean ();
+
+    use Import::Into;
+    use Test::Class::Moose ();
+    use Test::Fatal;
+    use Test::More;
+
+    sub import {
+        my @imports = qw(
+          Test::Class::Moose
+          namespace::autoclean
+          Test::Fatal
+          Test::More
+        );
+
+        my $caller_level = 1;
+        $_->import::into($caller_level) for @imports;
+    }
+
+You could also create a kit in a separate module like `My::Test::Kit` using
+[Test::Kit](https://metacpan.org/pod/Test::Kit) and then simply export that from your `My::Test::Class::Moose`
+module with [Import::Into](https://metacpan.org/pod/Import::Into).
+
 # TEST CONTROL METHODS
 
 Do not run tests in test control methods. This will cause the test control
