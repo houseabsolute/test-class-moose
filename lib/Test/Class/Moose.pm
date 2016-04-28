@@ -11,6 +11,7 @@ use Carp;
 use namespace::autoclean;
 use Import::Into;
 use Sub::Attribute;
+use Test::Most ();
 
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;

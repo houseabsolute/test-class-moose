@@ -1,6 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Explicitly load Test::Most in Test::Class::Moose. Earlier versions
+          of Import::Into would not load this for us, leading to all sorts of
+          errors. Reported by Philipp Gortan. (GitHub issue #62)
 
 0.68     2016-04-26
         * If you "use Test::Class::Moose bare => 1" you will no longer get
