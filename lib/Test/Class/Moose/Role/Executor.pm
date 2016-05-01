@@ -221,6 +221,12 @@ sub _run_test_instance {
 
             # test_startup skipped the class
             $instance_report->skipped($message);
+
+            if ( $test_instance->run_test_shutdown_on_skip ) {
+                $self->_run_shutdown( $test_instance, $instance_report )
+                  or return;
+            }
+
             $instance_report->passed(1);
             $ctx->plan( 0, SKIP => $message );
             return;
@@ -240,15 +246,7 @@ sub _run_test_instance {
         }
         $instance_report->passed($all_passed);
 
-        # shutdown
-        unless (
-            $self->_run_test_control_method(
-                $test_instance, 'test_shutdown', $instance_report,
-            )
-          )
-        {
-            $instance_report->passed(0);
-        }
+        $self->_run_shutdown( $test_instance, $instance_report );
 
         # finalize reporting
         $instance_report->_end_benchmark;
@@ -259,6 +257,19 @@ sub _run_test_instance {
     };
 
     return $instance_report;
+}
+
+sub _run_shutdown {
+    my ( $self, $test_instance, $instance_report ) = @_;
+
+    return 1
+      if $self->_run_test_control_method(
+        $test_instance, 'test_shutdown', $instance_report,
+      );
+
+    $instance_report->passed(0);
+
+    return 0;
 }
 
 sub _test_methods_for {

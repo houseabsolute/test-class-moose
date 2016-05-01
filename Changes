@@ -26,6 +26,10 @@ Revision history for Perl distribution Test-Class-Moose
     Test::Most exported into your class. Instead, you can load the testing
     module(s) of your choice.
 
+  * You can now force the test_shutdown method to be run when a class is
+    skipped by defining a run_test_shutdown_on_skip method in your test class
+    that returns a true value.
+
   * Test class instances now have a $self->test_instance_name method.
 
   [BUG FIXES]
