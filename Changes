@@ -2,70 +2,93 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
-[BACKWARDS INCOMPATIBILITIES]
-        * Parallel testing now parallelizes test classes rather than
-          individual test instances. This is only relevant if your test suite
-          contains parameterized test classes. This is slightly less
-          efficient, but made the internal test running code much, much
-          simpler, and made it possible to fix reporting.
-        * The Test::Class::Moose::Config->builder method has been removed.
-        * The Test::Class::Moose::Runner->builder method has been removed.
+  [BACKWARDS INCOMPATIBILITIES]
 
-[ENHANCEMENTS]
-        * Rewrote the internals of Test::Class::Moose to use Test2 test
-          events. This led to several changes and cleanups. Notably, parallel
-          testing is now much simpler and more like sequential testing.
-        * Test reporting works entirely correctly when tests are run in
-          parallel.
-        * If you "use Test::Class::Moose bare => 1" you will no longer get
-          Test::Most exported into your class. Instead, you can load the
-          testing module(s) of your choice.
+  * Parallel testing now parallelizes test classes rather than individual test
+    instances. This is only relevant if your test suite contains parameterized
+    test classes. This is slightly less efficient, but made the internal test
+    running code much simpler and made it possible to fix reporting for
+    parallel test runs.
+
+  * The Test::Class::Moose::Config->builder method has been removed.
+
+  * The Test::Class::Moose::Runner->builder method has been removed.
+
+  [ENHANCEMENTS]
+
+  * Rewrote the internals of Test::Class::Moose to use Test2 test events. This
+    led to several changes and cleanups. Notably, parallel testing is now much
+    simpler and more like sequential testing.
+
+  * Test reporting works entirely correctly when tests are run in parallel.
+
+  * If you "use Test::Class::Moose bare => 1" you will no longer get
+    Test::Most exported into your class. Instead, you can load the testing
+    module(s) of your choice.
+
+  * Test class instances now have a $self->test_instance_name method.
+
+  [BUG FIXES]
+
+  * Fixed a bug in how test methods were counted. When a test class or method
+    was entirely skipped by setting $self->test_skip, the method or classes
+    were still included in the count returned by the report object's
+    num_test_methods method.
 
 0.69     2016-04-28
-        * Explicitly load Test::Most in Test::Class::Moose. Earlier versions
-          of Import::Into would not load this for us, leading to all sorts of
-          errors. Reported by Philipp Gortan. (GitHub issue #62)
+
+  [BUG FIXES]
+
+  * Explicitly load Test::Most in Test::Class::Moose. Earlier versions of
+    Import::Into would not load this for us, leading to all sorts of
+    errors. Reported by Philipp Gortan. (GitHub issue #62)
 
 0.68     2016-04-26
-        * If you "use Test::Class::Moose bare => 1" you will no longer get
-          Test::Most exported into your class. Instead, you can load the
-          testing module(s) of your choice.
-        * Test class instances now have a $self->test_instance_name method.
 
-[BUG FIXES]
-        * Fixed a bug in how test methods were counted. When a test class or
-          method was entirely skipped by setting $self->test_skip, the method
-          or classes were still included in the count returned by the report
-          object's num_test_methods method.
+  [ENHANCEMENTS]
+
+  * If you "use Test::Class::Moose bare => 1" you will no longer get
+    Test::Most exported into your class. Instead, you can load the testing
+    module(s) of your choice.
 
 0.67     2015-11-30
-        * Same as 0.66, but repeating changes from 0.63 since there's a bunch
-          of them.
-        * Added a new method to Test::Class::Moose::Report, timing_data. This
-          returns a complex data structure containing timing data for all
-          levels of test suite. This is useful if you want to store test run
-          timing data for later analysis.
-        * Added a new report object, Test::Class::Moose::Report::Class. Each
-          class that is tested gets one of these reports. The Class report in
-          turn contains 1+ Instance reports, which in turn contains 1+ Method
-          reports.
-        * The TCM::Report::Instance class now has two new methods,
-          test_startup_method and test_shutdown_method. These methods return
-          TCM::Report::Method objects with information about these control
-          methods.
-        * The TCM::Report::Method class now has two new methods,
-          test_setup_method and test_teardown_method. These methods return
-          TCM::Report::Method objects with information about these control
-          methods.
-        * Removed the Test::Class::Moose::Report::Instance's error
-          attribute. Contrary to the documentation, this attribute was never
-          populated.
-        * Renamed Test::Class::Moose::Report::Method->instance_report method
-          to instance. This is a better match for other report-related
-          methods, which don't include a "_report" suffix.
-        * Removed the long-deprecated tests_run methods from TCM::Report and
-          TCM::Report::Method.
-        * Removed the long-deprecated TCM::Report::Method->add_to_plan method.
+
+  [ENHANCEMENTS]
+
+  * Same as 0.66, but repeating changes from 0.63 since there's a bunch of
+    them.
+
+  * Added a new method to Test::Class::Moose::Report, timing_data. This
+    returns a complex data structure containing timing data for all levels of
+    test suite. This is useful if you want to store test run timing data for
+    later analysis.
+
+  * Added a new report object, Test::Class::Moose::Report::Class. Each class
+    that is tested gets one of these reports. The Class report in turn
+    contains 1+ Instance reports, which in turn contains 1+ Method reports.
+
+  * The TCM::Report::Instance class now has two new methods,
+    test_startup_method and test_shutdown_method. These methods return
+    TCM::Report::Method objects with information about these control methods.
+
+  * The TCM::Report::Method class now has two new methods, test_setup_method
+    and test_teardown_method. These methods return TCM::Report::Method objects
+    with information about these control methods.
+
+  [BACKWARDS INCOMPATIBILITIES]
+
+  * Removed the Test::Class::Moose::Report::Instance's error
+    attribute. Contrary to the documentation, this attribute was never
+    populated.
+
+  * Renamed Test::Class::Moose::Report::Method->instance_report method to
+    instance. This is a better match for other report-related methods, which
+    don't include a "_report" suffix.
+
+  * Removed the long-deprecated tests_run methods from TCM::Report and
+    TCM::Report::Method.
+
+  * Removed the long-deprecated TCM::Report::Method->add_to_plan method.
 
 0.66     2015-11-30 (TRIAL RELEASE)
         * On some systems it seems that Benchmark can report negative run
