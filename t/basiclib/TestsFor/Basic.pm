@@ -96,6 +96,11 @@ sub expected_test_events {
                     event Ok => sub {
                         call pass => T();
                         call name => 'this is another test (TestsFor::Basic)';
+                        call trace => object {
+                            call package => 'TestsFor::Basic';
+                            call line    => 32;
+                            call subname => 'Test2::Tools::Basic::ok';
+                        };
                     };
                     event Ok => sub {
                         call pass => T();
@@ -119,6 +124,11 @@ sub expected_test_events {
                     event Ok => sub {
                         call pass => T();
                         call name => 'test_instance_name matches class name';
+                        call trace => object {
+                            call package => 'TestsFor::Basic';
+                            call line    => 24;
+                            call subname => 'Test2::Tools::Compare::is';
+                        };
                     };
                     event Plan => sub {
                         call max => 1;
