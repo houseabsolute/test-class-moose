@@ -1,8 +1,10 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
-        * If set_process_name we update the process name to include test
-          control method names and test methods as well.
+
+0.71     2016-05-09
+        * If set_process_name is true we update the process name to include
+          test control method names and test methods as well.
 
 0.70     2016-05-09
         * Added a new configuration parameter for the test runner,
