@@ -1,6 +1,8 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+
+0.71     2016-05-09
         * If set_process_name we update the process name to include test
           control method names and test methods as well.
 
