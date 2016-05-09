@@ -205,6 +205,9 @@ my %TEST_CONTROL_METHODS = map { $_ => 1 } qw/
 sub _tcm_run_test_control_method {
     my ( $self, $test_instance, $phase, $report_object ) = @_;
 
+    local $0 = "$0 - $phase"
+      if $self->test_configuration->set_process_name;
+
     $TEST_CONTROL_METHODS{$phase}
       or croak("Unknown test control method ($phase)");
 
@@ -252,11 +255,15 @@ sub _tcm_run_test_control_method {
 sub _tcm_run_test_method {
     my ( $self, $test_instance, $test_method, $instance_report ) = @_;
 
+    my $config = $self->test_configuration;
+
+    local $0 = "$0 - $test_method"
+      if $config->set_process_name;
+
     my $report = Test::Class::Moose::Report::Method->new(
         { name => $test_method, instance => $instance_report } );
 
     $instance_report->add_test_method($report);
-    my $config = $self->test_configuration;
 
     my $builder = $config->builder;
     $test_instance->test_skip_clear;
