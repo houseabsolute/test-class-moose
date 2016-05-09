@@ -4,7 +4,7 @@ package Test::Class::Moose::Role::Parallel;
 
 use 5.10.0;
 
-our $VERSION = '0.70';
+our $VERSION = '0.71';
 
 use Moose::Role 2.0000;
 use namespace::autoclean;
