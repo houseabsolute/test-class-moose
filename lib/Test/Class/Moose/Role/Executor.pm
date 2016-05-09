@@ -4,7 +4,7 @@ package Test::Class::Moose::Role::Executor;
 
 use 5.10.0;
 
-our $VERSION = '0.70';
+our $VERSION = '0.71';
 
 use Moose::Role 2.0000;
 use Carp;
@@ -352,6 +352,9 @@ my %TEST_CONTROL_METHODS = map { $_ => 1 } qw/
 sub _run_test_control_method {
     my ( $self, $test_instance, $phase, $report_object ) = @_;
 
+    local $0 = "$0 - $phase"
+      if $self->test_configuration->set_process_name;
+
     $TEST_CONTROL_METHODS{$phase}
       or croak("Unknown test control method ($phase)");
 
@@ -399,6 +402,9 @@ sub _run_test_control_method {
 
 sub _run_test_method {
     my ( $self, $test_instance, $test_method, $instance_report ) = @_;
+
+    local $0 = "$0 - $test_method"
+      if $self->test_configuration->set_process_name;
 
     my $method_report = Test::Class::Moose::Report::Method->new(
         { name => $test_method, instance => $instance_report } );
