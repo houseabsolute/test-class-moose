@@ -2,15 +2,6 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
-0.71     2016-05-09
-        * If set_process_name is true we update the process name to include
-          test control method names and test methods as well.
-
-0.70     2016-05-09
-        * Added a new configuration parameter for the test runner,
-          set_process_name. If this is true, then $0 will be updated to
-          include the test instance name for each test instance as it is run.
-
   [BACKWARDS INCOMPATIBILITIES]
 
   * Parallel testing now parallelizes test classes rather than individual test
@@ -47,6 +38,21 @@ Revision history for Perl distribution Test-Class-Moose
     was entirely skipped by setting $self->test_skip, the method or classes
     were still included in the count returned by the report object's
     num_test_methods method.
+
+0.71     2016-05-09
+
+  [ENHANCEMENTS]
+
+  * If set_process_name is true we update the process name to include
+    test control method names and test methods as well.
+
+0.70     2016-05-09
+
+  [ENHANCEMENTS]
+
+  * Added a new configuration parameter for the test runner,
+    set_process_name. If this is true, then $0 will be updated to
+    include the test instance name for each test instance as it is run.
 
 0.69     2016-04-28
 
