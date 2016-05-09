@@ -27,6 +27,12 @@ has 'show_timing' => (
     },
 );
 
+has 'set_process_name' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
+
 has 'statistics' => (
     is      => 'ro',
     isa     => 'Bool',

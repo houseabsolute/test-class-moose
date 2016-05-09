@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.69
+version 0.70
 
 # SYNOPSIS
 

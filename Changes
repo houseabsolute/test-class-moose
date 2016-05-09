@@ -1,6 +1,9 @@
 Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
+        * Added a new configuration parameter for the test runner,
+          set_process_name. If this is true, then $0 will be updated to
+          include the test instance name for each test instance as it is run.
 
   [BACKWARDS INCOMPATIBILITIES]
 

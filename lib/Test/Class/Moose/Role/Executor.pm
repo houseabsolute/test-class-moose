@@ -186,6 +186,9 @@ sub _run_test_instance {
         }
     );
 
+    local $0 = "$0 - $test_instance_name"
+      if $self->test_configuration->set_process_name;
+
     $instance_report->_start_benchmark;
 
     $class_report->add_test_instance($instance_report);
