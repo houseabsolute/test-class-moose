@@ -109,6 +109,12 @@ boost. This does mean a global state will be shared, so keep this in mind.
 Boolean. Will display verbose information on the amount of time it takes each
 test class/test method to run. Defaults to false, but see C<use_environment>.
 
+=item * C<set_process_name>
+
+Boolean. If this is true, then C<$0> will be updated to include the test
+instance name for each test instance as it is run. This can be helpful when
+debugging hanging tests. Defaults to false.
+
 =item * C<statistics>
 
 Boolean. Will display number of classes, test methods and tests run. Defaults

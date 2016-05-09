@@ -52,6 +52,9 @@ sub _tcm_run_test_instance {
     my $builder = $config->builder;
     my $report  = $self->test_report;
 
+    local $0 = "$0 - $test_instance_name"
+      if $config->set_process_name;
+
     # set up test class reporting
     my $instance_report = Test::Class::Moose::Report::Instance->new(
         {   name => $test_instance_name,
