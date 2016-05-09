@@ -112,7 +112,8 @@ test class/test method to run. Defaults to false, but see C<use_environment>.
 =item * C<set_process_name>
 
 Boolean. If this is true, then C<$0> will be updated to include the test
-instance name for each test instance as it is run. This can be helpful when
+instance name for each test instance as it is run, and then further updated as
+each test control method and test method are run, This can be helpful when
 debugging hanging tests. Defaults to false.
 
 =item * C<statistics>
