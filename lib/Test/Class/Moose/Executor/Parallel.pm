@@ -19,7 +19,7 @@ use Parallel::ForkManager;
 use Scalar::Util qw(reftype);
 use TAP::Formatter::Color;
 use Test2::API qw( test2_stack );
-use Test2::AsyncSubtest 0.000005 ();
+use Test2::AsyncSubtest 0.000015 ();
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Report::Class;
 use Try::Tiny;

@@ -15,8 +15,8 @@ use Test::Most ();
 
 # We don't use anything from these two modules, but we want to specify a
 # specific prereq version.
-use Test2 0.000025 ();
-use Test::More 1.3 ();
+use Test2 1.302015      ();
+use Test::More 1.302015 ();
 
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
