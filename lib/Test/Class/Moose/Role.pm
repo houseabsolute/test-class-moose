@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 use 5.10.0;
 
-our $VERSION = '0.72';
+our $VERSION = '0.73';
 
 use Carp;
 
