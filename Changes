@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.72     2016-05-10 (TRIAL RELEASE)
+
   [BACKWARDS INCOMPATIBILITIES]
 
   * Parallel testing now parallelizes test classes rather than individual test

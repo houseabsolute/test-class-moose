@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.71
+version 0.72
 
 # SYNOPSIS
 
@@ -273,7 +273,8 @@ you're about to run, you can do this:
        $test->next::method;
     }
 
-Runs at the end of each test method.
+Runs at the end of each test method. This method is always run, even if the
+method was skipped.
 
 ## `test_shutdown`
 
@@ -284,6 +285,10 @@ Runs at the end of each test method.
     }
 
 Runs at the end of each test class.
+
+By default, this is not run if the test class is skipped entirely. You can
+override the `run_test_shutdown_on_skip` in your class to return a true value
+in order to force this method to be run when the class is skipped.
 
 ## Overriding Test Control Methods
 
