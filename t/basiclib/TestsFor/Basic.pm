@@ -122,8 +122,8 @@ sub expected_test_events {
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
-                        call pass => T();
-                        call name => 'test_instance_name matches class name';
+                        call pass  => T();
+                        call name  => 'test_instance_name matches class name';
                         call trace => object {
                             call package => 'TestsFor::Basic';
                             call line    => 24;
