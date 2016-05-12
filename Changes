@@ -2,6 +2,10 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Fix a test failure on Windows.
+
 0.72     2016-05-10 (TRIAL RELEASE)
 
   [BACKWARDS INCOMPATIBILITIES]

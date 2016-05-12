@@ -10,7 +10,7 @@ use Test::Requires {
 };
 
 use Test2::API qw( intercept );
-use Test2::Tools::Basic qw( done_testing plan );
+use Test2::Tools::Basic qw( done_testing skip_all );
 use Test2::Tools::Compare qw( array call end event filter_items F T is );
 use Test::Events;
 use Test::Reporting qw( test_report );
@@ -21,9 +21,9 @@ use Test::Class::Moose::Load
   qw( t/basiclib t/parallellib t/parameterizedlib t/skiplib );
 use Test::Class::Moose::Runner;
 
-plan skip_all =>
-  'These tests currently fail on Windows for reasons we do not understand. Patches welcome.'
-  if $^O =~ /Win32/;
+skip_all(
+    'These tests currently fail on Windows for reasons we do not understand. Patches welcome.'
+) if $^O =~ /Win32/;
 
 my $runner = Test::Class::Moose::Runner->new(
     show_timing => 0,
