@@ -12,7 +12,7 @@ use namespace::autoclean;
 
 use List::SomeUtils qw(uniq);
 use List::Util qw(shuffle);
-use Test2::API qw( context context_do test2_stack );
+use Test2::API qw( test2_stack );
 use Test2::Tools::AsyncSubtest qw( async_subtest );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
@@ -20,6 +20,7 @@ use Test::Class::Moose::Report::Class;
 use Test::Class::Moose::Report::Instance;
 use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::Report;
+use Test::Class::Moose::Util qw( context_do );
 use Try::Tiny;
 
 has 'test_configuration' => (

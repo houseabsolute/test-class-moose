@@ -6,6 +6,8 @@ Revision history for Perl distribution Test-Class-Moose
 
   * Fix a test failure on Windows.
 
+  * Attempted to fix context handling so test events have the right traces.
+
 0.72     2016-05-10 (TRIAL RELEASE)
 
   [BACKWARDS INCOMPATIBILITIES]
