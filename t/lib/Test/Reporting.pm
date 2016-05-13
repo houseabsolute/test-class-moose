@@ -58,74 +58,87 @@ sub test_report {
 sub _test_timing_data {
     my $expect = shift;
 
+    return hash {
+        _time_field();
+        field class => hash {
+            for my $class ( keys %{ $expect->{classes} } ) {
+                field $class =>
+                  _class_timing_structure( $expect->{classes}{$class} );
+            }
+        };
+    };
+}
+
+sub _class_timing_structure {
+    my $expect = shift;
+
+    return hash {
+        _time_field();
+        if ( $expect->{instances} ) {
+            field instance => hash {
+                for my $instance ( keys %{ $expect->{instances} } ) {
+                    next
+                      if $expect->{instances}{$instance}{is_skipped} eq T();
+
+                    field $instance => _instance_timing_structure(
+                        $expect->{instances}{$instance} );
+                }
+            };
+        }
+    };
+}
+
+sub _instance_timing_structure {
+    my $expect = shift;
+
+    return hash {
+        _time_field();
+        field control => hash {
+            field test_startup => hash {
+                _time_field();
+            };
+            field test_shutdown => hash {
+                _time_field();
+            };
+        };
+        field method => hash {
+            for my $method ( keys %{ $expect->{methods} } ) {
+                field $method =>
+                  _method_timing_structure( $expect->{methods}{$method} );
+            }
+        };
+    };
+}
+
+sub _method_timing_structure {
+    my $expect = shift;
+
+    return hash {
+        _time_field();
+        field control => hash {
+            field test_setup => hash {
+                _time_field();
+            };
+
+            field test_teardown => hash {
+                _time_field();
+            };
+        };
+    };
+}
+
+{
     my $pos_or_zero
       = validator( 'number >= 0' => sub { looks_like_number($_) && $_ >= 0 }
       );
-    my $time_field = sub {
-        field time => hash {
+
+    sub _time_field {
+        return field time => hash {
             field real   => $pos_or_zero;
             field system => $pos_or_zero;
             field user   => $pos_or_zero;
         };
-    };
-
-    return hash {
-        $time_field->();
-        field class => hash {
-            for my $class ( keys %{ $expect->{classes} } ) {
-                field $class => hash {
-                    $time_field->();
-                    if ( $expect->{classes}{$class}{instances} ) {
-                        field instance => hash {
-                            for my $instance (
-                                keys %{ $expect->{classes}{$class}{instances}
-                                } )
-                            {
-                                next
-                                  if $expect->{classes}{$class}{instances}
-                                  {$instance}{is_skipped} eq T();
-
-                                field $instance => hash {
-                                    $time_field->();
-                                    field control => hash {
-                                        field test_startup => hash {
-                                            $time_field->();
-                                        };
-                                        field test_shutdown => hash {
-                                            $time_field->();
-                                        };
-                                    };
-                                    field method => hash {
-                                        for my $method (
-                                            keys %{
-                                                $expect->{classes}{$class}
-                                                  {instances}{$instance}
-                                                  {methods}
-                                            }
-                                          )
-                                        {
-                                            field $method => hash {
-                                                $time_field->();
-                                                field control => hash {
-                                                    field test_setup => hash {
-                                                        $time_field->();
-                                                    };
-                                                    field test_teardown =>
-                                                      hash {
-                                                        $time_field->();
-                                                      };
-                                                };
-                                            };
-                                        }
-                                    };
-                                };
-                            }
-                        };
-                    }
-                };
-            }
-        };
-    };
+    }
 }
 
 sub _test_class_report {
