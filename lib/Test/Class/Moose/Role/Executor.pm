@@ -4,7 +4,7 @@ package Test::Class::Moose::Role::Executor;
 
 use 5.10.0;
 
-our $VERSION = '0.73';
+our $VERSION = '0.74';
 
 use Moose::Role 2.0000;
 use Carp;
