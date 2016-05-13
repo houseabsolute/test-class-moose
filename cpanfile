@@ -1,6 +1,7 @@
 requires "Benchmark" => "0";
 requires "Carp" => "0";
 requires "Class::MOP" => "0";
+requires "Exporter" => "0";
 requires "File::Find" => "0";
 requires "File::Spec" => "0";
 requires "Import::Into" => "0";
@@ -29,7 +30,6 @@ requires "warnings" => "0";
 recommends "Parallel::ForkManager" => "v0.7.6";
 
 on 'test' => sub {
-  requires "Exporter" => "0";
   requires "ExtUtils::MakeMaker" => "0";
   requires "File::Spec" => "0";
   requires "Test2::Tools::Basic" => "0";

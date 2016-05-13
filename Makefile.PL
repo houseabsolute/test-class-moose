@@ -20,6 +20,7 @@ my %WriteMakefileArgs = (
     "Benchmark" => 0,
     "Carp" => 0,
     "Class::MOP" => 0,
+    "Exporter" => 0,
     "File::Find" => 0,
     "File::Spec" => 0,
     "Import::Into" => 0,
@@ -46,7 +47,6 @@ my %WriteMakefileArgs = (
     "warnings" => 0
   },
   "TEST_REQUIRES" => {
-    "Exporter" => 0,
     "ExtUtils::MakeMaker" => 0,
     "File::Spec" => 0,
     "Test2::Tools::Basic" => 0,
