@@ -2,8 +2,6 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
-0.73     2016-05-12 (TRIAL RELEASE)
-
   [BACKWARDS INCOMPATIBILITIES]
 
   * The run_test_shutdown_on_skip method is now named
@@ -13,6 +11,8 @@ Revision history for Perl distribution Test-Class-Moose
   * The test_teardown method is no longer run when a test is skipped unless
     run_control_methods_on_skip returns a true value. The test_teardown method
     was never intended to be run unconditionally.
+
+0.73     2016-05-12 (TRIAL RELEASE)
 
   [BUG FIXES]
 
