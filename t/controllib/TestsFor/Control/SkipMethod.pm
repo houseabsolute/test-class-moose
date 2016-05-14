@@ -25,6 +25,8 @@ sub test_will_skip {
     ok( 0, 'test_will_skip' );
 }
 
+sub run_control_methods_on_skip {1}
+
 sub expected_test_events {
     event Subtest => sub {
         call name      => 'TestsFor::Control::SkipMethod';

@@ -19,7 +19,7 @@ sub test_method {
     ok(1);
 }
 
-sub run_test_shutdown_on_skip {1}
+sub run_control_methods_on_skip {1}
 
 sub expected_test_events {
     event Subtest => sub {

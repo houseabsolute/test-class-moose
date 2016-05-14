@@ -10,6 +10,11 @@ sub test_startup {
     $test->test_skip('all methods should be skipped');
 }
 
+# This should not be called
+sub test_shutdown {
+    diag('in shutdown');
+}
+
 sub test_me {
     my $test  = shift;
     my $class = ref $test;

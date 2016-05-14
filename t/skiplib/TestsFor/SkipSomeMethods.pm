@@ -2,7 +2,7 @@ package TestsFor::SkipSomeMethods;
 
 use Test::Class::Moose bare => 1;
 
-use Test2::Tools::Basic qw( ok );
+use Test2::Tools::Basic qw( diag ok );
 use Test2::Tools::Compare qw( array call end event filter_items F is T );
 
 sub test_setup {
@@ -10,6 +10,11 @@ sub test_setup {
     if ( 'test_me' eq $test->test_report->current_method->name ) {
         $test->test_skip('only methods listed as skipped should be skipped');
     }
+}
+
+# This should not be called when a method is skipped
+sub test_teardown {
+    diag('in teardown');
 }
 
 sub test_me {
@@ -55,6 +60,9 @@ sub expected_test_events {
                     end();
                 };
             };
+            event Diag => sub {
+                call message => 'in teardown';
+            };
             event Subtest => sub {
                 call name      => 'test_me';
                 call pass      => T();
@@ -81,6 +89,9 @@ sub expected_test_events {
                     };
                     end();
                 };
+            };
+            event Diag => sub {
+                call message => 'in teardown';
             };
             end();
         };

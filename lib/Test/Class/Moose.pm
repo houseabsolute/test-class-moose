@@ -244,7 +244,7 @@ sub test_setup    { }
 sub test_teardown { }
 sub test_shutdown { }
 
-sub run_test_shutdown_on_skip {0}
+sub run_control_methods_on_skip {0}
 
 __PACKAGE__->meta->make_immutable;
 
@@ -252,7 +252,7 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
-=for Pod::Coverage Tags Tests runtests run_test_shutdown_on_skip
+=for Pod::Coverage Tags Tests runtests run_control_methods_on_skip
 
 =head1 SYNOPSIS
 
@@ -532,8 +532,11 @@ you're about to run, you can do this:
     $test->next::method;
  }
 
-Runs at the end of each test method. This method is always run, even if the
-method was skipped.
+Runs at the end of each test method.
+
+By default, this is not run if the test class is skipped entirely. You can
+override the C<run_control_methods_on_skip> in your class to return a true
+value in order to force this method to be run when the class is skipped.
 
 =head2 C<test_shutdown>
 
@@ -546,8 +549,8 @@ method was skipped.
 Runs at the end of each test class.
 
 By default, this is not run if the test class is skipped entirely. You can
-override the C<run_test_shutdown_on_skip> in your class to return a true value
-in order to force this method to be run when the class is skipped.
+override the C<run_control_methods_on_skip> in your class to return a true
+value in order to force this method to be run when the class is skipped.
 
 =head2 Overriding Test Control Methods
 

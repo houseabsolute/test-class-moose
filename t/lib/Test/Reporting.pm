@@ -49,6 +49,7 @@ sub test_report {
                 _test_class_report(
                     $class_report,
                     $expect->{classes}{$class_name},
+                    $class_name->run_control_methods_on_skip,
                 );
             }
         );
@@ -62,15 +63,18 @@ sub _test_timing_data {
         _time_field();
         field class => hash {
             for my $class ( keys %{ $expect->{classes} } ) {
-                field $class =>
-                  _class_timing_structure( $expect->{classes}{$class} );
+                field $class => _class_timing_structure(
+                    $expect->{classes}{$class},
+                    $class->run_control_methods_on_skip,
+                );
             }
         };
     };
 }
 
 sub _class_timing_structure {
-    my $expect = shift;
+    my $expect                      = shift;
+    my $always_runs_control_methods = shift;
 
     return hash {
         _time_field();
@@ -81,7 +85,9 @@ sub _class_timing_structure {
                       if $expect->{instances}{$instance}{is_skipped} eq T();
 
                     field $instance => _instance_timing_structure(
-                        $expect->{instances}{$instance} );
+                        $expect->{instances}{$instance},
+                        $always_runs_control_methods,
+                    );
                 }
             };
         }
@@ -89,7 +95,8 @@ sub _class_timing_structure {
 }
 
 sub _instance_timing_structure {
-    my $expect = shift;
+    my $expect                      = shift;
+    my $always_runs_control_methods = shift;
 
     return hash {
         _time_field();
@@ -103,15 +110,18 @@ sub _instance_timing_structure {
         };
         field method => hash {
             for my $method ( keys %{ $expect->{methods} } ) {
-                field $method =>
-                  _method_timing_structure( $expect->{methods}{$method} );
+                field $method => _method_timing_structure(
+                    $expect->{methods}{$method},
+                    $always_runs_control_methods,
+                );
             }
         };
     };
 }
 
 sub _method_timing_structure {
-    my $expect = shift;
+    my $expect                      = shift;
+    my $always_runs_control_methods = shift;
 
     return hash {
         _time_field();
@@ -119,6 +129,9 @@ sub _method_timing_structure {
             field test_setup => hash {
                 _time_field();
             };
+
+            return
+              if $expect->{is_skipped} eq T() || $always_runs_control_methods;
 
             field test_teardown => hash {
                 _time_field();
@@ -142,8 +155,9 @@ sub _method_timing_structure {
 }
 
 sub _test_class_report {
-    my $class_report = shift;
-    my $expect       = shift;
+    my $class_report                = shift;
+    my $expect                      = shift;
+    my $always_runs_control_methods = shift;
 
     _test_report_time($class_report);
 
@@ -167,6 +181,7 @@ sub _test_class_report {
                 _test_instance_report(
                     $instance_report,
                     $expect->{instances}{$instance_name},
+                    $always_runs_control_methods,
                 );
             }
         );
@@ -174,8 +189,9 @@ sub _test_class_report {
 }
 
 sub _test_instance_report {
-    my $instance_report = shift;
-    my $expect          = shift;
+    my $instance_report             = shift;
+    my $expect                      = shift;
+    my $always_runs_control_methods = shift;
 
     _test_report_time($instance_report);
 
@@ -188,7 +204,8 @@ sub _test_instance_report {
 
     my @control = 'test_startup';
     push @control, 'test_shutdown'
-      unless $instance_report->is_skipped;
+      unless $instance_report->is_skipped || $always_runs_control_methods;
+
     _test_control_methods(
         $instance_report,
         @control,
@@ -207,6 +224,7 @@ sub _test_instance_report {
                 _test_method_report(
                     $method_report,
                     $expect->{methods}{$method_name},
+                    $always_runs_control_methods,
                 );
             }
         );
@@ -214,8 +232,9 @@ sub _test_instance_report {
 }
 
 sub _test_method_report {
-    my $method_report = shift;
-    my $expect        = shift;
+    my $method_report               = shift;
+    my $expect                      = shift;
+    my $always_runs_control_methods = shift;
 
     _test_report_time($method_report);
 
@@ -226,10 +245,11 @@ sub _test_method_report {
         );
     }
 
-    _test_control_methods(
-        $method_report,
-        qw( test_setup test_teardown ),
-    );
+    my @control = 'test_setup';
+    push @control, 'test_teardown'
+      unless $method_report->is_skipped || $always_runs_control_methods;
+
+    _test_control_methods( $method_report, @control );
 }
 
 sub _test_control_methods {

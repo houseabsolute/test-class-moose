@@ -226,7 +226,7 @@ sub _run_test_instance {
             # test_startup skipped the class
             $instance_report->skipped($message);
 
-            if ( $test_instance->run_test_shutdown_on_skip ) {
+            if ( $test_instance->run_control_methods_on_skip ) {
                 $self->_run_shutdown( $test_instance, $instance_report )
                   or return;
             }
@@ -424,8 +424,10 @@ sub _run_test_method {
     my $num_tests  = 0;
     my $test_class = $test_instance->test_class;
 
-    my $passed = context_do {
+    context_do {
         my $ctx = shift;
+
+        my $skipped;
 
         # If the call to ->$test_method fails then this subtest will fail and
         # Test2::API will also include a diagnostic message with the error.
@@ -442,7 +444,8 @@ sub _run_test_method {
                     context_do {
                         shift->plan( 0, SKIP => $message );
                     };
-                    return;
+                    $skipped = 1;
+                    return 1;
                 }
 
                 $test_instance->$test_method($method_report);
@@ -456,20 +459,20 @@ sub _run_test_method {
             $ctx->diag( $method_report->name . ": $time" );
         }
 
+        # $p will be undef if the tests failed but we want to stick to 0
+        # or 1.
+        $method_report->passed( $p ? 1 : 0 );
+
+        unless ( $skipped && !$test_instance->run_control_methods_on_skip ) {
+            $self->_run_test_control_method(
+                $test_instance,
+                'test_teardown',
+                $method_report,
+            ) or $method_report->passed(0);
+        }
+
         return $p;
     };
-
-    # $passed will be undef if the tests failed but we want to stick to 0 or
-    # 1.
-    $method_report->passed( $passed ? 1 : 0 );
-
-    $method_report->_end_benchmark;
-
-    $self->_run_test_control_method(
-        $test_instance,
-        'test_teardown',
-        $method_report,
-    ) or $method_report->passed(0);
 
     return $method_report unless $num_tests && !$method_report->is_skipped;
 
