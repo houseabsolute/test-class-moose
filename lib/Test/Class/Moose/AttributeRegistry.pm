@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.74';
+our $VERSION = '0.75';
 
 use Carp;
 use Class::MOP;
