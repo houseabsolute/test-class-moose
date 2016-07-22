@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.73
+version 0.74
 
 # SYNOPSIS
 
@@ -273,8 +273,11 @@ you're about to run, you can do this:
        $test->next::method;
     }
 
-Runs at the end of each test method. This method is always run, even if the
-method was skipped.
+Runs at the end of each test method.
+
+By default, this is not run if the test class is skipped entirely. You can
+override the `run_control_methods_on_skip` in your class to return a true
+value in order to force this method to be run when the class is skipped.
 
 ## `test_shutdown`
 
@@ -287,8 +290,8 @@ method was skipped.
 Runs at the end of each test class.
 
 By default, this is not run if the test class is skipped entirely. You can
-override the `run_test_shutdown_on_skip` in your class to return a true value
-in order to force this method to be run when the class is skipped.
+override the `run_control_methods_on_skip` in your class to return a true
+value in order to force this method to be run when the class is skipped.
 
 ## Overriding Test Control Methods
 
@@ -806,30 +809,30 @@ I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 
 # AUTHORS
 
-- Curtis "Ovid" Poe &lt;ovid@cpan.org>
-- Dave Rolsky &lt;autarch@urth.org>
+- Curtis "Ovid" Poe <ovid@cpan.org>
+- Dave Rolsky <autarch@urth.org>
 
 # CONTRIBUTORS
 
-- Andy Jack &lt;github@veracity.ca>
-- Denny de la Haye &lt;denny@users.noreply.github.com>
-- Doug Bell &lt;madcityzen@gmail.com>
-- Gregory Oschwald &lt;goschwald@maxmind.com>
+- Andy Jack <github@veracity.ca>
+- Denny de la Haye <denny@users.noreply.github.com>
+- Doug Bell <madcityzen@gmail.com>
+- Gregory Oschwald <goschwald@maxmind.com>
 - Jeremy Krieg <Jeremy.Krieg@YourAmigo.com>
-- Jonathan C. Otsuka &lt;djgoku@gmail.com>
-- Jonathan Stowe &lt;jns@gellyfish.co.uk>
-- Karen Etheridge &lt;ether@cpan.org>
-- mark-5 &lt;maflick88@gmail.com>
-- mephinet &lt;mephinet@gmx.net>
-- Neil Bowers &lt;neil@bowers.com>
-- Olaf Alders &lt;olaf@wundersolutions.com>
-- Paul Boyd &lt;pboyd@dev3l.net>
-- Petrea Corneliu Stefan &lt;stefan@garage-coding.com>
-- Steven Humphrey &lt;catchgithub@33k.co.uk>
-- Stuckdownawell &lt;stuckdownawell@gmail.com>
-- Tim Vroom &lt;vroom@blockstackers.com>
-- Tom Beresford &lt;tom.beresford@bskyb.com>
-- Tom Heady &lt;tom@punch.net>
+- Jonathan C. Otsuka <djgoku@gmail.com>
+- Jonathan Stowe <jns@gellyfish.co.uk>
+- Karen Etheridge <ether@cpan.org>
+- mark-5 <maflick88@gmail.com>
+- mephinet <mephinet@gmx.net>
+- Neil Bowers <neil@bowers.com>
+- Olaf Alders <olaf@wundersolutions.com>
+- Paul Boyd <pboyd@dev3l.net>
+- Petrea Corneliu Stefan <stefan@garage-coding.com>
+- Steven Humphrey <catchgithub@33k.co.uk>
+- Stuckdownawell <stuckdownawell@gmail.com>
+- Tim Vroom <vroom@blockstackers.com>
+- Tom Beresford <tom.beresford@bskyb.com>
+- Tom Heady <tom@punch.net>
 - Udo Oji <Velti@signor.com>
 
 # COPYRIGHT AND LICENCE

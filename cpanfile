@@ -17,7 +17,7 @@ requires "Sub::Attribute" => "0";
 requires "TAP::Formatter::Color" => "0";
 requires "Test2" => "1.302015";
 requires "Test2::API" => "0";
-requires "Test2::AsyncSubtest" => "0.000015";
+requires "Test2::AsyncSubtest" => "0.000018";
 requires "Test2::IPC" => "0";
 requires "Test2::Tools::AsyncSubtest" => "0";
 requires "Test::More" => "1.302015";
@@ -52,6 +52,7 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
+  requires "Code::TidyAll::Plugin::Test::Vars" => "0.02";
   requires "File::Spec" => "0";
   requires "IO::Handle" => "0";
   requires "IPC::Open3" => "0";
@@ -70,7 +71,9 @@ on 'develop' => sub {
   requires "Test::Pod" => "1.41";
   requires "Test::Pod::Coverage" => "1.08";
   requires "Test::Pod::LinkCheck" => "0";
+  requires "Test::Portability::Files" => "0";
   requires "Test::Spelling" => "0.12";
+  requires "Test::Vars" => "0.009";
   requires "Test::Version" => "1";
   requires "blib" => "1.01";
 };
