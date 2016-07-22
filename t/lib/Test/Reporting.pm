@@ -104,10 +104,18 @@ sub _instance_timing_structure {
             field test_startup => hash {
                 _time_field();
             };
-            field test_shutdown => hash {
-                _time_field();
-            };
+
+            if ( $always_runs_control_methods
+                || !$expect->{is_skipped} eq T() )
+            {
+                field test_shutdown => hash {
+                    _time_field();
+                };
+            }
         };
+
+        return unless keys %{ $expect->{methods} };
+
         field method => hash {
             for my $method ( keys %{ $expect->{methods} } ) {
                 field $method => _method_timing_structure(
@@ -130,12 +138,13 @@ sub _method_timing_structure {
                 _time_field();
             };
 
-            return
-              if $expect->{is_skipped} eq T() || $always_runs_control_methods;
-
-            field test_teardown => hash {
-                _time_field();
-            };
+            if ( $always_runs_control_methods
+                || !$expect->{is_skipped} eq T() )
+            {
+                field test_teardown => hash {
+                    _time_field();
+                };
+            }
         };
     };
 }
@@ -204,7 +213,7 @@ sub _test_instance_report {
 
     my @control = 'test_startup';
     push @control, 'test_shutdown'
-      unless $instance_report->is_skipped || $always_runs_control_methods;
+      if $always_runs_control_methods || !$instance_report->is_skipped;
 
     _test_control_methods(
         $instance_report,
@@ -247,7 +256,7 @@ sub _test_method_report {
 
     my @control = 'test_setup';
     push @control, 'test_teardown'
-      unless $method_report->is_skipped || $always_runs_control_methods;
+      if $always_runs_control_methods || !$method_report->is_skipped;
 
     _test_control_methods( $method_report, @control );
 }
