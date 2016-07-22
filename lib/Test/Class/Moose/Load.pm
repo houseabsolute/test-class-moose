@@ -13,7 +13,7 @@ use File::Spec;
 
 # Override to get your own filter
 sub is_test_class {
-    my ( $class, $file, $dir ) = @_;
+    my ( undef, $file, undef ) = @_;
 
     # By default, we only care about .pm files
     if ( $file =~ /\.pm$/ ) {

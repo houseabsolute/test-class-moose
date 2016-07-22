@@ -144,8 +144,8 @@ has '_config_p' => (
 );
 
 sub import {
-    my $class = shift;
-    my %args  = @_;
+    shift;
+    my %args = @_;
 
     my $caller = caller;
 

@@ -3,8 +3,6 @@ package TestsFor::Basic::Role;
 use Test::Class::Moose::Role;
 
 sub test_in_a_role {
-    my $test = shift;
-
     pass "This is picked up from role";
 }
 

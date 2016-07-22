@@ -6,20 +6,16 @@ use Test2::Tools::Basic qw( pass );
 use Test2::Tools::Compare qw( array call end event T );
 
 sub test_just_one_test : Test {
-    my $test = shift;
     pass 'We should only have a single test';
 }
 
 sub test_more_than_one_test : Tests(1) {
     my $test = shift;
-
     $test->next::method;
     pass 'Overriding and calling parent';
 }
 
 sub test_with_attribute_but_no_plan : Tests(3) {
-    my $test = shift;
-
     pass "Overriding and not calling parent: $_" for 1 .. 3;
 }
 

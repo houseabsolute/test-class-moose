@@ -6,7 +6,6 @@ use Test2::Tools::Basic qw( ok );
 use Test2::Tools::Compare qw( array call end event F is T );
 
 sub test_alpha_first {
-    my $test = shift;
     ok 1;
     ok 2;
 }

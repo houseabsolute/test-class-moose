@@ -18,7 +18,7 @@ my %BY_METHOD = (
 );
 
 sub add_plan {
-    my ( $class, $test_class, $method, $plan ) = @_;
+    my ( undef, $test_class, $method, $plan ) = @_;
     if ( defined $plan ) {
         $plan =~ s/\D//g;
         undef $plan unless $plan =~ /\d/;    # no_plan
@@ -27,12 +27,12 @@ sub add_plan {
 }
 
 sub get_plan {
-    my ( $class, $test_class, $method ) = @_;
+    my ( undef, $test_class, $method ) = @_;
     return $BY_METHOD{plans}{$method}{$test_class};
 }
 
 sub has_test_attribute {
-    my ( $class, $test_class, $method ) = @_;
+    my ( undef, $test_class, $method ) = @_;
     return exists $BY_METHOD{plans}{$method}{$test_class};
 }
 

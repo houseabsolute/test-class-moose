@@ -6,12 +6,10 @@ use Test2::Tools::Basic qw( ok );
 use Test2::Tools::Compare qw( array call end event filter_items F is T );
 
 sub test_sequential_first : Tags(noparallel) {
-    my $test = shift;
     ok 1;
 }
 
 sub test_sequential_second {
-    my $test = shift;
     ok 1;
 }
 

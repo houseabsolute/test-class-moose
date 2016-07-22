@@ -14,7 +14,6 @@ before 'test_this_baby' => sub {
 };
 
 sub this_should_not_run : Tags(first) {
-    my $test = shift;
     fail "We should never see this test";
 }
 

@@ -6,13 +6,11 @@ use Test2::Tools::Basic qw( ok );
 use Test2::Tools::Compare qw( array call end event F is T );
 
 sub test_beta_first {
-    my $test = shift;
     ok 1;
     ok 2;
 }
 
 sub test_second {
-    my $test = shift;
     ok 1;
     ok 2;
 }
