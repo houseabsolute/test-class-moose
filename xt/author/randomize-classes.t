@@ -12,8 +12,11 @@ TODO: {
     local $TODO = 'cannot guarantee that randomized class list is not ABCDE';
 
     # there is no "isnt_deeply", so string comparison instead.
-    my $classes = join( q{}, $tcmr->test_classes );
-    isnt( $classes, 'ABCDE', "$classes is not ABCDE" );
+    my $classes = join q{}, $tcmr->test_classes;
+    isnt(
+        $classes, 'ClassAClassBClassCClassDClassE',
+        'classes are not ordered when randomization is in effect'
+    );
 }
 
 done_testing();

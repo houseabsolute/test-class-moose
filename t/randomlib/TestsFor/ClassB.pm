@@ -1,4 +1,4 @@
-package B;
+package ClassB;
 
 use Test::Class::Moose;
 
