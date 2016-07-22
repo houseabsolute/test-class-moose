@@ -2,6 +2,9 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  * Last TRIAL release before the Test2 version goes stable unless I receive
+    reports of problems with this release.
+
   [BACKWARDS INCOMPATIBILITIES]
 
   * The run_test_shutdown_on_skip method is now named
