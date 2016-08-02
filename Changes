@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.75     2016-08-02
+
   * This is the first non-TRIAL release of the "rewrite TCM to use Test2"
     work. There are no changes from 0.74. All changes below are a summary of
     previous TRIAL release changes.
