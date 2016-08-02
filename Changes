@@ -2,6 +2,52 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  * This is the first non-TRIAL release of the "rewrite TCM to use Test2"
+    work. There are no changes from 0.74. All changes below are a summary of
+    previous TRIAL release changes.
+
+  [BACKWARDS INCOMPATIBILITIES]
+
+  * The test_teardown method is no longer run when a test is skipped unless
+    run_control_methods_on_skip returns a true value. The test_teardown method
+    was never intended to be run unconditionally.
+
+  * Parallel testing now parallelizes test classes rather than individual test
+    instances. This is only relevant if your test suite contains parameterized
+    test classes. This is slightly less efficient, but made the internal test
+    running code much simpler and made it possible to fix reporting for
+    parallel test runs.
+
+  * The Test::Class::Moose::Config->builder method has been removed.
+
+  * The Test::Class::Moose::Runner->builder method has been removed.
+
+  [ENHANCEMENTS]
+
+  * Rewrote the internals of Test::Class::Moose to use Test2 test events. This
+    led to several changes and cleanups. Notably, parallel testing is now much
+    simpler and more like sequential testing.
+
+  * You can force test_shutdown to run when a class is skipped by having a
+    class's run_control_methods_on_skip method return true.
+
+  * Test reporting works correctly when tests are run in parallel, and the
+    reports for sequential and parallel runs of the same classes should now be
+    identical.
+
+  * You can now force the test_shutdown method to be run when a class is
+    skipped by defining a run_test_shutdown_on_skip method in your test class
+    that returns a true value.
+
+  * Test class instances now have a $self->test_instance_name method.
+
+  [BUG FIXES]
+
+  * Fixed a bug in how test methods were counted. When a test class or method
+    was entirely skipped by setting $self->test_skip, the method or classes
+    were still included in the count returned by the report object's
+    num_test_methods method.
+
 0.74     2016-07-22 (TRIAL RELEASE)
 
   * Last TRIAL release before the Test2 version goes stable unless I receive
