@@ -8,7 +8,6 @@ our $VERSION = '0.76';
 
 use Moose;
 use Moose::Util::TypeConstraints;
-use TAP::Formatter::Color;
 use namespace::autoclean;
 
 subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
