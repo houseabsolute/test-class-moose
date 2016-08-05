@@ -2,6 +2,11 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Require Test::Harness 3.29. Tests fail with earlier versions. Reported by
+    Andreas Koenig. (GitHub issue #65).
+
 0.75     2016-08-02
 
   * This is the first non-TRIAL release of the "rewrite TCM to use Test2"

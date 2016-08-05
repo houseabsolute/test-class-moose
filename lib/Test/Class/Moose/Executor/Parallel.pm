@@ -17,7 +17,7 @@ use Test2::IPC;
 use List::SomeUtils qw( none part );
 use Parallel::ForkManager;
 use Scalar::Util qw(reftype);
-use TAP::Formatter::Color;
+use TAP::Formatter::Color 3.29;
 use Test2::API qw( test2_stack );
 use Test2::AsyncSubtest 0.000018 ();
 use Test::Class::Moose::AttributeRegistry;
