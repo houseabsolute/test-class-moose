@@ -1026,15 +1026,7 @@ You write this:
 
 =back
 
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-test-class-moose at rt.cpan.org>,
-or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose>.  I will be
-notified, and then you'll automatically be notified of progress on your bug as
-I make changes.
-
-=head1 SUPPORT
+=head1 MORE INFO
 
 You can find documentation for this module with the perldoc command.
 
@@ -1043,10 +1035,6 @@ You can find documentation for this module with the perldoc command.
 You can also look for information at:
 
 =over 4
-
-=item * GitHub Issues (report bugs here)
-
-L<https://github.com/test-class-moose/test-class-moose/issues>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
