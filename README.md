@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.76
+version 0.77
 
 # SYNOPSIS
 
@@ -656,14 +656,46 @@ Or even shorter:
 If you would like [Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moose) to take care of loading your classes
 for you, see [Test::Class::Moose::Role::AutoUse](https://metacpan.org/pod/Test::Class::Moose::Role::AutoUse) in this distribution.
 
-# DEPRECATIONS
+# DEPRECATIONS AND BACKWARDS INCOMPATIBILITIES
+
+## Version 0.77
+
+- The passing of the report object as an argument to test methods and test
+control methods is now deprecated. You can get the report from the test class
+object itself via the `$test->test_report` method.
+- The `Test::Class::Moose->runtests` method has been removed. Use
+[Test::Class::Moose::Runner](https://metacpan.org/pod/Test::Class::Moose::Runner) to run your test classes.
+- The `Test::Class::Moose::Role::Paralllel` role has been removed. This has not
+done anything except issue a warning since version 0.55.
+
+## Version 0.75
+
+- The `test_teardown method` is no longer run when a test is skipped unless
+`run_control_methods_on_skip` returns a true value. The `test_teardown
+method` was never intended to be run unconditionally.
+- Parallel testing now parallelizes test classes rather than individual test
+instances. This is only relevant if your test suite contains parameterized
+test classes. This is slightly less efficient, but made the internal test
+running code much simpler and made it possible to fix reporting for parallel
+test runs.
+- The [Test::Class::Moose::Config](https://metacpan.org/pod/Test::Class::Moose::Config) `builder` method has been removed.
+- The [Test::Class::Moose::Runner](https://metacpan.org/pod/Test::Class::Moose::Runner) `builder` method has been removed.
 
 ## Version 0.67
 
-- The [Test::Class::Moose::Report](https://metacpan.org/pod/Test::Class::Moose::Report) class's `test_classes` method is un-deprecated
+- The [Test::Class::Moose::Report](https://metacpan.org/pod/Test::Class::Moose::Report) class's `all_test_classes` method is un-deprecated
 
     This method now returns a list of [Test::Class::Moose::Report::Class](https://metacpan.org/pod/Test::Class::Moose::Report::Class)
     objects. A class report contains one or more instance reports.
+
+- Removed the [Test::Class::Moose::Report::Instance](https://metacpan.org/pod/Test::Class::Moose::Report::Instance)'s error
+attribute. Contrary to the documentation, this attribute was never populated.
+- Renamed the [Test::Class::Moose::Report::Method](https://metacpan.org/pod/Test::Class::Moose::Report::Method) `instance_report` method to
+`instance`. This is a better match for other report-related methods, which
+don't include a "\_report" suffix.
+- Removed the long-deprecated `tests_run` methods from
+[Test::Class::Moose::Report](https://metacpan.org/pod/Test::Class::Moose::Report) and [Test::Class::Moose::Report::Method](https://metacpan.org/pod/Test::Class::Moose::Report::Method).
+- Removed the long-deprecated TCM::Report::Method->add\_to\_plan method.
 
 ## Version 0.55
 
@@ -750,21 +782,13 @@ for you, see [Test::Class::Moose::Role::AutoUse](https://metacpan.org/pod/Test::
 - Callbacks for tags (for example, 'critical' tags could bailout)
 - New test phases - start and end suite, not just start and end class/method
 
-# SUPPORT
+# MORE INFO
 
 You can find documentation for this module with the perldoc command.
 
     perldoc Test::Class::Moose
 
 You can also look for information at:
-
-- GitHub Issues (report bugs here)
-
-    [https://github.com/test-class-moose/test-class-moose/issues](https://github.com/test-class-moose/test-class-moose/issues)
-
-- AnnoCPAN: Annotated CPAN documentation
-
-    [http://annocpan.org/dist/Test-Class-Moose](http://annocpan.org/dist/Test-Class-Moose)
 
 - CPAN Ratings
 
@@ -795,15 +819,9 @@ You can also look for information at:
 
     [Test::Class](https://metacpan.org/pod/Test::Class) + [Test::Most](https://metacpan.org/pod/Test::Most).
 
-# BUGS
+# SUPPORT
 
-Please report any bugs or feature requests to `bug-test-class-moose at rt.cpan.org`,
-or through the web interface at
-[http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose](http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose).  I will be
-notified, and then you'll automatically be notified of progress on your bug as
-I make changes.
-
-bugs may be submitted through [https://github.com/test-class-moose/test-class-moose/issues](https://github.com/test-class-moose/test-class-moose/issues).
+Bugs may be submitted through [https://github.com/test-class-moose/test-class-moose/issues](https://github.com/test-class-moose/test-class-moose/issues).
 
 I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 
@@ -835,7 +853,7 @@ I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 - Tom Heady <tom@punch.net>
 - Udo Oji <Velti@signor.com>
 
-# COPYRIGHT AND LICENCE
+# COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2012 - 2016 by Curtis "Ovid" Poe.
 
