@@ -880,7 +880,7 @@ Or even shorter:
 If you would like L<Test::Class::Moose> to take care of loading your classes
 for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
-=head1 DEPRECATIONS
+=head1 DEPRECATIONS AND BACKWARDS INCOMPATIBILITIES
 
 =head2 Version 0.77
 
@@ -892,6 +892,44 @@ The passing of the report object as an argument to test methods and test
 control methods is now deprecated. You can get the report from the test class
 object itself via the C<< $test->test_report >> method.
 
+=item *
+
+The C<< Test::Class::Moose->runtests >> method has been removed. Use
+L<Test::Class::Moose::Runner> to run your test classes.
+
+=item *
+
+The C<Test::Class::Moose::Role::Paralllel> role has been removed. This has not
+done anything except issue a warning since version 0.55.
+
+=back
+
+=head2 Version 0.75
+
+=over 4
+
+=item *
+
+The C<test_teardown method> is no longer run when a test is skipped unless
+C<run_control_methods_on_skip> returns a true value. The C<test_teardown
+method> was never intended to be run unconditionally.
+
+=item *
+
+Parallel testing now parallelizes test classes rather than individual test
+instances. This is only relevant if your test suite contains parameterized
+test classes. This is slightly less efficient, but made the internal test
+running code much simpler and made it possible to fix reporting for parallel
+test runs.
+
+=item *
+
+The L<Test::Class::Moose::Config> C<builder> method has been removed.
+
+=item *
+
+The L<Test::Class::Moose::Runner> C<builder> method has been removed.
+
 =back
 
 =head2 Version 0.67
@@ -902,6 +940,26 @@ object itself via the C<< $test->test_report >> method.
 
 This method now returns a list of L<Test::Class::Moose::Report::Class>
 objects. A class report contains one or more instance reports.
+
+=item *
+
+Removed the L<Test::Class::Moose::Report::Instance>'s error
+attribute. Contrary to the documentation, this attribute was never populated.
+
+=item *
+
+Renamed the L<Test::Class::Moose::Report::Method> C<instance_report> method to
+C<instance>. This is a better match for other report-related methods, which
+don't include a "_report" suffix.
+
+=item *
+
+Removed the long-deprecated C<tests_run> methods from
+L<Test::Class::Moose::Report> and L<Test::Class::Moose::Report::Method>.
+
+=item *
+
+Removed the long-deprecated TCM::Report::Method->add_to_plan method.
 
 =back
 
@@ -1012,10 +1070,6 @@ You can find documentation for this module with the perldoc command.
 You can also look for information at:
 
 =over 4
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Test-Class-Moose>
 
 =item * CPAN Ratings
 
