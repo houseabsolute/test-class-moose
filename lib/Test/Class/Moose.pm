@@ -933,7 +933,7 @@ object itself via the C<< $test->test_report >> method.
 
 =over 4
 
-=item * The L<Test::Class::Moose::Report> class's C<test_classes> method is un-deprecated
+=item * The L<Test::Class::Moose::Report> class's C<all_test_classes> method is un-deprecated
 
 This method now returns a list of L<Test::Class::Moose::Report::Class>
 objects. A class report contains one or more instance reports.
