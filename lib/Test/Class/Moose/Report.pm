@@ -411,40 +411,4 @@ Here's an example of what the entire timing data structure looks like:
         },
     }
 
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-test-class-moose at rt.cpan.org>,
-or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Test-Class-Moose>.  I will be
-notified, and then you'll automatically be notified of progress on your bug as
-I make changes.
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc Test::Class::Moose
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker (report bugs here)
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Class-Moose>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Test-Class-Moose>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Test-Class-Moose>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Test-Class-Moose/>
-
-=back
-
 =cut
