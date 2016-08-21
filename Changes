@@ -2,6 +2,16 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BACKWARDS INCOMPATIBILITIES]
+
+  * The Test::Class::Moose->runtests backwards compatibility method shim has
+    been removed. You should be using Test::Class::Moose::Runner to run test
+    classes.
+
+  * The long-deprecated Test::Class::Moose::Role::Parallel role has been
+    removed. This didn't actually do anything except to tell you to use
+    Test::Class::Moose::Runner instead.
+
   [DEPRECATIONS]
 
   * The passing of the report object as an argument to test methods and test

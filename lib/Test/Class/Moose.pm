@@ -170,41 +170,6 @@ sub import {
     }
 }
 
-# XXX - this is only necessary for backwards compatibility, where people call
-# Test::Class::Moose->new(...)->runtests() instead of
-# Test::Class::Moose::Runner->new(...)->runtests()
-my %config_attrs = map { $_->init_arg => 1 }
-  Test::Class::Moose::Config->meta->get_all_attributes;
-around 'BUILDARGS' => sub {
-    my $orig  = shift;
-    my $class = shift;
-
-    my $p = $class->$orig(@_);
-
-    my %config_p
-      = map { $_ => delete $p->{$_} } grep { $config_attrs{$_} } keys %{$p};
-    $p->{_config_p} = \%config_p;
-
-    return $p;
-};
-
-# XXX - also for backwards compat
-sub runtests {
-    my $self = shift;
-
-    Test::Class::Moose::Deprecated::deprecated(
-        message =>
-          'Calling runtests() on a Test::Class::Moose object is deprecated.'
-          . ' Use Test::Class::Moose::Runner instead.',
-        feature => 'Test::Class::Moose->runtests',
-    );
-
-    require Test::Class::Moose::Runner;
-    my $runner = Test::Class::Moose::Runner->new( $self->_config_p );
-
-    return $runner->runtests();
-}
-
 sub _tcm_make_test_class_instances {
     my $test_class = shift;
 
