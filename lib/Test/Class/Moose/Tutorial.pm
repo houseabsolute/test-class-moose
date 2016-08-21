@@ -13,6 +13,9 @@ our $VERSION = '0.77';
 1;
 
 __END__
+
+=pod
+
 =head1 Getting Started
 
 Automated testing is wonderful. Verifying your program's correctness in all
@@ -351,3 +354,5 @@ Here is the bare minimum you need to get started using C<Test::Class::Moose>
 =head1 AUTHOR
 
 Doug Bell: https://github.com/preaction
+
+=cut
