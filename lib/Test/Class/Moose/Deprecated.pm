@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 use 5.10.0;
 
-our $VERSION = '0.78';
+our $VERSION = '0.79';
 
 use Package::DeprecationManager 0.16 -deprecations => {
     'Test::Class::Moose->runtests' => '0.55',
