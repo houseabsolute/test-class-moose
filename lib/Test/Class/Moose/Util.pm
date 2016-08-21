@@ -3,7 +3,7 @@ package Test::Class::Moose::Util;
 use strict;
 use warnings;
 
-our $VERSION = '0.77';
+our $VERSION = '0.78';
 
 use Test2::API qw( context );
 
