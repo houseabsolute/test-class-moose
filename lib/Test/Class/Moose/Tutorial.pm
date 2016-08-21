@@ -46,7 +46,7 @@ C<Test::Class::Moose> loads C<strict>, C<warnings>, C<Moose>, and
 C<Test::Most> (which includes C<Test::More>, C<Test::Deep>,
 C<Test::Exception>, and C<Test::Differences>). Note that if you don't want to
 load C<Test::Most> (to use Test2 tools instead, for example), you can disable
-this by writing C<use Test::Class::Moose bare => 1> instead.
+this by writing C<< use Test::Class::Moose bare => 1 >> instead.
 
 I put my test classes in the C<t/lib/TestsFor> directory, to keep them
 separated from my other classes that help testing (C<t/lib>) and my other test
