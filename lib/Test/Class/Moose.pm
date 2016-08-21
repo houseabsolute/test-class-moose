@@ -917,6 +917,18 @@ for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 DEPRECATIONS
 
+=head2 Version 0.77
+
+=over 4
+
+=item *
+
+The passing of the report object as an argument to test methods and test
+control methods is now deprecated. You can get the report from the test class
+object itself via the C<< $test->test_report >> method.
+
+=back
+
 =head2 Version 0.67
 
 =over 4

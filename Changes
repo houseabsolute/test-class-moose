@@ -2,6 +2,12 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [DEPRECATIONS]
+
+  * The passing of the report object as an argument to test methods and test
+    control methods is now deprecated. You can get the report from the test
+    class object itself via the $test->test_report method.
+
 0.76     2016-08-05
 
   [BUG FIXES]
