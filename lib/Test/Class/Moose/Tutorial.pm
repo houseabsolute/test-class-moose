@@ -73,7 +73,7 @@ as many C<test_> methods as we want in a class.
 
 Now that we have a test class, we need a way for prove to load and run them.
 L<Test::Class::Moose::Load> can load our test modules from a given
-directory. To run them, we use the L<Test::Class::Moose::Runner> classs
+directory. To run them, we use the L<Test::Class::Moose::Runner> class
 
     # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );

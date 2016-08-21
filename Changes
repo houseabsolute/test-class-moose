@@ -2,6 +2,10 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * Updated the included Test::Class::Moose::Tutorial docs.
+
 0.77     2016-08-21
 
   [BACKWARDS INCOMPATIBILITIES]
