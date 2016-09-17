@@ -11,7 +11,7 @@ use 5.10.0;
 our $VERSION = '0.79';
 
 use Package::DeprecationManager 0.16 -deprecations => {
-    'Test::Class::Moose->runtests' => '0.55',
+    'Test::Class::Moose::Config::args' => '0.79',
 };
 
 1;
@@ -31,16 +31,14 @@ deprecated in L<Test::Class::Moose>.
 
 If you specify C<< -api_version => $version >>, you can use deprecated features
 without warnings. Note that this special treatment is limited to the package
-that loads C<Moose::Deprecated>.
+that loads C<Test::Class::Moose::Deprecated>.
 
 =head1 DEPRECATIONS BY VERSION
 
 The following features were deprecated in past versions and will now warn:
 
-=head2 Test::Class::Moose->runtests
+=head2 Test::Class::Moose::Config->args
 
-This was deprecated in version 0.55.
-
-Use L<Test::Class::Moose::Runner> to run tests instead.
+This was deprecated in version 0.79.
 
 =cut

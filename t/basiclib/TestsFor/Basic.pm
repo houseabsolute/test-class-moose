@@ -75,7 +75,7 @@ sub expected_test_events {
                 call max   => 4;
                 call trace => object {
                     call package => 'Test::Class::Moose::Role::Executor';
-                    call line    => 152;
+                    call line    => 151;
                     call subname => 'Test::Class::Moose::Util::context_do';
                 };
             };

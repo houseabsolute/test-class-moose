@@ -113,7 +113,6 @@ sub _run_test_instances {
     my $class_report = shift;
 
     my @test_instances = $test_class->_tcm_make_test_class_instances(
-        $self->test_configuration->args,
         test_report => $self->test_report,
     );
 

@@ -877,6 +877,18 @@ for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 
 =head1 DEPRECATIONS AND BACKWARDS INCOMPATIBILITIES
 
+=head2 Version 0.79
+
+=over 4
+
+=item *
+
+The L<Test::Class::Moose::Config> class's C<args> method is now
+deprecated. was a holdover from when Test::Class::Moose was both a parent
+class for your test classes and the test class runner.
+
+=back
+
 =head2 Version 0.77
 
 =over 4

@@ -10,6 +10,8 @@ use Moose;
 use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 
+use Test::Class::Moose::Deprecated;
+
 subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
 
 coerce 'ArrayRefOfStrings', from 'Str', via { defined($_) ? [$_] : undef };
@@ -98,6 +100,8 @@ has 'test_classes' => (
 
 sub args {
     my $self = shift;
+
+    Test::Class::Moose::Deprecated::deprecated();
 
     return (
         map { defined $self->$_ ? ( $_ => $self->$_ ) : () }
@@ -194,10 +198,9 @@ Boolean. Will run test classes in a random order.
 
 =head2 C<args>
 
- my $tests = Some::Test::Class->new($test_suite->test_configuration->args);
-
-Returns a hash of the args used to build the configuration. Used in
-testing. You probably won't need it.
+Returns a hash of the args used to build the configuration. This used to be
+used internally, but is now retained simply for backwards compatibility. You
+probably won't need it.
 
 =cut
 

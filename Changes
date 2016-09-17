@@ -2,6 +2,13 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BACKWARDS INCOMPATIBILITIES]
+
+  * The value of Test::Class::Moose::Config->args is no longer passed to the
+    constructor for each test class instance. This was a holdover from when
+    Test::Class::Moose was both a parent class for your test classes and the
+    test class runner. Fixes GH #68. Reported by Noel Maddy.
+
 0.78     2016-08-21
 
   [ENHANCEMENTS]
