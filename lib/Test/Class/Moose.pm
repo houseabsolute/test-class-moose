@@ -138,11 +138,6 @@ has 'test_skip' => (
     clearer => 'test_skip_clear',
 );
 
-has '_config_p' => (
-    is  => 'ro',
-    isa => 'HashRef',
-);
-
 sub import {
     shift;
     my %args = @_;
