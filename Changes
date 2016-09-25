@@ -2,6 +2,11 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Depend on Test2 1.302059. This version fixes an issue where subtest output
+    from test methods was not showing up. Reported by Ilya Chesnokov. GH #67.
+
 0.79     2016-09-25
 
   [BACKWARDS INCOMPATIBILITIES]
