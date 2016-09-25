@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.78
+version 0.79
 
 # SYNOPSIS
 
@@ -657,6 +657,12 @@ If you would like [Test::Class::Moose](https://metacpan.org/pod/Test::Class::Moo
 for you, see [Test::Class::Moose::Role::AutoUse](https://metacpan.org/pod/Test::Class::Moose::Role::AutoUse) in this distribution.
 
 # DEPRECATIONS AND BACKWARDS INCOMPATIBILITIES
+
+## Version 0.79
+
+- The [Test::Class::Moose::Config](https://metacpan.org/pod/Test::Class::Moose::Config) class's `args` method is now
+deprecated. was a holdover from when Test::Class::Moose was both a parent
+class for your test classes and the test class runner.
 
 ## Version 0.77
 
