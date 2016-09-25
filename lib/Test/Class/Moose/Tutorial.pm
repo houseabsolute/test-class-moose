@@ -284,7 +284,7 @@ classes we want to run in its constructor:
     use Test::Class::Moose::Load catdir( $Bin, 't', 'lib' );
     use Test::Class::Moose::Runner;
     Test::Class::Moose::Runner->new(
-        classes => ['TestsFor::My::Test::Class'],
+        test_classes => ['TestsFor::My::Test::Class'],
     )->runtests;
 
 Now, we only run C<TestsFor::My::Test::Class> instead of all the tests found in
@@ -300,7 +300,7 @@ C<Test::Class::Moose::Runner> which test classes to run via C<@ARGV>:
     use Test::Class::Moose::Load catdir( $Bin, 't', 'lib' );
     use Test::Class::Moose::Runner;
     Test::Class::Moose::Runner->new(
-        classes => \@ARGV,
+        test_classes => \@ARGV,
     )->runtests;
 
 If C<@ARGV> is empty, C<Test::Class::Moose> will run all classes. To give
@@ -333,7 +333,7 @@ C<t/test_class_tests.t> script:
     use Test::Class::Moose::Load catdir( $Bin, 't', 'lib' );
     use Test::Class::Moose::Runner;
     Test::Class::Moose::Runner->new(
-        classes      => \@ARGV,
+        test_classes => \@ARGV,
         exclude_tags => [qw( database )],
     )->runtests;
 
@@ -364,7 +364,7 @@ Here is the bare minimum you need to get started using C<Test::Class::Moose>
     use Test::Class::Moose::Load catdir( $Bin, 't', 'lib' );
     use Test::Class::Moose::Runner;
     Test::Class::Moose::Runner->new(
-        classes => \@ARGV,
+        test_classes => \@ARGV,
     )->runtests;
 
 =head1 AUTHOR
