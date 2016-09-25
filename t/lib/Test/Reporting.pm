@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::Tools::Basic qw( ok );
 use Test2::Tools::Class qw( can_ok isa_ok );
-use Test2::Tools::Compare qw( field hash is T validator );
+use Test2::Tools::Compare qw( end field hash is T validator );
 use Test2::Tools::Subtest qw( subtest_streamed );
 
 use Scalar::Util 'looks_like_number';
@@ -68,7 +68,9 @@ sub _test_timing_data {
                     $class->run_control_methods_on_skip,
                 );
             }
+            end();
         };
+        end();
     };
 }
 
@@ -81,16 +83,15 @@ sub _class_timing_structure {
         if ( $expect->{instances} ) {
             field instance => hash {
                 for my $instance ( keys %{ $expect->{instances} } ) {
-                    next
-                      if $expect->{instances}{$instance}{is_skipped} eq T();
-
                     field $instance => _instance_timing_structure(
                         $expect->{instances}{$instance},
                         $always_runs_control_methods,
                     );
                 }
+                end();
             };
         }
+        end();
     };
 }
 
@@ -103,15 +104,19 @@ sub _instance_timing_structure {
         field control => hash {
             field test_startup => hash {
                 _time_field();
+                end();
             };
 
-            if ( $always_runs_control_methods
-                || !$expect->{is_skipped} eq T() )
+            unless ( $expect->{is_skipped}->name eq 'TRUE'
+                && !$always_runs_control_methods )
             {
                 field test_shutdown => hash {
                     _time_field();
+                    end();
                 };
             }
+
+            end();
         };
 
         return unless keys %{ $expect->{methods} };
@@ -123,7 +128,9 @@ sub _instance_timing_structure {
                     $always_runs_control_methods,
                 );
             }
+            end();
         };
+        end();
     };
 }
 
@@ -136,16 +143,21 @@ sub _method_timing_structure {
         field control => hash {
             field test_setup => hash {
                 _time_field();
+                end();
             };
 
-            if ( $always_runs_control_methods
-                || !$expect->{is_skipped} eq T() )
+            unless ( $expect->{is_skipped}->name eq 'TRUE'
+                && !$always_runs_control_methods )
             {
                 field test_teardown => hash {
                     _time_field();
+                    end();
                 };
             }
+
+            end();
         };
+        end();
     };
 }
 
@@ -159,6 +171,7 @@ sub _method_timing_structure {
             field real   => $pos_or_zero;
             field system => $pos_or_zero;
             field user   => $pos_or_zero;
+            end();
         };
     }
 }
