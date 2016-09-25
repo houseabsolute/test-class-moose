@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.80     2016-09-25
+
   [BUG FIXES]
 
   * Depend on Test2 1.302059. This version fixes an issue where subtest output
