@@ -2,6 +2,15 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * If you pass one or more test class names to the Runner class explicitly
+    and those classes are either not loaded or not subclasses of
+    Test::Class::Moose, you'll get a better error message. Previously this
+    would die with an unhelpful error about missing methods. Reported by Andy
+    Cunningham with additional clarification from hoppfrosch. GH #57.
+
+
 0.80     2016-09-25
 
   [BUG FIXES]
