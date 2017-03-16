@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.80
+version 0.81
 
 # SYNOPSIS
 
@@ -827,9 +827,13 @@ You can also look for information at:
 
 # SUPPORT
 
-Bugs may be submitted through [https://github.com/test-class-moose/test-class-moose/issues](https://github.com/test-class-moose/test-class-moose/issues).
+Bugs may be submitted at [https://github.com/test-class-moose/test-class-moose/issues](https://github.com/test-class-moose/test-class-moose/issues).
 
-I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
+I am also usually active on IRC as 'autarch' on `irc://irc.perl.org`.
+
+# SOURCE
+
+The source code repository for Test-Class-Moose can be found at [https://github.com/test-class-moose/test-class-moose](https://github.com/test-class-moose/test-class-moose).
 
 # AUTHORS
 
@@ -861,7 +865,10 @@ I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 - 2016 by Curtis "Ovid" Poe.
+This software is copyright (c) 2012 - 2017 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
+
+The full text of the license can be found in the
+`LICENSE` file included with this distribution.

@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.81     2017-03-16
+
   [ENHANCEMENTS]
 
   * If you pass one or more test class names to the Runner class explicitly

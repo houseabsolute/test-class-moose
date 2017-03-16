@@ -106,7 +106,7 @@ All pull requests for this distribution will be automatically tested by
 [Travis](https://travis-ci.org/) and the build status will be reported on the
 pull request page. If your build fails, please take a look at the output.
 
-## Tidyall
+## TidyAll
 
 This distribution uses
 [Code::TidyAll](https://metacpan.org/release/Code-TidyAll) to enforce a
@@ -127,5 +127,5 @@ commit or patch), unless you specifically request for it not to be. If you
 wish to be listed under a different name or address, you should submit a pull
 request to the .mailmap file to contain the correct mapping.
 
-This file was generated via Dist::Zilla::Plugin::GenerateFile::FromShareDir 0.012 from a
-template file originating in Dist-Zilla-PluginBundle-DROLSKY-0.71.
+This file was generated via Dist::Zilla::Plugin::GenerateFile::FromShareDir 0.013 from a
+template file originating in Dist-Zilla-PluginBundle-DROLSKY-0.85.
