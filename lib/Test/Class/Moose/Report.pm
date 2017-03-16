@@ -4,7 +4,7 @@ package Test::Class::Moose::Report;
 
 use 5.10.0;
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 use Carp;
 use Moose;
