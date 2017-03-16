@@ -1,8 +1,8 @@
 use strict;
 use warnings;
 
-use Test::More;
-use Test::Warnings qw( warnings );
+use Test2::Bundle::Extended;
+use Test::Warnings qw( warnings :no_end_test );
 
 my $package = <<'EOF';
 package TestFor::Bare;
@@ -12,9 +12,9 @@ use Test::More;
 use List::SomeUtils qw( any );
 EOF
 
-is_deeply(
+is(
     [ warnings { eval $package } ],
-    [],
+    array { end(); },
     'no warnings from using Test::Class::Moose with List::SomeUtils'
 );
 

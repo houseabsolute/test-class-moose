@@ -3,9 +3,7 @@
 use lib 'lib', 't/lib';
 
 use Test2::API qw( intercept );
-use Test2::Tools::Basic qw( done_testing ok );
-use Test2::Tools::Class qw( isa_ok );
-use Test2::Tools::Compare qw( array call end event is T );
+use Test2::Bundle::Extended;
 use Test::Events;
 
 use Test::Class::Moose::Load qw(t/basiclib);

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::Most;
+use Test2::Bundle::Extended;
 
 use Test2::API qw( intercept );
 use Test::Class::Moose::Load qw(t/reportpassedlib);
@@ -10,7 +10,6 @@ use Test::Class::Moose::Runner;
 my $runner = Test::Class::Moose::Runner->new( show_timing => 0 );
 intercept { $runner->runtests };
 my $report = $runner->test_report;
-explain $report->time->duration;
 
 # note: because of a possible bug in Test::Builder::subtest returning a fail
 # status, even if the test is TODO, we rely on that feature to make these
@@ -85,8 +84,7 @@ for my $class ( $report->all_test_classes ) {
     }
 }
 
-is_deeply(
-    [ sort keys %got ],
+is( [ sort keys %got ],
     [ sort keys %expect ],
     'ran all the classes we expected',
 );
@@ -96,7 +94,7 @@ for my $class ( sort keys %expect ) {
         $expect{$class}{passed},
         "got expected pass/fail status for $class class"
     );
-    is_deeply(
+    is(
         [ sort keys %{ $got{$class}{instances} } ],
         [ sort keys %{ $expect{$class}{instances} } ],
         "ran all the $class instances we expected",
@@ -107,7 +105,7 @@ for my $class ( sort keys %expect ) {
             $expect{$class}{instances}{$instance}{passed},
             "got expected pass/fail status for $instance instance"
         );
-        is_deeply(
+        is(
             [ sort keys %{ $got{$class}{instances}{$instance}{methods} } ],
             [ sort keys %{ $expect{$class}{instances}{$instance}{methods} } ],
             "ran all the $instance methods we expected",

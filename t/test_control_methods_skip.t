@@ -3,8 +3,7 @@
 use lib 'lib', 't/lib';
 
 use Test2::API qw( intercept );
-use Test2::Tools::Basic qw( diag done_testing );
-use Test2::Tools::Compare qw( array call end event F );
+use Test2::Bundle::Extended;
 use Test2::Tools::Subtest qw( subtest_streamed );
 use Test::Events;
 use Test::Reporting qw( test_report );

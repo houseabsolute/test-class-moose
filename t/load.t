@@ -1,12 +1,10 @@
 #!/usr/bin/env perl
-use Test::Most 'bail';
-
 use lib 't/loadlib/helpers';
-
+use Test2::Bundle::Extended;
 require Test::Class::Moose::Load;
 
-throws_ok(
-    sub { Test::Class::Moose::Load->import('t/loadlib/tests') },
+like(
+    dies { Test::Class::Moose::Load->import('t/loadlib/tests') },
     qr{
           \QBareword "here" not allowed while "strict subs" in use at t\E.loadlib.helpers.Fail\Q.pm line 6\E
           .+
