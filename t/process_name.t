@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
-use Test::Most;
 use lib 'lib';
+use Test2::Bundle::Extended;
 use Test::Class::Moose::Load qw(t/processnamelib);
 use Test::Class::Moose::Runner;
 

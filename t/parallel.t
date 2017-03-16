@@ -10,8 +10,7 @@ use Test::Requires {
 };
 
 use Test2::API qw( intercept );
-use Test2::Tools::Basic qw( done_testing skip_all );
-use Test2::Tools::Compare qw( array call end event filter_items F T is );
+use Test2::Bundle::Extended;
 use Test::Events;
 use Test::Reporting qw( test_report );
 
