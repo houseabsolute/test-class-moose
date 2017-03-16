@@ -75,7 +75,6 @@ sub expected_test_events {
                 call max   => 4;
                 call trace => object {
                     call package => 'Test::Class::Moose::Role::Executor';
-                    call line    => 151;
                     call subname => 'Test::Class::Moose::Util::context_do';
                 };
             };
@@ -88,7 +87,6 @@ sub expected_test_events {
                         call name  => 'test_me() ran (TestsFor::Basic)';
                         call trace => object {
                             call package => 'TestsFor::Basic';
-                            call line    => 31;
                             call subname => 'Test2::Tools::Basic::ok';
                         };
                     };
@@ -97,7 +95,6 @@ sub expected_test_events {
                         call name => 'this is another test (TestsFor::Basic)';
                         call trace => object {
                             call package => 'TestsFor::Basic';
-                            call line    => 32;
                             call subname => 'Test2::Tools::Basic::ok';
                         };
                     };
@@ -125,7 +122,6 @@ sub expected_test_events {
                         call name  => 'test_instance_name matches class name';
                         call trace => object {
                             call package => 'TestsFor::Basic';
-                            call line    => 24;
                             call subname => 'Test2::Tools::Compare::is';
                         };
                     };

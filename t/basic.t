@@ -51,7 +51,6 @@ subtest_streamed(
                     call max   => 2;
                     call trace => object {
                         call package => 'Test::Class::Moose::Role::Executor';
-                        call line    => 60;
                         call subname =>
                           'Test::Class::Moose::Util::context_do';
                     };
