@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.82     2017-04-05
+
   [ENHANCEMENTS]
 
   * Added a Test::Class::Moose::CLI class. This provides a ready-to-go

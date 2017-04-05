@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.81
+version 0.82
 
 # SYNOPSIS
 
