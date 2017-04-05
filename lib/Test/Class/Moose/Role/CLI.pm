@@ -4,7 +4,7 @@ package Test::Class::Moose::Role::CLI;
 
 use 5.10.0;
 
-our $VERSION = '0.82';
+our $VERSION = '0.83';
 
 use Moose::Role 2.0000;
 use Carp;
