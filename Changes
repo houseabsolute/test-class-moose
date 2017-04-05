@@ -2,6 +2,20 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * Added a Test::Class::Moose::CLI class. This provides a ready-to-go
+    interface for handling CLI parameters passed to the test file that runs
+    your Test::Class::Moose tests. This lets you do things like run "prove -lv
+    t/tcm.t :: --classes TestFor::My::Thing" without having to write your own
+    code to handle this.
+
+    This new CLI class is entirely implemented by a role,
+    Test::Class::Moose::Role::CLI, that has well-documented hooks for you to
+    write your own CLI class on top of. See the docs for the class and the
+    role for more details.
+
+
 0.81     2017-03-16
 
   [ENHANCEMENTS]
