@@ -20,3 +20,4 @@ sub test_b_bad {
 sub test_another { ok 1 }
 
 1;
+
