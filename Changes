@@ -17,7 +17,6 @@ Revision history for Perl distribution Test-Class-Moose
     write your own CLI class on top of. See the docs for the class and the
     role for more details.
 
-
 0.81     2017-03-16
 
   [ENHANCEMENTS]
@@ -27,7 +26,6 @@ Revision history for Perl distribution Test-Class-Moose
     Test::Class::Moose, you'll get a better error message. Previously this
     would die with an unhelpful error about missing methods. Reported by Andy
     Cunningham with additional clarification from hoppfrosch. GH #57.
-
 
 0.80     2016-09-25
 
