@@ -65,6 +65,7 @@ has '_color' => (
 around _run_test_classes => sub {
     my $orig         = shift;
     my $self         = shift;
+    my $ctx          = shift;
     my @test_classes = @_;
 
     my ( $seq, $par )
@@ -72,7 +73,7 @@ around _run_test_classes => sub {
 
     $self->_run_test_classes_in_parallel($par);
 
-    $self->$orig( @{$seq} )
+    $self->$orig( $ctx, @{$seq} )
       if $seq && @{$seq};
 
     return;

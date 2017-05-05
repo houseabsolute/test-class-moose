@@ -16,6 +16,14 @@ subtype 'ArrayRefOfStrings', as 'Maybe[ArrayRef[Str]]';
 
 coerce 'ArrayRefOfStrings', from 'Str', via { defined($_) ? [$_] : undef };
 
+enum 'Verbosity' => [ 0, 1, 2 ];
+
+has 'verbose' => (
+    is      => 'ro',
+    isa     => 'Verbosity',
+    default => 0,
+);
+
 has 'show_timing' => (
     is      => 'ro',
     isa     => 'Bool',

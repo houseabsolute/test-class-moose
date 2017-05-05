@@ -104,6 +104,22 @@ boost. This does mean a global state will be shared, so keep this in mind.
 
 =over 4
 
+=item * C<verbose>
+
+Optional integer. Allowed values are 0, 1, and 2.
+
+If greater than zero, each test class name will be displayed (via C<diag()>)
+before being run.
+
+If greater than one, each test class method name will be displayed (via
+C<diag()>) before being run.
+
+This is useful when runnning the full test suite via C<prove>, but not in
+verbose mode.
+
+This option is a no-op if running tests in parallel because the output would
+effectively be garbled.
+
 =item * C<show_timing>
 
 Boolean. Will display verbose information on the amount of time it takes each

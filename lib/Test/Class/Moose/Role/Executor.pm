@@ -61,7 +61,7 @@ sub runtests {
 
         $ctx->plan( scalar @test_classes );
 
-        $self->_run_test_classes(@test_classes);
+        $self->_run_test_classes( $ctx, @test_classes );
 
         $ctx->diag(<<"END") if $self->test_configuration->statistics;
 Test classes:    @{[ $report->num_test_classes ]}
@@ -79,9 +79,12 @@ END
 
 sub _run_test_classes {
     my $self         = shift;
+    my $ctx          = shift;
     my @test_classes = @_;
 
     for my $test_class (@test_classes) {
+        $ctx->diag("Running class: $test_class")
+          if $self->test_configuration->verbose;
         async_subtest(
             $test_class,
             { manual_skip_all => 1 },
@@ -251,8 +254,13 @@ sub _run_test_instance {
 
         $ctx->plan( scalar @test_methods );
 
-        my $all_passed = 1;
+        my $all_passed    = 1;
+        my $count         = 0;
+        my $total_methods = @test_methods;
         foreach my $test_method (@test_methods) {
+            $count++;
+            $ctx->diag("  $test_method $count/$total_methods")
+              if $self->test_configuration->verbose > 1;
             my $method_report = $self->_run_test_method(
                 $test_instance,
                 $test_method,
