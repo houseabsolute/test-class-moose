@@ -149,7 +149,7 @@ sub import {
       warnings
     );
 
-    unless ($args{bare}) {
+    unless ( $args{bare} ) {
         require Test::Most;
         push @imports, 'Test::Most';
     }

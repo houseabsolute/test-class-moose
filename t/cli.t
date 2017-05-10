@@ -3,9 +3,10 @@ use warnings;
 
 use Test2::Bundle::Extended;
 
-use JSON qw( decode_json );
 use File::Spec;
 use File::Temp qw( tempdir );
+use JSON qw( decode_json );
+use Test2::API qw( intercept );
 use Test::Class::Moose::CLI;
 
 {
@@ -125,6 +126,28 @@ subtest 'classes as paths' => sub {
         [qw( TestFor::MyApp::Model TestFor::MyApp::Controller )],
         '--classes as paths are converted to class names'
     );
+};
+
+{
+
+    package Test::CLI;
+
+    use Moose;
+
+    with 'Test::Class::Moose::Role::CLI';
+
+    sub _test_lib_dirs { return ('t/clilib') }
+}
+
+subtest 'classes from CLI are loaded' => sub {
+    local @ARGV = ( '--classes', 'Foo' );
+    intercept { Test::CLI->new_with_options->run };
+    ok( $Foo::LOADED,  'Foo class was loaded' );
+    ok( !$Bar::LOADED, 'Bar class was not loaded' );
+
+    local @ARGV = ( '--classes', 't/clilib/Bar.pm' );
+    intercept { Test::CLI->new_with_options->run };
+    ok( $Bar::LOADED, 'Bar class was loaded' );
 };
 
 {

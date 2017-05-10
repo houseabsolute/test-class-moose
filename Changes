@@ -7,6 +7,11 @@ Revision history for Perl distribution Test-Class-Moose
   * Test::Most is only loaded if you do not pass "bare => 1" when importing
     Test::Class::Moose.
 
+  [BUG FIXES]
+
+  * The CLI implementation released in 0.82 was broken in regards to the
+    --classes parameter. This would not actually load the specified classes at
+    all, because the test lib dirs were not being added to @INC.
 
 0.82     2017-04-05
 

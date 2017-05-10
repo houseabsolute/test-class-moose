@@ -170,6 +170,7 @@ sub _load_classes {
     my $self = shift;
 
     if ( $self->_has_class_names ) {
+        local @INC = ( $self->_test_lib_dirs, @INC );
         use_package_optimistically($_) for @{ $self->_class_names };
     }
     else {
