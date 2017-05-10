@@ -11,12 +11,10 @@ use Carp;
 use namespace::autoclean;
 use Import::Into;
 use Sub::Attribute;
-use Test::Most ();
 
-# We don't use anything from these two modules, but we want to specify a
-# specific prereq version.
-use Test2 1.302059      ();
-use Test::More 1.302059 ();
+# We don't use anything from this module, but we want to specify a specific
+# prereq version.
+use Test2 1.302059 ();
 
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
@@ -151,8 +149,10 @@ sub import {
       warnings
     );
 
-    push @imports, 'Test::Most'
-      unless $args{bare};
+    unless ($args{bare}) {
+        require Test::Most;
+        push @imports, 'Test::Most';
+    }
 
     $_->import::into($caller) for @imports;
 
