@@ -142,6 +142,8 @@ subtest 'classes as paths' => sub {
 subtest 'classes from CLI are loaded' => sub {
     local @ARGV = ( '--classes', 'Foo' );
     intercept { Test::CLI->new_with_options->run };
+
+    no warnings 'once';
     ok( $Foo::LOADED,  'Foo class was loaded' );
     ok( !$Bar::LOADED, 'Bar class was not loaded' );
 
