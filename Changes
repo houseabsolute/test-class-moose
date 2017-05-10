@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.83     2017-05-10
+
   [ENHANCEMENTS]
 
   * Test::Most is only loaded if you do not pass "bare => 1" when importing
