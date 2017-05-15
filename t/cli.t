@@ -65,8 +65,16 @@ use Test::Class::Moose::CLI;
             { exclude           => qr/^(?:foo|bar|baz)$/ },
         ],
         [   '--color',
-            { color        => 1 },
+            { color        => undef },
             { color_output => 1 }
+        ],
+        [   '--no-color',
+            { 'no-color'   => undef },
+            { color_output => 0 }
+        ],
+        [   '--no-parallel-progress',
+            { 'no-parallel-progress' => undef },
+            { show_parallel_progress => 0 }
         ],
     );
 
@@ -217,8 +225,11 @@ sub _fake_argv {
         if ( ref $val ) {
             push @argv, map { $option => $_ } @{$val};
         }
-        else {
+        elsif ( defined $val ) {
             push @argv, $option => $val;
+        }
+        else {
+            push @argv, $option;
         }
     }
 

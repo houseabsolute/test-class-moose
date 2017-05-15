@@ -23,6 +23,12 @@ has 'jobs' => (
     default => 1,
 );
 
+has 'show_parallel_progress' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 1,
+);
+
 has 'color_output' => (
     is      => 'ro',
     isa     => 'Bool',
@@ -63,9 +69,10 @@ sub _build__executor {
     else {
         require Test::Class::Moose::Executor::Parallel;
         return Test::Class::Moose::Executor::Parallel->new(
-            test_configuration => $self->test_configuration,
-            jobs               => $self->jobs,
-            color_output       => $self->color_output,
+            test_configuration     => $self->test_configuration,
+            jobs                   => $self->jobs,
+            color_output           => $self->color_output,
+            show_parallel_progress => $self->show_parallel_progress,
         );
     }
 }
@@ -132,6 +139,22 @@ when running C<prove -v ...>, for example.
 This defaults to 1. If you set this to a larger number than test instances
 will be run in parallel. See the L</PARALLEL RUNNING> section below for more
 details.
+
+=item * C<show_parallel_progress>
+
+This defaults to 1. This only impacts the output when running tests in
+parallel. If this is true then when running tests in parallel the runner will
+output one dot per class being executed. This makes it clear that the test
+suite is not stuck.
+
+However, this output can cause issues with things like the
+L<TAP::Harness::Archive> module, so you can disable it if needed.
+
+=item * C<color_output>
+
+This defaults to 1. This only impacts the output when running tests in
+parallel. If this is true then parallel test progress output will use ANSI
+coloring to indicate each class's pass/fail status.
 
 =item * C<randomize>
 

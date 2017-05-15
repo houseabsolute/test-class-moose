@@ -36,6 +36,12 @@ has color_output => (
     default => 1,
 );
 
+has show_parallel_progress => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 1,
+);
+
 has '_fork_manager' => (
     is       => 'ro',
     isa      => 'Parallel::ForkManager',
@@ -158,6 +164,8 @@ around _run_test_method => sub {
     my $self = shift;
 
     my $method_report = $self->$orig(@_);
+
+    return $method_report unless $self->show_parallel_progress;
 
     # we're running under parallel testing, so rather than having
     # the code look like it's stalled, we'll output a dot for

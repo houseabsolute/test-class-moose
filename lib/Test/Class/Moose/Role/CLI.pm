@@ -62,6 +62,12 @@ has exclude_tags => (
     },
 );
 
+has parallel_progress => (
+    is        => 'ro',
+    isa       => 'Bool',
+    predicate => '_has_parallel_progress',
+);
+
 has color => (
     is        => 'ro',
     isa       => 'Bool',
@@ -191,6 +197,7 @@ sub _after_run { }
     $attr_map{randomize_methods} = 'randomize';
     $attr_map{tags}              = 'include_tags';
     $attr_map{color}             = 'color_output';
+    $attr_map{parallel_progress} = 'show_parallel_progress';
 
     sub _build_runner {
         my $self = shift;

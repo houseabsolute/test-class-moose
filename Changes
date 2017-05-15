@@ -2,6 +2,13 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * Make it possible to disable the progress output shown when running tests
+    in parallel. This does not play nicely with things like
+    TAP::Harness::Archive and prove's --merge flag. The output ends up
+    interleaved with test output, breaking the TAP.
+
 0.83     2017-05-10
 
   [ENHANCEMENTS]

@@ -70,9 +70,13 @@ method matching these tags will be run.
 The name of one or more test method tags that you want to exclude. Any test
 methods matching these tags will be ignored.
 
+=head2 --parallel-progress and --no-parallel-progress
+
+Show a progress indicator when running tests in parallel. Defaults to true.
+
 =head2 --color and --no-color
 
-Enable/disable color output. Defaults to true.
+Enable/disable color for the parallel progress output. Defaults to true.
 
 =head2 --jobs
 
