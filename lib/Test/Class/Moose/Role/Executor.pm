@@ -24,9 +24,9 @@ use Test::Class::Moose::Util qw( context_do );
 use Try::Tiny;
 
 has 'test_configuration' => (
-    is  => 'ro',
-    isa => 'Test::Class::Moose::Config',
-
+    is       => 'ro',
+    isa      => 'Test::Class::Moose::Config',
+    required => 1,
 );
 
 has 'test_report' => (
