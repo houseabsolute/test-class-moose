@@ -12,7 +12,7 @@ use List::Util qw( max );
 use namespace::autoclean;
 
 {
-    my @fields = qw( real user system _children_user _children_system );
+    my @fields = qw( real user system );
     for my $i ( 0 .. $#fields ) {
         has $fields[$i] => (
             is       => 'ro',
