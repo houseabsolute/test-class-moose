@@ -15,21 +15,19 @@ use Benchmark qw(timediff timestr :hireswallclock);
 use Test::Class::Moose::Report::Time;
 
 has '_start_benchmark' => (
-    is            => 'ro',
-    isa           => 'Benchmark',
-    lazy          => 1,
-    default       => sub { Benchmark->new },
-    predicate     => '_has_start_benchmark',
-    documentation => 'Trusted method for Test::Class::Moose',
+    is        => 'ro',
+    isa       => 'Benchmark',
+    lazy      => 1,
+    default   => sub { Benchmark->new },
+    predicate => '_has_start_benchmark',
 );
 
 has '_end_benchmark' => (
-    is            => 'ro',
-    isa           => 'Benchmark',
-    lazy          => 1,
-    default       => sub { Benchmark->new },
-    predicate     => '_has_end_benchmark',
-    documentation => 'Trusted method for Test::Class::Moose',
+    is        => 'ro',
+    isa       => 'Benchmark',
+    lazy      => 1,
+    default   => sub { Benchmark->new },
+    predicate => '_has_end_benchmark',
 );
 
 has 'time' => (
