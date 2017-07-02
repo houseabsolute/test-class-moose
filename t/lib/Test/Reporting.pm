@@ -307,6 +307,14 @@ sub _test_control_methods {
         subtest_streamed(
             'timing report',
             sub {
+                is( $report,
+                    object {
+                        call start_time => $pos;
+                        call end_time   => $pos;
+                    },
+                    'report has start and end time'
+                );
+
                 can_ok( $report, 'time' );
                 my $time = $report->time;
                 isa_ok(

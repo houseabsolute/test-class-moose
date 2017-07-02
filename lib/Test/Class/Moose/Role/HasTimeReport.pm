@@ -37,6 +37,21 @@ has 'time' => (
     builder => '_build_time',
 );
 
+# If Time::HiRes is available these will be non-integers
+has 'start_time' => (
+    is      => 'ro',
+    isa     => 'Num',
+    lazy    => 0,
+    default => sub { $_[0]->_start_benchmark->[0] },
+);
+
+has 'end_time' => (
+    is      => 'ro',
+    isa     => 'Num',
+    lazy    => 0,
+    default => sub { $_[0]->_end_benchmark->[0] },
+);
+
 sub _build_time {
     my $self = shift;
 
@@ -73,3 +88,11 @@ None.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class or method. The duration may be "0" if
 it's an abstract class with no tests run.
+
+=head2 C<start_time>
+
+Returns the start time for the report as an epoch value.
+
+=head2 C<end_time>
+
+Returns the end time for the report as an epoch value.
