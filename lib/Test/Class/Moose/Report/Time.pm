@@ -24,14 +24,6 @@ use namespace::autoclean;
     }
 }
 
-has '_iters' => (
-    is       => 'ro',
-    isa      => 'Num',
-    lazy     => 1,
-    default  => sub { $_[0]->_timediff->[5] },
-    init_arg => undef,
-);
-
 has '_timediff' => (
     is       => 'ro',
     isa      => 'Benchmark',
