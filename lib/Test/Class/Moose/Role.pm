@@ -13,6 +13,7 @@ our $VERSION = '0.85';
 use Carp;
 
 use Sub::Attribute;
+use Import::Into;
 use Test::Class::Moose::AttributeRegistry;
 
 BEGIN {
@@ -22,20 +23,25 @@ BEGIN {
 }
 
 sub import {
-    my ( $class, %arg_for ) = @_;
+    shift;
+    my %args = @_;
+
     my $caller = caller;
 
-    my $preamble = <<"END";
-package $caller;
-use Moose::Role;
-use Test::Most;
-use Sub::Attribute;
-END
+    my @imports = qw(
+      Moose::Role
+      Sub::Attribute
+      strict
+      warnings
+    );
 
-    eval $preamble;
-    croak($@) if $@;
-    strict->import;
-    warnings->import;
+    unless ( $args{bare} ) {
+        require Test::Most;
+        push @imports, 'Test::Most';
+    }
+
+    $_->import::into($caller) for @imports;
+
     no strict "refs";
     *{"$caller\::Tags"}  = \&Tags;
     *{"$caller\::Test"}  = \&Test;
