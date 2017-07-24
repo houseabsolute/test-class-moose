@@ -13,6 +13,7 @@ our $VERSION = '0.85';
 use Carp;
 
 use Sub::Attribute;
+use Import::Into;
 use Test::Class::Moose::AttributeRegistry;
 
 BEGIN {
@@ -22,20 +23,25 @@ BEGIN {
 }
 
 sub import {
-    my ( $class, %arg_for ) = @_;
+    shift;
+    my %args = @_;
+
     my $caller = caller;
 
-    my $preamble = <<"END";
-package $caller;
-use Moose::Role;
-use Test::Most;
-use Sub::Attribute;
-END
+    my @imports = qw(
+      Moose::Role
+      Sub::Attribute
+      strict
+      warnings
+    );
 
-    eval $preamble;
-    croak($@) if $@;
-    strict->import;
-    warnings->import;
+    unless ( $args{bare} ) {
+        require Test::Most;
+        push @imports, 'Test::Most';
+    }
+
+    $_->import::into($caller) for @imports;
+
     no strict "refs";
     *{"$caller\::Tags"}  = \&Tags;
     *{"$caller\::Test"}  = \&Test;
@@ -92,3 +98,16 @@ And to consume it:
 Note that this cannot be consumed into classes and magically make them into
 test classes. You must still (at the present time) inherit from
 C<Test::Class::Moose> to create a test suite.
+
+=head2 Skipping Test::Most
+
+By default, when you C<use Test::Class::Moose::Role> in your own test class, it
+exports all the subs from L<Test::Most> into your class. If you'd prefer to
+import a different set of test tools, you can pass C<< bare => 1 >> when using
+C<Test::Class::Moose::Role>:
+
+ use Test::Class::Moose::Role bare => 1;
+
+ When you pass this, C<Test::Class::Moose::Role> will not export L<Test::Most>'s subs
+ into your class. You will have to explicitly import something like
+ L<Test::More> or L<Test2::Tools::Compare> in order to actually perform tests.
