@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::Tools::Basic qw( ok );
 use Test2::Tools::Class qw( can_ok isa_ok );
-use Test2::Tools::Compare qw( end field hash is T validator );
+use Test2::Tools::Compare qw( call end field hash is object T validator );
 use Test2::Tools::Subtest qw( subtest_streamed );
 
 use Scalar::Util 'looks_like_number';
@@ -13,6 +13,9 @@ use Scalar::Util 'looks_like_number';
 use Exporter qw( import );
 
 our @EXPORT_OK = 'test_report';
+
+my $PosOrZero
+  = validator( 'number >= 0' => sub { looks_like_number($_) && $_ >= 0 } );
 
 sub test_report {
     my $report = shift;
@@ -161,19 +164,13 @@ sub _method_timing_structure {
     };
 }
 
-{
-    my $pos_or_zero
-      = validator( 'number >= 0' => sub { looks_like_number($_) && $_ >= 0 }
-      );
-
-    sub _time_field {
-        return field time => hash {
-            field real   => $pos_or_zero;
-            field system => $pos_or_zero;
-            field user   => $pos_or_zero;
-            end();
-        };
-    }
+sub _time_field {
+    return field time => hash {
+        field real   => $PosOrZero;
+        field system => $PosOrZero;
+        field user   => $PosOrZero;
+        end();
+    };
 }
 
 sub _test_class_report {
@@ -300,29 +297,42 @@ sub _test_control_methods {
     }
 }
 
-sub _test_report_time {
-    my $report = shift;
+{
+    my $pos
+      = validator( 'number > 0', sub { looks_like_number($_) && $_ > 0 } );
 
-    subtest_streamed(
-        'timing report',
-        sub {
-            can_ok( $report, 'time' );
-            my $time = $report->time;
-            isa_ok(
-                $time,
-                'Test::Class::Moose::Report::Time',
-            );
+    sub _test_report_time {
+        my $report = shift;
 
-            for my $method (qw( real user system )) {
-                ok( looks_like_number( $time->$method ),
-                    qq{\$time->$method returns a number}
+        subtest_streamed(
+            'timing report',
+            sub {
+                is( $report,
+                    object {
+                        call start_time => $pos;
+                        call end_time   => $pos;
+                    },
+                    'report has start and end time'
                 );
-                ok( $time->$method >= 0,
-                    'number is greater than or equal to zero'
+
+                can_ok( $report, 'time' );
+                my $time = $report->time;
+                isa_ok(
+                    $time,
+                    'Test::Class::Moose::Report::Time',
+                );
+
+                is( $time,
+                    object {
+                        call real   => $PosOrZero;
+                        call system => $PosOrZero;
+                        call user   => $PosOrZero;
+                    },
+                    'time object has expected values'
                 );
             }
-        }
-    );
+        );
+    }
 }
 
 1;

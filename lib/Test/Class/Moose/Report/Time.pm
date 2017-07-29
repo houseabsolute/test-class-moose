@@ -12,7 +12,7 @@ use List::Util qw( max );
 use namespace::autoclean;
 
 {
-    my @fields = qw( real user system _children_user _children_system );
+    my @fields = qw( real user system );
     for my $i ( 0 .. $#fields ) {
         has $fields[$i] => (
             is       => 'ro',
@@ -23,14 +23,6 @@ use namespace::autoclean;
         );
     }
 }
-
-has '_iters' => (
-    is       => 'ro',
-    isa      => 'Num',
-    lazy     => 1,
-    default  => sub { $_[0]->_timediff->[5] },
-    init_arg => undef,
-);
 
 has '_timediff' => (
     is       => 'ro',

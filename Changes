@@ -2,6 +2,10 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * All report objects now have start_time and end_time methods.
+
 0.84     2017-05-15
 
   [ENHANCEMENTS]

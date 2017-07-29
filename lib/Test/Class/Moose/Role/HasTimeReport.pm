@@ -15,21 +15,19 @@ use Benchmark qw(timediff timestr :hireswallclock);
 use Test::Class::Moose::Report::Time;
 
 has '_start_benchmark' => (
-    is            => 'ro',
-    isa           => 'Benchmark',
-    lazy          => 1,
-    default       => sub { Benchmark->new },
-    predicate     => '_has_start_benchmark',
-    documentation => 'Trusted method for Test::Class::Moose',
+    is        => 'ro',
+    isa       => 'Benchmark',
+    lazy      => 1,
+    default   => sub { Benchmark->new },
+    predicate => '_has_start_benchmark',
 );
 
 has '_end_benchmark' => (
-    is            => 'ro',
-    isa           => 'Benchmark',
-    lazy          => 1,
-    default       => sub { Benchmark->new },
-    predicate     => '_has_end_benchmark',
-    documentation => 'Trusted method for Test::Class::Moose',
+    is        => 'ro',
+    isa       => 'Benchmark',
+    lazy      => 1,
+    default   => sub { Benchmark->new },
+    predicate => '_has_end_benchmark',
 );
 
 has 'time' => (
@@ -37,6 +35,21 @@ has 'time' => (
     isa     => 'Test::Class::Moose::Report::Time',
     lazy    => 1,
     builder => '_build_time',
+);
+
+# If Time::HiRes is available these will be non-integers
+has 'start_time' => (
+    is      => 'ro',
+    isa     => 'Num',
+    lazy    => 0,
+    default => sub { $_[0]->_start_benchmark->[0] },
+);
+
+has 'end_time' => (
+    is      => 'ro',
+    isa     => 'Num',
+    lazy    => 0,
+    default => sub { $_[0]->_end_benchmark->[0] },
 );
 
 sub _build_time {
@@ -75,3 +88,11 @@ None.
 Returns a L<Test::Class::Moose::Report::Time> object. This object
 represents the duration of this class or method. The duration may be "0" if
 it's an abstract class with no tests run.
+
+=head2 C<start_time>
+
+Returns the start time for the report as an epoch value.
+
+=head2 C<end_time>
+
+Returns the end time for the report as an epoch value.
