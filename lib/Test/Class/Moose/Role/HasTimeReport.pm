@@ -41,14 +41,14 @@ has 'time' => (
 has 'start_time' => (
     is      => 'ro',
     isa     => 'Num',
-    lazy    => 0,
+    lazy    => 1,
     default => sub { $_[0]->_start_benchmark->[0] },
 );
 
 has 'end_time' => (
     is      => 'ro',
     isa     => 'Num',
-    lazy    => 0,
+    lazy    => 1,
     default => sub { $_[0]->_end_benchmark->[0] },
 );
 

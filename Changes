@@ -2,6 +2,13 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * The change to add start_time and end_time methods to all reports
+    completely broke timing data, so all tests reported taking essentially
+    zero time. Reported by Andy Armstrong. GH #81.
+
+
 0.85     2017-07-29
 
   [ENHANCEMENTS]
