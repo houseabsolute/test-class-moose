@@ -265,6 +265,11 @@ L<Test::Class::Moose::Config> rather than the runner itself. This may change
 in a future release, in which case this method will simply return the runner
 itself for backwards compatibility.
 
+=head2 C<< $runner->test_report >>
+
+This returns a L<Test::Class::Moose::Report> for the runner. After running
+tests you can use this object to get information about the test run.
+
 =head1 PARALLEL RUNNING
 
 Running tests in parallel requires you to have L<Parallel::ForkManager>
