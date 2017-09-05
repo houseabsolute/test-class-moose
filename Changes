@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.86     2017-09-05
+
   [BUG FIXES]
 
   * The change to add start_time and end_time methods to all reports

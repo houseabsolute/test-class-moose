@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.85
+version 0.86
 
 # SYNOPSIS
 
@@ -827,13 +827,13 @@ You can also look for information at:
 
 # SUPPORT
 
-Bugs may be submitted at [https://github.com/test-class-moose/test-class-moose/issues](https://github.com/test-class-moose/test-class-moose/issues).
+Bugs may be submitted at [https://github.com/houseabsolute/test-class-moose/issues](https://github.com/houseabsolute/test-class-moose/issues).
 
 I am also usually active on IRC as 'autarch' on `irc://irc.perl.org`.
 
 # SOURCE
 
-The source code repository for Test-Class-Moose can be found at [https://github.com/test-class-moose/test-class-moose](https://github.com/test-class-moose/test-class-moose).
+The source code repository for Test-Class-Moose can be found at [https://github.com/houseabsolute/test-class-moose](https://github.com/houseabsolute/test-class-moose).
 
 # AUTHORS
 
