@@ -8,7 +8,6 @@ Revision history for Perl distribution Test-Class-Moose
     completely broke timing data, so all tests reported taking essentially
     zero time. Reported by Andy Armstrong. GH #81.
 
-
 0.85     2017-07-29
 
   [ENHANCEMENTS]
