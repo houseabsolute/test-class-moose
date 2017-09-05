@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test2::Bundle::Extended;
+use Test2::V0;
 
 use File::Spec;
 use File::Temp qw( tempdir );

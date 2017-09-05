@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use lib 't/loadlib/helpers';
-use Test2::Bundle::Extended;
+use Test2::V0;
 require Test::Class::Moose::Load;
 
 like(

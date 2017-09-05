@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use lib 'lib';
 
-use Test2::Bundle::Extended;
+use Test2::V0;
 use Test::Class::Moose ();    # prevents us from inheriting from it
 sub registry () {'Test::Class::Moose::AttributeRegistry'}
 

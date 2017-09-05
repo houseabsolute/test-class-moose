@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test2::Bundle::Extended;
+use Test2::V0;
 use Test::Class::Moose::Load 't/randomlib';
 use Test::Class::Moose::Runner;
 

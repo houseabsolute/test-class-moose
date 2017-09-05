@@ -3,7 +3,7 @@
 use lib 'lib', 't/lib';
 
 use Test2::API qw( intercept );
-use Test2::Bundle::Extended;
+use Test2::V0;
 use Test::Events;
 
 use Test::Class::Moose::Load qw(t/basiclib);

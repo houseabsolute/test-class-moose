@@ -3,7 +3,7 @@
 use lib 'lib', 't/lib';
 
 use Test2::API qw( intercept );
-use Test2::Bundle::Extended;
+use Test2::V0;
 use Test2::Tools::Subtest qw( subtest_streamed );
 use Test::Events;
 

@@ -10,7 +10,7 @@ use Test::Requires {
 };
 
 use Test2::API qw( intercept );
-use Test2::Bundle::Extended;
+use Test2::V0;
 use Test::Events;
 use Test::Reporting qw( test_report );
 
