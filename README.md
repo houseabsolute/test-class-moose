@@ -31,7 +31,7 @@ version 0.86
 
 # DESCRIPTION
 
-See the [Test::Class::Moose home page](http://test-class-moose.github.io/test-class-moose/) for
+See the [Test::Class::Moose home page](http://houseabsolute.github.io/test-class-moose/) for
 a summary.
 
 `Test::Class::Moose` is a powerful testing framework for Perl. Out of the box
