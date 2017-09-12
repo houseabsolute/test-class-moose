@@ -2,6 +2,11 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Fixed link to the TCM home page in the docs. Fixed by Paul Williams. GH
+    #82.
+
 0.86     2017-09-05
 
   [BUG FIXES]
