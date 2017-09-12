@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.86
+version 0.87
 
 # SYNOPSIS
 
@@ -856,6 +856,7 @@ The source code repository for Test-Class-Moose can be found at [https://github.
 - Neil Bowers <neil@bowers.com>
 - Olaf Alders <olaf@wundersolutions.com>
 - Paul Boyd <pboyd@dev3l.net>
+- Paul Williams <kwakwaversal@gmail.com>
 - Petrea Corneliu Stefan <stefan@garage-coding.com>
 - Steven Humphrey <catchgithub@33k.co.uk>
 - Stuckdownawell <stuckdownawell@gmail.com>
