@@ -11,7 +11,7 @@ use Moose;
 use namespace::autoclean;
 with 'Test::Class::Moose::Role::HasTimeReport';
 
-use List::Util qw( first sum );
+use List::Util qw( first sum0 );
 
 has 'is_parallel' => (
     is      => 'ro',
@@ -45,10 +45,10 @@ sub num_test_methods {
 
 sub num_tests_run {
     my $self = shift;
-    return sum map { $_->num_tests_run }
-      grep         { !$_->is_skipped }
-      map          { $_->all_test_methods }
-      map          { $_->all_test_instances } $self->all_test_classes;
+    return sum0 map { $_->num_tests_run }
+      grep          { !$_->is_skipped }
+      map           { $_->all_test_methods }
+      map           { $_->all_test_instances } $self->all_test_classes;
 }
 
 sub all_test_classes {

@@ -500,9 +500,7 @@ sub test_classes {
     my $self = shift;
 
     if ( my $classes = $self->test_configuration->test_classes ) {
-        if (@$classes) {    # ignore it if the array is empty
-            return @$classes;
-        }
+        return @{$classes} if @{$classes};
     }
 
     my %metaclasses = Class::MOP::get_all_metaclasses();

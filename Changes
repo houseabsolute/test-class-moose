@@ -2,6 +2,11 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  - When no tests were run, the num_tests_run() method for the report object
+    would return undef instead of 0. Reported by Johan Lindstrom. GH #83.
+
 0.87     2017-09-12
 
   [BUG FIXES]
