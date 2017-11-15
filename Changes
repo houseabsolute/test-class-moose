@@ -2,6 +2,12 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * Moved the check for bad class names in Test::Class::Moose::Role::Executor
+    to its own method to facilitate overriding just that portion of the
+    role. Based on PR #85 from Chuck Adams, and addresses #84.
+
 0.88     2017-11-04
 
   [BUG FIXES]
