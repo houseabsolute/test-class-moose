@@ -28,7 +28,7 @@ requires "Test2::Tools::AsyncSubtest" => "0";
 requires "Test::Most" => "0";
 requires "Try::Tiny" => "0";
 requires "namespace::autoclean" => "0";
-requires "perl" => "v5.10.0";
+requires "perl" => "5.010";
 requires "strict" => "0";
 requires "warnings" => "0";
 recommends "Parallel::ForkManager" => "v0.7.6";
@@ -47,6 +47,7 @@ on 'test' => sub {
   requires "Test::Requires" => "0";
   requires "Test::Warnings" => "0";
   requires "lib" => "0";
+  requires "perl" => "5.010";
 };
 
 on 'test' => sub {
@@ -56,6 +57,7 @@ on 'test' => sub {
 
 on 'configure' => sub {
   requires "ExtUtils::MakeMaker" => "0";
+  requires "perl" => "v5.10.0";
 };
 
 on 'develop' => sub {

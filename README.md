@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.88
+version 0.89
 
 # SYNOPSIS
 
@@ -843,6 +843,7 @@ The source code repository for Test-Class-Moose can be found at [https://github.
 # CONTRIBUTORS
 
 - Andy Jack <github@veracity.ca>
+- Chuck Adams &lt;charles\_adams@symantec.com>
 - Denny de la Haye <denny@users.noreply.github.com>
 - Desmond Daignault <nawglan@users.noreply.github.com>
 - Doug Bell <madcityzen@gmail.com>
