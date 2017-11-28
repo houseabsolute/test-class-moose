@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.90     2017-11-28
+
   [BUG FIXES]
 
   * Require Test2 1.1302118 per Chad Granum's recommendation. This version

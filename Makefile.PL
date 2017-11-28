@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use 5.010;
+use 5.010000;
 
 use ExtUtils::MakeMaker;
 
@@ -14,7 +14,7 @@ my %WriteMakefileArgs = (
   },
   "DISTNAME" => "Test-Class-Moose",
   "LICENSE" => "perl",
-  "MIN_PERL_VERSION" => "5.010",
+  "MIN_PERL_VERSION" => "5.010000",
   "NAME" => "Test::Class::Moose",
   "PREREQ_PM" => {
     "Benchmark" => 0,
@@ -39,7 +39,7 @@ my %WriteMakefileArgs = (
     "Scalar::Util" => 0,
     "Sub::Attribute" => 0,
     "TAP::Formatter::Color" => "3.29",
-    "Test2" => "1.302059",
+    "Test2" => "1.1302118",
     "Test2::API" => 0,
     "Test2::AsyncSubtest" => "0.000018",
     "Test2::IPC" => 0,
@@ -54,7 +54,6 @@ my %WriteMakefileArgs = (
     "ExtUtils::MakeMaker" => 0,
     "File::Spec" => 0,
     "File::Temp" => 0,
-    "Test2::Bundle::Extended" => 0,
     "Test2::Tools::Basic" => 0,
     "Test2::Tools::Class" => 0,
     "Test2::Tools::Compare" => 0,
@@ -97,10 +96,9 @@ my %FallbackPrereqs = (
   "Scalar::Util" => 0,
   "Sub::Attribute" => 0,
   "TAP::Formatter::Color" => "3.29",
-  "Test2" => "1.302059",
+  "Test2" => "1.1302118",
   "Test2::API" => 0,
   "Test2::AsyncSubtest" => "0.000018",
-  "Test2::Bundle::Extended" => 0,
   "Test2::IPC" => 0,
   "Test2::Tools::AsyncSubtest" => 0,
   "Test2::Tools::Basic" => 0,

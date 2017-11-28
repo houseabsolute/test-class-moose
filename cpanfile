@@ -20,7 +20,7 @@ requires "Parallel::ForkManager" => "0";
 requires "Scalar::Util" => "0";
 requires "Sub::Attribute" => "0";
 requires "TAP::Formatter::Color" => "3.29";
-requires "Test2" => "1.302059";
+requires "Test2" => "1.1302118";
 requires "Test2::API" => "0";
 requires "Test2::AsyncSubtest" => "0.000018";
 requires "Test2::IPC" => "0";
@@ -28,7 +28,7 @@ requires "Test2::Tools::AsyncSubtest" => "0";
 requires "Test::Most" => "0";
 requires "Try::Tiny" => "0";
 requires "namespace::autoclean" => "0";
-requires "perl" => "5.010";
+requires "perl" => "v5.10.0";
 requires "strict" => "0";
 requires "warnings" => "0";
 recommends "Parallel::ForkManager" => "v0.7.6";
@@ -37,7 +37,6 @@ on 'test' => sub {
   requires "ExtUtils::MakeMaker" => "0";
   requires "File::Spec" => "0";
   requires "File::Temp" => "0";
-  requires "Test2::Bundle::Extended" => "0";
   requires "Test2::Tools::Basic" => "0";
   requires "Test2::Tools::Class" => "0";
   requires "Test2::Tools::Compare" => "0";
@@ -47,7 +46,6 @@ on 'test' => sub {
   requires "Test::Requires" => "0";
   requires "Test::Warnings" => "0";
   requires "lib" => "0";
-  requires "perl" => "5.010";
 };
 
 on 'test' => sub {
@@ -57,7 +55,6 @@ on 'test' => sub {
 
 on 'configure' => sub {
   requires "ExtUtils::MakeMaker" => "0";
-  requires "perl" => "v5.10.0";
 };
 
 on 'develop' => sub {
