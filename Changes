@@ -2,6 +2,11 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Use sum0 instead of sum in the num_test_instances() method for the report
+    object. Fixed by Larry Leszczynski. GH #87.
+
 0.90     2017-11-28
 
   [BUG FIXES]
