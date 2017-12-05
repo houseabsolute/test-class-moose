@@ -33,7 +33,7 @@ has test_classes => (
 
 sub num_test_instances {
     my $self = shift;
-    return sum map { $_->num_test_instances } $self->all_test_classes;
+    return sum0 map { $_->num_test_instances } $self->all_test_classes;
 }
 
 sub num_test_methods {
