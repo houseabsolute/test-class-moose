@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 use 5.10.0;
 
-our $VERSION = '0.91';
+our $VERSION = '0.92';
 
 use Moose::Role;
 
