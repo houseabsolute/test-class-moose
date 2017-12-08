@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.91     2017-12-07
+
   [BUG FIXES]
 
   * Use sum0 instead of sum in the num_test_instances() method for the report
