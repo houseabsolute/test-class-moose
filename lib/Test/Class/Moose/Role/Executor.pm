@@ -35,6 +35,12 @@ has 'test_report' => (
     builder => '_build_test_report',
 );
 
+has 'is_parallel' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => sub { ( ref $_[0] ) =~ /::Parallel$/ ? 1 : 0 },
+);
+
 sub runtests {
     my $self = shift;
 
@@ -91,7 +97,7 @@ sub _run_test_classes {
         async_subtest(
             $test_class,
             { manual_skip_all => 1 },
-            sub { $self->_run_test_class($test_class) }
+            sub { $self->run_test_class($test_class) }
         )->finish;
     }
 }
@@ -103,11 +109,11 @@ sub _build_test_report {
     # types of Executors. However, the real fix is to make parallel reporting
     # actually work so the report doesn't have to care about this.
     return Test::Class::Moose::Report->new(
-        is_parallel => ( ref $self ) =~ /::Parallel$/ ? 1 : 0,
+        is_parallel => $self->is_parallel,,
     );
 }
 
-sub _run_test_class {
+sub run_test_class {
     my $self       = shift;
     my $test_class = shift;
 
@@ -160,8 +166,8 @@ sub _run_test_instances {
             @test_instances )
         {
             my $instance_report = $self->_maybe_wrap_test_instance(
-                $class_report,
                 $test_instance,
+                $class_report,
                 @test_instances > 1,
             );
             $passed = 0 if not $instance_report->passed;
@@ -173,13 +179,13 @@ sub _run_test_instances {
 
 sub _maybe_wrap_test_instance {
     my $self          = shift;
-    my $class_report  = shift;
     my $test_instance = shift;
+    my $class_report  = shift;
     my $in_subtest    = shift;
 
-    return $self->_run_test_instance(
-        $class_report,
+    return $self->run_test_instance(
         $test_instance,
+        $class_report,
     ) unless $in_subtest;
 
     my $instance_report;
@@ -187,9 +193,9 @@ sub _maybe_wrap_test_instance {
         $test_instance->test_instance_name,
         { manual_skip_all => 1 },
         sub {
-            $instance_report = $self->_run_test_instance(
-                $class_report,
+            $instance_report = $self->run_test_instance(
                 $test_instance,
+                $class_report,
             );
         },
     )->finish;
@@ -197,8 +203,8 @@ sub _maybe_wrap_test_instance {
     return $instance_report;
 }
 
-sub _run_test_instance {
-    my ( $self, $class_report, $test_instance ) = @_;
+sub run_test_instance {
+    my ( $self, $test_instance, $class_report ) = @_;
 
     my $test_instance_name = $test_instance->test_instance_name;
     my $instance_report    = Test::Class::Moose::Report::Instance->new(
@@ -231,7 +237,7 @@ sub _run_test_instance {
         my $report = $self->test_report;
 
         unless (
-            $self->_run_test_control_method(
+            $self->run_test_control_method(
                 $test_instance, 'test_startup', $instance_report,
             )
           )
@@ -259,11 +265,10 @@ sub _run_test_instance {
 
         my $all_passed = 1;
         foreach my $test_method (@test_methods) {
-            my $method_report = $self->_run_test_method(
+            my $method_report = $self->run_test_method(
                 $test_instance,
                 $test_method,
                 $instance_report,
-                $ctx,
             );
             $all_passed = 0 if not $method_report->passed;
         }
@@ -286,7 +291,7 @@ sub _run_shutdown {
     my ( $self, $test_instance, $instance_report ) = @_;
 
     return 1
-      if $self->_run_test_control_method(
+      if $self->run_test_control_method(
         $test_instance, 'test_shutdown', $instance_report,
       );
 
@@ -369,7 +374,7 @@ my %TEST_CONTROL_METHODS = map { $_ => 1 } qw/
   test_shutdown
   /;
 
-sub _run_test_control_method {
+sub run_test_control_method {
     my ( $self, $test_instance, $phase, $report_object ) = @_;
 
     local $0 = "$0 - $phase"
@@ -420,7 +425,7 @@ sub _run_test_control_method {
     return $success;
 }
 
-sub _run_test_method {
+sub run_test_method {
     my ( $self, $test_instance, $test_method, $instance_report ) = @_;
 
     local $0 = "$0 - $test_method"
@@ -432,7 +437,7 @@ sub _run_test_method {
     $instance_report->add_test_method($method_report);
 
     $test_instance->test_skip_clear;
-    $self->_run_test_control_method(
+    $self->run_test_control_method(
         $test_instance,
         'test_setup',
         $method_report,
@@ -483,7 +488,7 @@ sub _run_test_method {
         $method_report->passed( $p ? 1 : 0 );
 
         unless ( $skipped && !$test_instance->run_control_methods_on_skip ) {
-            $self->_run_test_control_method(
+            $self->run_test_control_method(
                 $test_instance,
                 'test_teardown',
                 $method_report,
@@ -524,4 +529,78 @@ sub test_classes {
 
 1;
 
-=for Pod::Coverage runtests test_classes
+__END__
+
+=pod
+
+=head1 DESCRIPTION
+
+This role implements the guts of this distribution, running all of your test
+classes. It's public API can be wrapped by additional roles to provide
+extensions to the default TCM behavior.
+
+The actual implementations are provided by
+C<Test::Class::Moose::Executor::Sequential> and
+C<Test::Class::Moose::Executor::Parallel>.
+
+=head1 API
+
+This role provides the following public methods for extensions. If you wrap
+any of the methods related to test execution you are strongly encouraged to
+make sure that the original method is called, as these methods implement the
+core functionality of TCM.
+
+=head2 $executor->is_parallel
+
+This returns a boolean indicating whether or not this executor will run test
+classes in parallel or not.
+
+=head2 $executor->test_configuration
+
+Returns the L<Test::Class::Moose::Config> object for this executor.
+
+=head2 $executor->test_report
+
+Returns the L<Test::Class::Moose::Report> object for this executor.
+
+=head2 $executor->test_classes
+
+Returns the list of test classes to be run, in the order that they should be
+run.
+
+=head2 $executor->runtests
+
+This is the primary entry method for test executor. It is called without any
+arguments and is expected to run all of the test classes defined in the test
+configuration.
+
+=head2 $executor->run_test_class($test_class)
+
+This method is called once for each test class to be run. It is passed a
+single argument, the I<name> of the test class to be run.
+
+=head2 $executor->run_test_instance($test_instance, $class_report)
+
+This method is called once for each instance of a test class to be run. For
+most classes this is just called once but for classes which consume the
+L<Test::Class::Moose::Role::Parameterized> role, it will be called more than
+once.
+
+The first argument is the test class object to be run, and the second is an
+instance of L<Test::Class::Moose::Report::Class> for the class being run.
+
+=head2 $executor->run_test_method($test_instance, $test_method, $instance_report)
+
+This method is called once for each test method in an instance to be run.
+
+The first argument is the test class object to be run, the second is a method
+name, and the third is an instance of L<Test::Class::Moose::Report::Instance>
+for the instance being run.
+
+=head2 $executor->run_test_control_method($test_instance, $control_method, $instance_report)
+
+This method is called once for each test method in an instance to be run.
+
+The first argument is the test class object to be run, the second is a control
+method name (like C<'test_startup'>), and the third is an instance of
+L<Test::Class::Moose::Report::Instance> for the instance being run.

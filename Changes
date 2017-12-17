@@ -2,6 +2,14 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * Added a new "executor_roles" parameter to the Test::Class::Moose::Runner
+    constructor. This allows you to apply roles to the executor (the object
+    which executes test classes) as a way to extend the default TCM
+    behavior. See the documentation for Test::Class::Moose::Role::Executor for
+    methods which you can wrap.
+
 0.91     2017-12-07
 
   [BUG FIXES]
