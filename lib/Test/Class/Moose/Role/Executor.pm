@@ -102,16 +102,7 @@ sub _run_test_classes {
     }
 }
 
-sub _build_test_report {
-    my $self = shift;
-
-    # XXX - This isn't very elegant and won't work well in the face of other
-    # types of Executors. However, the real fix is to make parallel reporting
-    # actually work so the report doesn't have to care about this.
-    return Test::Class::Moose::Report->new(
-        is_parallel => $self->is_parallel,,
-    );
-}
+sub _build_test_report { Test::Class::Moose::Report->new }
 
 sub run_test_class {
     my $self       = shift;

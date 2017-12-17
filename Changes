@@ -10,6 +10,12 @@ Revision history for Perl distribution Test-Class-Moose
     behavior. See the documentation for Test::Class::Moose::Role::Executor for
     methods which you can wrap.
 
+  [BACKWARDS INCOMPATIBILITIES]
+
+  * Removed the never-documented Test::Class::Moose::Report's is_parallel
+    attribute. This was present because in older versions of TCM, reporting
+    was broken when tests were run in parallel.
+
 0.91     2017-12-07
 
   [BUG FIXES]

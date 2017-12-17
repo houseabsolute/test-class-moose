@@ -13,12 +13,6 @@ with 'Test::Class::Moose::Role::HasTimeReport';
 
 use List::Util qw( first sum0 );
 
-has 'is_parallel' => (
-    is      => 'ro',
-    isa     => 'Bool',
-    default => 0,
-);
-
 has test_classes => (
     is      => 'ro',
     traits  => ['Array'],
