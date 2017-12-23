@@ -34,7 +34,6 @@ is( intercept { $runner->runtests },
 );
 
 my %expect = (
-    is_parallel        => F(),
     num_tests_run      => 2,
     num_test_instances => 2,
     num_test_methods   => 2,

@@ -64,7 +64,6 @@ subtest_streamed(
 );
 
 my %expect = (
-    is_parallel        => F(),
     num_tests_run      => 27,
     num_test_instances => 2,
     num_test_methods   => 9,

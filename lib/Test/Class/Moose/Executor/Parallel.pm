@@ -117,7 +117,7 @@ sub _run_test_classes_in_parallel {
         $subtest->attach($id);
         $subtest->run(
             sub {
-                $class_report = $self->_run_test_class($test_class);
+                $class_report = $self->run_test_class($test_class);
             }
         );
         $subtest->detach;
@@ -159,7 +159,7 @@ sub _build_fork_manager {
     return $pfm;
 }
 
-around _run_test_method => sub {
+around run_test_method => sub {
     my $orig = shift;
     my $self = shift;
 

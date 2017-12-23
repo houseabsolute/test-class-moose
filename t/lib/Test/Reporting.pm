@@ -32,9 +32,7 @@ sub test_report {
         'class reports have expected names'
     );
 
-    for my $method (
-        qw( is_parallel num_tests_run num_test_instances num_test_methods ))
-    {
+    for my $method (qw( num_tests_run num_test_instances num_test_methods )) {
         is( $report->$method,
             $expect->{$method},
             $method

@@ -86,7 +86,6 @@ for my $class (@classes) {
 }
 
 my %expect = (
-    is_parallel        => T(),
     num_tests_run      => 44,
     num_test_instances => 10,
     num_test_methods   => 22,

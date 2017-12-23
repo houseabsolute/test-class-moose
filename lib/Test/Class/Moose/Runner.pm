@@ -35,6 +35,16 @@ has 'color_output' => (
     default => 1,
 );
 
+has 'executor_roles' => (
+    traits  => ['Array'],
+    is      => 'ro',
+    isa     => 'ArrayRef[RoleName]',
+    default => sub { [] },
+    handles => {
+        _has_executor_roles => 'count',
+    },
+);
+
 has '_executor' => (
     is         => 'ro',
     init_arg   => undef,
@@ -61,20 +71,28 @@ around BUILDARGS => sub {
 sub _build__executor {
     my $self = shift;
 
+    my $executor;
     if ( $self->jobs == 1 ) {
         require Test::Class::Moose::Executor::Sequential;
-        return Test::Class::Moose::Executor::Sequential->new(
+        $executor = Test::Class::Moose::Executor::Sequential->new(
             test_configuration => $self->test_configuration );
     }
     else {
         require Test::Class::Moose::Executor::Parallel;
-        return Test::Class::Moose::Executor::Parallel->new(
+        $executor = Test::Class::Moose::Executor::Parallel->new(
             test_configuration     => $self->test_configuration,
             jobs                   => $self->jobs,
             color_output           => $self->color_output,
             show_parallel_progress => $self->show_parallel_progress,
         );
     }
+
+    return $executor unless $self->_has_executor_roles;
+
+    require Moose::Util;
+    Moose::Util::apply_all_roles( $executor, @{ $self->executor_roles } );
+
+    return $executor;
 }
 
 1;
@@ -244,6 +262,14 @@ them. For example, if your network is down:
  my $test_suite = Test::Class::Moose->new({
      exclude_tags => 'network',
  });
+
+=item * C<executor_roles>
+
+An array reference containing one or more roles to be applied to the executor
+object. This allows you to apply plugins on top of the normal TCM behavior.
+
+See the L<Test::Class::Moose::Role::Executor> docs for details of what methods
+you can modify as part of such roles.
 
 =back
 
