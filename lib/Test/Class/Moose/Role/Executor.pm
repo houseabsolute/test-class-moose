@@ -478,7 +478,7 @@ sub run_test_method {
         # or 1.
         $method_report->passed( $p ? 1 : 0 );
 
-        unless ( $skipped && !$test_instance->run_control_methods_on_skip ) {
+        if ( !$skipped || $test_instance->run_control_methods_on_skip ) {
             $self->run_test_control_method(
                 $test_instance,
                 'test_teardown',
