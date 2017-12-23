@@ -17,7 +17,7 @@ use Test::Reporting qw( test_report );
 use List::SomeUtils qw( first_index );
 use Scalar::Util qw( blessed );
 use Test::Class::Moose::Load
-  qw( t/basiclib t/parallellib t/parameterizedlib t/skiplib );
+  qw( t/basiclib t/parallellib t/parameterizedlib t/skiplib t/todolib );
 use Test::Class::Moose::Runner;
 
 skip_all(
@@ -35,9 +35,16 @@ my $events = intercept { $runner->runtests };
 test_events_is(
     $events,
     array {
-        event Plan => sub {
-            call max => 10;
+        # The todo tests produce some diags from their die events and these
+        # are mixed into the Subtest events in an unpredictable order because
+        # tests are run in parallel.
+        filter_items {
+            grep { !$_->isa('Test2::Event::Diag') } @_;
         };
+        event Plan => sub {
+            call max => 11;
+        };
+        event 'Subtest';
         event 'Subtest';
         event 'Subtest';
         event 'Subtest';
@@ -50,7 +57,7 @@ test_events_is(
         event 'Subtest';
         end();
     },
-    'parallel tests produces a plan followed by 6 subtests events'
+    'parallel tests produces a plan followed by a series of subtest & diag events'
 );
 
 my @classes = qw(
@@ -64,6 +71,7 @@ my @classes = qw(
   TestsFor::SkipAll
   TestsFor::SkipSomeMethods
   TestsFor::Sequential
+  TestsFor::Todo
 );
 
 for my $class (@classes) {
@@ -86,9 +94,9 @@ for my $class (@classes) {
 }
 
 my %expect = (
-    num_tests_run      => 44,
-    num_test_instances => 10,
-    num_test_methods   => 22,
+    num_tests_run      => 47,
+    num_test_instances => 11,
+    num_test_methods   => 25,
     classes            => {
         map { $_->expected_report } @classes,
     },
