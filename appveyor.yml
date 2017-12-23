@@ -10,7 +10,7 @@ install:
 build_script:
   - perl -e 1
 test_script:
-  - prove -lrv t/
+  - prove -lrvm t/
 ### __app_cisetup__
 # --- {}
 
