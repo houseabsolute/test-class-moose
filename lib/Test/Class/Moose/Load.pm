@@ -22,38 +22,14 @@ sub is_test_class {
     return;
 }
 
-my %Added_to_INC;
-
 sub _load {
-    my ( $class, $file, $dir ) = @_;
+    my ( undef, $file, $dir ) = @_;
 
-    $file =~ s{\.pm$}{};    # remove .pm extension
-    $file =~ s{\\}{/}g;     # to make win32 happy
-    $dir =~ s{\\}{/}g;      # to make win32 happy
-    $file =~ s/^$dir//;
-    my $_package = join '::' => grep $_ => File::Spec->splitdir($file);
+    $_ =~ s{\\}{/}g for $file, $dir;    # to make win32 happy
+    $file =~ s{^\Q$dir\E\/}{};
 
-    # untaint that puppy!
-    my ($package) = $_package =~ /^([[:word:]]+(?:::[[:word:]]+)*)$/;
-
-    # Filter out bad classes (mainly this means things in .svn and similar)
-    return unless defined $package;
-
-    unshift @INC => $dir unless $Added_to_INC{$dir}++;
-
-    {
-        local $SIG{__DIE__} = sub {
-            undef $SIG{__DIE__};
-            require Carp;
-            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-            Carp::confess(@_);
-        };
-
-        # either "require" it or "use" it with no import list. Otherwise, this
-        # module will inherit from Test::Class::Moose and break everything.
-        eval "use $package ()";    ## no critic
-    }
-    die $@ if $@;
+    local @INC = ( @INC, $dir );
+    require $file;
 }
 
 sub import {
