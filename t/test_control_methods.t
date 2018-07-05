@@ -60,7 +60,7 @@ subtest_streamed(
                         };
                         event Diag => sub {
                             call message => match
-                              qr/\Qforced die at t\E.\Qtest_control_methods.t\E.+/s;
+                              qr/\Qforced die at \E(\.\/)?\Qt\E.\Qtest_control_methods.t\E.+/s;
                         };
                         event Plan => sub {
                             call max => 1;

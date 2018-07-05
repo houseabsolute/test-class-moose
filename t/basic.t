@@ -227,7 +227,7 @@ subtest_streamed(
                             call subevents => array {
                                 event Exception => sub {
                                     call error => match
-                                      qr{\Qforced die at t\E.\Qbasic.t\E.+}s;
+                                      qr{\Qforced die at \E(\./)?\Qt\E.\Qbasic.t\E.+}s;
                                 };
                                 event Plan => sub {
                                     call max => 0;
