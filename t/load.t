@@ -1,5 +1,8 @@
-#!/usr/bin/env perl
+use strict;
+use warnings;
+
 use lib 't/loadlib/helpers';
+
 use Test2::V0;
 require Test::Class::Moose::Load;
 

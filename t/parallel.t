@@ -1,9 +1,7 @@
-#!/usr/bin/env perl
-
 use strict;
 use warnings;
 
-use lib 'lib', 't/lib';
+use lib 't/lib';
 
 use Test::Requires {
     'Parallel::ForkManager' => 0,

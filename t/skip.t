@@ -1,6 +1,7 @@
-#!/usr/bin/env perl
+use strict;
+use warnings;
 
-use lib 'lib', 't/lib';
+use lib 't/lib';
 
 use Test2::API qw( intercept );
 use Test2::V0;

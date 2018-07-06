@@ -1,5 +1,6 @@
-#!/usr/bin/env perl
-use lib 'lib';
+use strict;
+use warnings;
+
 use Test2::V0;
 use Test::Class::Moose::Load qw(t/basiclib);
 use Test::Class::Moose::Runner;
