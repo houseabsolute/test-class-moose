@@ -968,7 +968,8 @@ L<Test::Class::Moose::Report> and L<Test::Class::Moose::Report::Method>.
 
 =item *
 
-Removed the long-deprecated TCM::Report::Method->add_to_plan method.
+Removed the long-deprecated C<<
+Test::Class::Moose::Report::Method->add_to_plan method >>.
 
 =back
 
