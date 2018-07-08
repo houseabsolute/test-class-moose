@@ -886,7 +886,7 @@ for you, see L<Test::Class::Moose::Role::AutoUse> in this distribution.
 =item *
 
 The L<Test::Class::Moose::Config> class's C<args> method is now
-deprecated. was a holdover from when Test::Class::Moose was both a parent
+deprecated. This was a holdover from when Test::Class::Moose was both a parent
 class for your test classes and the test class runner.
 
 =back
