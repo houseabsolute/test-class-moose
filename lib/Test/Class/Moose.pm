@@ -573,12 +573,14 @@ See the docs for L<Test::Class::Moose::Runner> for details on running your
 test suite. If you'd like to get up and running quickly, here's a very simple
 test file you can use:
 
- use Test::Class::Moose::Load 't/lib';
- use Test::Class::Moose::Runner;
- Test::Class::Moose::Runner->new->runtests;
+ use Test::Class::Moose::CLI;
+ Test::Class::Moose::CLI->new_with_options->run;
 
 Put this in a file like F<t/run-test-class.t>. When you run it with prove it
 will load all the test classes defined in F<t/lib> and run them sequentially.
+
+See the documentation for L<Test::Class::Moose::CLI> on the options you can
+pass when running tests.
 
 =head2 Skipping Classes and Methods
 
