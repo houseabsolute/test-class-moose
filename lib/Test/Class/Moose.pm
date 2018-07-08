@@ -908,7 +908,7 @@ L<Test::Class::Moose::Runner> to run your test classes.
 
 =item *
 
-The C<Test::Class::Moose::Role::Paralllel> role has been removed. This has not
+The C<Test::Class::Moose::Role::Parallel> role has been removed. This has not
 done anything except issue a warning since version 0.55.
 
 =back
