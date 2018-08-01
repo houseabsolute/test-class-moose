@@ -2,6 +2,14 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.93     2018-07-08
+
+  [BUG FIXES]
+
+  * Extending a TCM class with a non-existing or non-TCM class now delivers
+    a fatal error instead of silently ignoring the test class.  PR #93,
+    fixes GH #70.
+
 0.92     2017-12-23
 
   [ENHANCEMENTS]
