@@ -2,6 +2,12 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * The CLI class (and role) now allow you to pass a directory for the
+  --classes option. This directory is searched recursively for classes to be
+  loaded. Based on a feature request from jrubinator. GH #91.
+
 0.93     2018-07-08
 
   [BUG FIXES]
