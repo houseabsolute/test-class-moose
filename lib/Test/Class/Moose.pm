@@ -159,9 +159,37 @@ sub import {
     if ( my $parent = ( delete $args{parent} || delete $args{extends} ) ) {
         my @parents = 'ARRAY' eq ref $parent ? @$parent : $parent;
         $caller->meta->superclasses(@parents);
+        unless ( $caller->isa(__PACKAGE__) ) {
+            Carp::croak( _build_error_bad_parents($caller) );
+        }
     }
     else {
         $caller->meta->superclasses(__PACKAGE__);
+    }
+}
+
+sub _build_error_bad_parents {
+    my $class     = shift;
+    my @ancestors = $class->meta->linearized_isa;
+    shift @ancestors;    # First element is $class
+    my $me = "The $class class";
+    if ( scalar @ancestors == 1 ) {
+        return "$me inherits from $ancestors[0] which does not inherit from "
+          . __PACKAGE__;
+    }
+    else {
+        my $heritage;
+        if ( scalar @ancestors == 2 ) {
+            $heritage .= join( ' and ', @ancestors );
+        }
+        else {
+            my $last = pop @ancestors;
+            $heritage .= join( ', ', @ancestors ) . ", and $last";
+        }
+        return
+            "$me has $heritage as ancestors "
+          . "but none of these classes inherit from "
+          . __PACKAGE__;
     }
 }
 
@@ -357,7 +385,9 @@ run does not match the plan.
 
 =head2 Inheriting from another Test::Class::Moose class
 
-List it as the C<extends> in the import list.
+List it as the C<extends> in the import list. If the base class does
+not use (or extend) Test::Class::Moose, then a compile-time error is
+thrown.
 
  package TestsFor::Some::Class::Subclass;
  use Test::Class::Moose extends => 'TestsFor::Some::Class';
