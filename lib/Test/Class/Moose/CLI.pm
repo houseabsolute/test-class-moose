@@ -43,9 +43,16 @@ This class allows you to pass the following command-line options:
 =head2 --classes
 
 This should be the full name of one a class that you want to run (rather than
-running classes). You can also pass a path to the class. Any leading C<t/lib/>
-part of the path will be stripped, and the rest will be transformed from a
-path to a module name. You can pass this option more than once.
+running classes).
+
+You can also pass a path to a single class. Any leading C<t/lib/> part of the
+path will be stripped, and the rest will be transformed from a path to a
+module name.
+
+Finally, you can pass a path to a directory. It will be searched for F<.pm>
+files and each of those files will be loaded as a test class.
+
+You can pass this option more than once.
 
 =head2 --methods
 

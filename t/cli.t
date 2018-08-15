@@ -145,19 +145,28 @@ subtest 'classes as paths' => sub {
     with 'Test::Class::Moose::Role::CLI';
 
     sub _test_lib_dirs { return ('t/clilib') }
+
+    sub _load_classes { }
 }
 
 subtest 'classes from CLI are loaded' => sub {
     local @ARGV = ( '--classes', 'Foo' );
-    intercept { Test::CLI->new_with_options->run };
-
-    no warnings 'once';
-    ok( $Foo::LOADED,  'Foo class was loaded' );
-    ok( !$Bar::LOADED, 'Bar class was not loaded' );
+    is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
+        ['Foo'],
+        'Foo class is found by class name'
+    );
 
     local @ARGV = ( '--classes', 't/clilib/Bar.pm' );
-    intercept { Test::CLI->new_with_options->run };
-    ok( $Bar::LOADED, 'Bar class was loaded' );
+    is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
+        ['Bar'],
+        'Bar class is found by file path'
+    );
+
+    local @ARGV = ( '--classes', 't/clilib' );
+    is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
+        [ 'Bar', 'Foo' ],
+        'Bar and Foo class are found in a directory'
+    );
 };
 
 {

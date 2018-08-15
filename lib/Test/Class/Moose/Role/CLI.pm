@@ -10,6 +10,7 @@ use Moose::Role 2.0000;
 use Carp;
 use namespace::autoclean;
 
+use File::Find qw( find );
 use JSON qw( encode_json );
 use Module::Runtime qw( use_package_optimistically );
 use Module::Util qw( fs_path_to_module );
@@ -234,25 +235,56 @@ sub _after_run { }
 sub _build_class_names {
     my $self = shift;
 
-    return [ map { $self->_munge_class( $self->_maybe_file_to_class($_) ) }
-          @{ $self->classes } ];
+    return [
+        map { $self->_munge_class($_) }
+        map { $self->_maybe_resolve_path($_) } @{ $self->classes }
+    ];
 }
 
 sub _munge_class { $_[1] }
 
-sub _maybe_file_to_class {
+sub _maybe_resolve_path {
     my $self = shift;
-    my $file = shift;
+    my $path = shift;
 
-    return $file unless $file =~ /\.pm$/;
-    for my $dir ( $self->_test_lib_dirs ) {
-        last if $file =~ s{^.*\Q$dir}{};
+    if ( -d $path ) {
+        return $self->_find_classes($path);
     }
-    return fs_path_to_module($file);
+
+    if ( $path =~ /\.pm$/ ) {
+        for my $dir ( $self->_test_lib_dirs ) {
+            if ( $path =~ s{^.*\Q$dir}{} ) {
+                return fs_path_to_module($path);
+            }
+        }
+    }
+
+    return $path;
 }
 
 sub _test_lib_dirs {
     return ('t/lib');
+}
+
+sub _find_classes {
+    my $self = shift;
+    my $dir  = shift;
+
+    my @classes;
+    my $finder = sub {
+        return unless /\.pm$/;
+        s{^.*\Q$dir}{};
+        push @classes, fs_path_to_module($_);
+    };
+
+    find(
+        {   wanted   => $finder,
+            no_chdir => 1,
+        },
+        $dir
+    );
+
+    return @classes;
 }
 
 sub _maybe_save_timing_data {
@@ -311,10 +343,12 @@ in your class that does something.
 
 =head2 _munge_class
 
-This method is called for each class passed on the command line with the
-C<--classes> option. It passed the command line argument (one per call). You
-can use this to allow people to pass short names like C<Model::Car> and turn
-it into a full name like C<TestFor::MyApp::Model::Car>.
+This method is called for each class as found the command line C<--classes>
+option. Note that this is called I<after> resolving file and directory paths
+pass as a C<--classes> option.
+
+You can use this to allow people to pass short names like C<Model::Car> and
+turn it into a full name like C<TestFor::MyApp::Model::Car>.
 
 By default this method is a no-op.
 
