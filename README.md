@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.92
+version 0.93
 
 # SYNOPSIS
 
@@ -138,7 +138,8 @@ run does not match the plan.
 
 ## Inheriting from another Test::Class::Moose class
 
-List it as the `extends` in the import list.
+List it as the `extends` in the import list. If the base class does not use
+(or extend) Test::Class::Moose, then a compile-time error is thrown.
 
     package TestsFor::Some::Class::Subclass;
     use Test::Class::Moose extends => 'TestsFor::Some::Class';
@@ -354,12 +355,14 @@ See the docs for [Test::Class::Moose::Runner](https://metacpan.org/pod/Test::Cla
 test suite. If you'd like to get up and running quickly, here's a very simple
 test file you can use:
 
-    use Test::Class::Moose::Load 't/lib';
-    use Test::Class::Moose::Runner;
-    Test::Class::Moose::Runner->new->runtests;
+    use Test::Class::Moose::CLI;
+    Test::Class::Moose::CLI->new_with_options->run;
 
 Put this in a file like `t/run-test-class.t`. When you run it with prove it
 will load all the test classes defined in `t/lib` and run them sequentially.
+
+See the documentation for [Test::Class::Moose::CLI](https://metacpan.org/pod/Test::Class::Moose::CLI) on the options you can
+pass when running tests.
 
 ## Skipping Classes and Methods
 
@@ -661,7 +664,7 @@ for you, see [Test::Class::Moose::Role::AutoUse](https://metacpan.org/pod/Test::
 ## Version 0.79
 
 - The [Test::Class::Moose::Config](https://metacpan.org/pod/Test::Class::Moose::Config) class's `args` method is now
-deprecated. was a holdover from when Test::Class::Moose was both a parent
+deprecated. This was a holdover from when Test::Class::Moose was both a parent
 class for your test classes and the test class runner.
 
 ## Version 0.77
@@ -671,7 +674,7 @@ control methods is now deprecated. You can get the report from the test class
 object itself via the `$test->test_report` method.
 - The `Test::Class::Moose->runtests` method has been removed. Use
 [Test::Class::Moose::Runner](https://metacpan.org/pod/Test::Class::Moose::Runner) to run your test classes.
-- The `Test::Class::Moose::Role::Paralllel` role has been removed. This has not
+- The `Test::Class::Moose::Role::Parallel` role has been removed. This has not
 done anything except issue a warning since version 0.55.
 
 ## Version 0.75
@@ -701,7 +704,7 @@ attribute. Contrary to the documentation, this attribute was never populated.
 don't include a "\_report" suffix.
 - Removed the long-deprecated `tests_run` methods from
 [Test::Class::Moose::Report](https://metacpan.org/pod/Test::Class::Moose::Report) and [Test::Class::Moose::Report::Method](https://metacpan.org/pod/Test::Class::Moose::Report::Method).
-- Removed the long-deprecated TCM::Report::Method->add\_to\_plan method.
+- Removed the long-deprecated `Test::Class::Moose::Report::Method->add_to_plan method`.
 
 ## Version 0.55
 
@@ -848,6 +851,7 @@ The source code repository for Test-Class-Moose can be found at [https://github.
 - Desmond Daignault <nawglan@users.noreply.github.com>
 - Doug Bell <madcityzen@gmail.com>
 - Gregory Oschwald <goschwald@maxmind.com>
+- Harald Jörg <Harald.Joerg@arcor.de>
 - Jeremy Krieg <Jeremy.Krieg@YourAmigo.com>
 - Jonathan C. Otsuka <djgoku@gmail.com>
 - Jonathan Stowe <jns@gellyfish.co.uk>
@@ -869,7 +873,7 @@ The source code repository for Test-Class-Moose can be found at [https://github.
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 - 2017 by Curtis "Ovid" Poe.
+This software is copyright (c) 2012 - 2018 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
