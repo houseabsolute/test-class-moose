@@ -24,6 +24,13 @@ cache:
 matrix:
   allow_failures:
     - perl: blead
+      # While the dev release has Test::More 1.302138 it will fail the
+      # compilation test because that specific version of Test::More warns
+      # during compilation ("Too late for INIT block")> This is fixed in
+      # 1.302140 but we don't want to bump the prereq just because blead
+      # currently has a bad version of Test::More. _Earlier_ versions of
+      # Test::More work fine, as do later versions.
+    - perl: dev
   include:
     - env: COVERAGE=1
       perl: '5.26'
