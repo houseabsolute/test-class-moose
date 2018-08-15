@@ -8,8 +8,6 @@ Revision history for Perl distribution Test-Class-Moose
   --classes option. This directory is searched recursively for classes to be
   loaded. Based on a feature request from jrubinator. GH #91.
 
-0.93     2018-07-08
-
   [BUG FIXES]
 
   * Extending a TCM class with a non-existing or non-TCM class now delivers a
