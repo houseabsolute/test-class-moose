@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.94     2018-08-18
+
   [BUG FIXES]
 
   * Replace all cases of "use 5.10.0" with "use 5.010000". The former was
