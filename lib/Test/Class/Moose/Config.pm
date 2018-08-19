@@ -4,7 +4,7 @@ package Test::Class::Moose::Config;
 
 use 5.010000;
 
-our $VERSION = '0.94';
+our $VERSION = '0.95';
 
 use Moose;
 use Moose::Util::TypeConstraints;

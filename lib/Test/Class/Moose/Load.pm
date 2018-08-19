@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '0.94';
+our $VERSION = '0.95';
 
 use File::Find;
 use File::Spec;
