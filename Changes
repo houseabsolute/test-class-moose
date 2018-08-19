@@ -2,6 +2,12 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Replace all cases of "use 5.10.0" with "use 5.010000". The former was
+    causing some versions of Perl to emit warnings that cause tests to fail.
+
+
 0.93     2018-08-14
 
   [ENHANCEMENTS]

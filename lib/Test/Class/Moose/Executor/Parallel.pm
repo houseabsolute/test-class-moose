@@ -2,7 +2,7 @@ package Test::Class::Moose::Executor::Parallel;
 
 # ABSTRACT: Execute tests in parallel (parallelized by instance)
 
-use 5.10.0;
+use 5.010000;
 
 our $VERSION = '0.94';
 

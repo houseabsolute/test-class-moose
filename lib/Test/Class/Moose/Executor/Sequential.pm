@@ -2,7 +2,7 @@ package Test::Class::Moose::Executor::Sequential;
 
 # ABSTRACT: Execute tests sequentially
 
-use 5.10.0;
+use 5.010000;
 
 our $VERSION = '0.94';
 

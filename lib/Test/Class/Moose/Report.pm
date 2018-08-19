@@ -2,7 +2,7 @@ package Test::Class::Moose::Report;
 
 # ABSTRACT: Test information for Test::Class::Moose
 
-use 5.10.0;
+use 5.010000;
 
 our $VERSION = '0.94';
 

@@ -2,7 +2,7 @@ package Test::Class::Moose::CLI;
 
 # ABSTRACT: Use this in your tcm.t script for a drop-in runner tool
 
-use 5.10.0;
+use 5.010000;
 
 our $VERSION = '0.94';
 

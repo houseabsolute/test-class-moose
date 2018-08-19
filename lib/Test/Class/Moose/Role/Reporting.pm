@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-use 5.10.0;
+use 5.010000;
 
 our $VERSION = '0.94';
 

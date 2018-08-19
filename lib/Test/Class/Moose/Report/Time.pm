@@ -2,7 +2,7 @@ package Test::Class::Moose::Report::Time;
 
 # ABSTRACT: Reporting object for timing
 
-use 5.10.0;
+use 5.010000;
 
 our $VERSION = '0.94';
 
