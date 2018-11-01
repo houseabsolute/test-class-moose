@@ -121,6 +121,15 @@ The name of the runner class to use. Defaults to
 L<Test::Class::Moose::Runner>. This class will be loaded when creating the
 runner if it is not already loaded.
 
+=head2 --test-lib-dirs
+
+This should be the path to a directory containing test classes. The path can
+be relative to the project root (F<t/lib>) or absolute. If you do not pass this
+argument, it will default to F<t/lib>.
+
+You can pass this option more than once if you'd like to include multiple test
+directories.
+
 =head2 --timing-data-file
 
 If this is passed, the value returned by C<<

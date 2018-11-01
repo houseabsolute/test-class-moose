@@ -53,6 +53,17 @@ has tags => (
     },
 );
 
+has test_lib_dirs => (
+    traits  => ['Array'],
+    is      => 'ro',
+    isa     => 'ArrayRef[Str]',
+    default => sub { ['t/lib'] },
+    handles => {
+        _all_test_lib_dirs => 'elements',
+        _has_test_lib_dirs => 'count',
+    },
+);
+
 has exclude_tags => (
     traits  => ['Array'],
     is      => 'ro',
@@ -177,12 +188,12 @@ sub _load_classes {
     my $self = shift;
 
     if ( $self->_has_class_names ) {
-        local @INC = ( $self->_test_lib_dirs, @INC );
+        local @INC = ( $self->_all_test_lib_dirs, @INC );
         use_package_optimistically($_) for @{ $self->_class_names };
     }
     else {
         require Test::Class::Moose::Load;
-        Test::Class::Moose::Load->import( $self->_test_lib_dirs );
+        Test::Class::Moose::Load->import( $self->_all_test_lib_dirs );
     }
 
     return;
@@ -252,7 +263,7 @@ sub _maybe_resolve_path {
     }
 
     if ( $path =~ /\.pm$/ ) {
-        for my $dir ( $self->_test_lib_dirs ) {
+        for my $dir ( $self->_all_test_lib_dirs ) {
             if ( $path =~ s{^.*\Q$dir}{} ) {
                 return fs_path_to_module($path);
             }
@@ -260,10 +271,6 @@ sub _maybe_resolve_path {
     }
 
     return $path;
-}
-
-sub _test_lib_dirs {
-    return ('t/lib');
 }
 
 sub _find_classes {
@@ -357,13 +364,6 @@ By default this method is a no-op.
 This method is called before the test classes are run (or even loaded).
 
 By default this method is a no-op.
-
-=head2 _test_lib_dirs
-
-This should return a list of directories containing test classes. The
-directories can be relative to the project root (F<t/lib>) or absolute.
-
-This defaults to returning a single path, F<t/lib>.
 
 =head2 _load_classes
 

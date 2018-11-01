@@ -46,35 +46,41 @@ use Test::Class::Moose::CLI;
     my @tests = (
         [   'empty args',
             {},
-            {}
+            { test_lib_dirs => ['t/lib'] }
         ],
         [   '--classes',
-            { classes      => [qw( Foo Bar Baz )] },
-            { test_classes => [qw( Foo Bar Baz )] }
+            { classes => [qw( Foo Bar Baz )] },
+            {   test_classes  => [qw( Foo Bar Baz )],
+                test_lib_dirs => ['t/lib'],
+            }
         ],
         [   '--tags',
             { tags         => [qw( Big DB )] },
-            { include_tags => [qw( Big DB )] },
+            { include_tags => [qw( Big DB )], test_lib_dirs => ['t/lib'] },
+        ],
+        [   '--test-lib-dirs',
+            { 'test-lib-dirs' => ['t/lib/Local'] },
+            { 'test_lib_dirs' => ['t/lib/Local'] },
         ],
         [   '--methods',
             { methods => [qw( foo bar baz )] },
-            { include => qr/^(?:foo|bar|baz)$/ }
+            { include => qr/^(?:foo|bar|baz)$/, test_lib_dirs => ['t/lib'] }
         ],
         [   '--exclude-methods',
             { 'exclude-methods' => [qw( foo bar baz )] },
-            { exclude           => qr/^(?:foo|bar|baz)$/ },
+            { exclude => qr/^(?:foo|bar|baz)$/, test_lib_dirs => ['t/lib'] },
         ],
         [   '--color',
             { color        => undef },
-            { color_output => 1 }
+            { color_output => 1, test_lib_dirs => ['t/lib'] }
         ],
         [   '--no-color',
             { 'no-color'   => undef },
-            { color_output => 0 }
+            { color_output => 0, test_lib_dirs => ['t/lib'] }
         ],
         [   '--no-parallel-progress',
             { 'no-parallel-progress' => undef },
-            { show_parallel_progress => 0 }
+            { show_parallel_progress => 0, test_lib_dirs => ['t/lib'] }
         ],
     );
 
@@ -144,25 +150,24 @@ subtest 'classes as paths' => sub {
 
     with 'Test::Class::Moose::Role::CLI';
 
-    sub _test_lib_dirs { return ('t/clilib') }
-
     sub _load_classes { }
 }
 
 subtest 'classes from CLI are loaded' => sub {
-    local @ARGV = ( '--classes', 'Foo' );
+    local @ARGV = ( '--classes', 'Foo', '--test-lib-dirs', 't/clilib', );
     is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
         ['Foo'],
         'Foo class is found by class name'
     );
 
-    local @ARGV = ( '--classes', 't/clilib/Bar.pm' );
+    local @ARGV
+      = ( '--classes', 't/clilib/Bar.pm', '--test-lib-dirs', 't/clilib', );
     is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
         ['Bar'],
         'Bar class is found by file path'
     );
 
-    local @ARGV = ( '--classes', 't/clilib' );
+    local @ARGV = ( '--classes', 't/clilib', '--test-lib-dirs', 't/clilib', );
     is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
         [ 'Bar', 'Foo' ],
         'Bar and Foo class are found in a directory'
@@ -183,8 +188,6 @@ subtest 'classes from CLI are loaded' => sub {
 
     sub _munge_class { 'FR::' . $_[1] }
 
-    sub _test_lib_dirs {qw( t/lib t/testlib )}
-
     sub _load_classes {
         $_[0]->load_classes_count( ( $_[0]->load_classes_count // 0 ) + 1 );
     }
@@ -197,10 +200,16 @@ subtest 'classes from CLI are loaded' => sub {
 }
 
 subtest 'role extension methods' => sub {
-    local @ARGV
-      = (
-        qw( --classes Foo --classes Bar --classes t/lib/Baz.pm --classes t/testlib/Quux.pm )
-      );
+    local @ARGV = (
+        qw(
+          --classes Foo
+          --classes Bar
+          --classes t/lib/Baz.pm
+          --classes t/testlib/Quux.pm
+          --test-lib-dirs t/lib
+          --test-lib-dirs t/testlib
+          )
+    );
     my $cli = My::CLI->new_with_options( runner_class => 'FakeRunner' );
     my $runner = $cli->run;
     is( $runner->args->{test_classes},
