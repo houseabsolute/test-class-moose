@@ -350,7 +350,7 @@ in your class that does something.
 
 =head2 _munge_class
 
-This method is called for each class as found the command line C<--classes>
+This method is called for each class as found by the command line C<--classes>
 option. Note that this is called I<after> resolving file and directory paths
 pass as a C<--classes> option.
 
