@@ -53,6 +53,17 @@ has tags => (
     },
 );
 
+has test_lib_dirs => (
+    traits  => ['Array'],
+    is      => 'ro',
+    isa     => 'ArrayRef[Str]',
+    default => sub { ['t/lib'] },
+    handles => {
+        _all_test_lib_dirs => 'elements',
+        _has_test_lib_dirs => 'count',
+    },
+);
+
 has exclude_tags => (
     traits  => ['Array'],
     is      => 'ro',
@@ -262,8 +273,13 @@ sub _maybe_resolve_path {
     return $path;
 }
 
+# This is still here to maintain backwards compatibility for people writing
+# custom test runners. In past releases the only way to customize this value
+# was to override this method, though we later added a CLI option to set this
+# value.
 sub _test_lib_dirs {
-    return ('t/lib');
+    my $self = shift;
+    return $self->_all_test_lib_dirs;
 }
 
 sub _find_classes {
@@ -364,6 +380,9 @@ This should return a list of directories containing test classes. The
 directories can be relative to the project root (F<t/lib>) or absolute.
 
 This defaults to returning a single path, F<t/lib>.
+
+Note that this is now also settable via
+L<Test::Class::Moose::CLI/--test_lib_dirs>.
 
 =head2 _load_classes
 
