@@ -151,23 +151,27 @@ subtest 'classes as paths' => sub {
     with 'Test::Class::Moose::Role::CLI';
 
     sub _load_classes { }
+
+    # Ensure that we can still use a hook for _test_lib_dirs
+    sub _test_lib_dirs {
+        't/clilib';
+    }
 }
 
 subtest 'classes from CLI are loaded' => sub {
-    local @ARGV = ( '--classes', 'Foo', '--test-lib-dirs', 't/clilib', );
+    local @ARGV = ( '--classes', 'Foo', );
     is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
         ['Foo'],
         'Foo class is found by class name'
     );
 
-    local @ARGV
-      = ( '--classes', 't/clilib/Bar.pm', '--test-lib-dirs', 't/clilib', );
+    local @ARGV = ( '--classes', 't/clilib/Bar.pm', );
     is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
         ['Bar'],
         'Bar class is found by file path'
     );
 
-    local @ARGV = ( '--classes', 't/clilib', '--test-lib-dirs', 't/clilib', );
+    local @ARGV = ( '--classes', 't/clilib', );
     is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
         [ 'Bar', 'Foo' ],
         'Bar and Foo class are found in a directory'
