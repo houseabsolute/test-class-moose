@@ -24,6 +24,7 @@ cache:
     - $HOME/perl5
 matrix:
   allow_failures:
+    - env: COVERAGE=1
     - perl: blead
       # While the dev release has Test::More 1.302138 it will fail the
       # compilation test because that specific version of Test::More warns
