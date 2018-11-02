@@ -35,7 +35,7 @@ matrix:
   fast_finish: 'true'
   include:
     - env: COVERAGE=1
-      perl: '5.26'
+      perl: '5.28'
 env:
   global:
     - AUTHOR_TESTING=1
