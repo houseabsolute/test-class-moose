@@ -32,6 +32,7 @@ matrix:
       # currently has a bad version of Test::More. _Earlier_ versions of
       # Test::More work fine, as do later versions.
     - perl: dev
+  fast_finish: 'true'
   include:
     - env: COVERAGE=1
       perl: '5.26'
