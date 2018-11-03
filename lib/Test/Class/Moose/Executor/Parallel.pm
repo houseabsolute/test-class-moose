@@ -4,7 +4,7 @@ package Test::Class::Moose::Executor::Parallel;
 
 use 5.010000;
 
-our $VERSION = '0.95';
+our $VERSION = '0.96';
 
 use Moose 2.0000;
 use Carp;

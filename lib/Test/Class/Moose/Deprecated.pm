@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 use 5.010000;
 
-our $VERSION = '0.95';
+our $VERSION = '0.96';
 
 use Package::DeprecationManager 0.16 -deprecations => {
     'Test::Class::Moose::Config::args' => '0.79',
