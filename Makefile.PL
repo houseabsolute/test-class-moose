@@ -27,7 +27,6 @@ my %WriteMakefileArgs = (
     "File::Find" => 0,
     "File::Spec" => 0,
     "Import::Into" => 0,
-    "JSON" => 0,
     "List::SomeUtils" => 0,
     "List::Util" => 0,
     "Module::Runtime" => 0,

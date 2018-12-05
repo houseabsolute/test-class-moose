@@ -11,7 +11,7 @@ use Carp;
 use namespace::autoclean;
 
 use File::Find qw( find );
-use JSON qw( encode_json );
+use JSON::MaybeXS qw( encode_json );
 use Module::Runtime qw( use_package_optimistically );
 use Module::Util qw( fs_path_to_module );
 use MooseX::Getopt 0.71;
