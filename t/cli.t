@@ -5,7 +5,7 @@ use Test2::V0;
 
 use File::Spec;
 use File::Temp qw( tempdir );
-use JSON qw( decode_json );
+use JSON::MaybeXS qw( decode_json );
 use Test2::API qw( intercept );
 use Test::Class::Moose::CLI;
 
