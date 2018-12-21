@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 use 5.010000;
 
-our $VERSION = '0.96';
+our $VERSION = '0.97';
 
 use Moose::Role;
 use Carp 'confess';
