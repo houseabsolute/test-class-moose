@@ -56,13 +56,13 @@ sub current_class {
 }
 
 sub current_instance {
-    my $self = shift;
+    my $self          = shift;
     my $current_class = $self->current_class or return;
     return $current_class->current_instance;
 }
 
 sub current_method {
-    my $self = shift;
+    my $self             = shift;
     my $current_instance = $self->current_instance or return;
     return $current_instance->current_method;
 }

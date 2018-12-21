@@ -44,7 +44,7 @@ sub is_bad_parent {
     my $error = $@;
 
     my $base_pattern = join '\b.*?\b', @{$parents};
-    my $n_classes = scalar @{$parents};
+    my $n_classes    = scalar @{$parents};
 
     like(
         $error,

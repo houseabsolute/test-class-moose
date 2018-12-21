@@ -101,7 +101,7 @@ use Test::Class::Moose::CLI;
 }
 
 subtest 'timing data file' => sub {
-    my $dir = File::Temp->newdir;
+    my $dir  = File::Temp->newdir;
     my $file = File::Spec->catfile( $dir, 'timing.json' );
 
     my $time = time;
@@ -214,7 +214,7 @@ subtest 'role extension methods' => sub {
           --test-lib-dirs t/testlib
           )
     );
-    my $cli = My::CLI->new_with_options( runner_class => 'FakeRunner' );
+    my $cli    = My::CLI->new_with_options( runner_class => 'FakeRunner' );
     my $runner = $cli->run;
     is( $runner->args->{test_classes},
         [ 'FR::Foo', 'FR::Bar', 'FR::Baz', 'FR::Quux' ],

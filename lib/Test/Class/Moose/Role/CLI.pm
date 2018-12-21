@@ -202,7 +202,7 @@ sub _load_classes {
 sub _after_run { }
 
 {
-    my $meta = __PACKAGE__->meta;
+    my $meta     = __PACKAGE__->meta;
     my %attr_map = map { $_ => $_ }
       grep { $meta->get_attribute($_)->original_role->name eq __PACKAGE__ }
       grep { !/^_/ && $_ ne 'classes' } $meta->get_attribute_list;
