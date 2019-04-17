@@ -67,7 +67,7 @@ Revision history for Perl distribution Test-Class-Moose
 
   [BUG FIXES]
 
-  * Require Test2 1.1302118 per Chad Granum's recommendation. This version
+  * Require Test2 1.302118 per Chad Granum's recommendation. This version
     includes some fixes for bugs that could cause tests to hang.
 
 0.89     2017-11-19
