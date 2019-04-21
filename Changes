@@ -2,6 +2,12 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Require Test2 1.302118, not 1.1302118 (note the extra 1 after the
+    decimal). Fixed by Christopher Layne. GH #99.
+
+
 0.96     2018-12-21
 
   [ENHANCEMENTS]
