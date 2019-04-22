@@ -4,7 +4,7 @@ Test::Class::Moose - Serious testing for serious Perl
 
 # VERSION
 
-version 0.96
+version 0.97
 
 # SYNOPSIS
 
@@ -846,6 +846,7 @@ The source code repository for Test-Class-Moose can be found at [https://github.
 # CONTRIBUTORS
 
 - Andy Jack <github@veracity.ca>
+- Christopher Layne <clayne@apple.com>
 - Chuck Adams &lt;charles\_adams@symantec.com>
 - Denny de la Haye <denny@users.noreply.github.com>
 - Desmond Daignault <nawglan@users.noreply.github.com>
@@ -873,7 +874,7 @@ The source code repository for Test-Class-Moose can be found at [https://github.
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 - 2018 by Curtis "Ovid" Poe.
+This software is copyright (c) 2012 - 2019 by Curtis "Ovid" Poe.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
