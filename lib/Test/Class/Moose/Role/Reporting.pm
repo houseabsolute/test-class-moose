@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 use 5.010000;
 
-our $VERSION = '0.97';
+our $VERSION = '0.98';
 
 use Moose::Role;
 with 'Test::Class::Moose::Role::HasTimeReport';
