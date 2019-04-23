@@ -361,7 +361,7 @@ in your class that does something.
 
 This method is called for each class as found by the command line C<--classes>
 option. Note that this is called I<after> resolving file and directory paths
-pass as a C<--classes> option.
+passed as a C<--classes> option.
 
 You can use this to allow people to pass short names like C<Model::Car> and
 turn it into a full name like C<TestFor::MyApp::Model::Car>.
