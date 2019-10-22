@@ -27,10 +27,10 @@ my %Added_to_INC;
 sub _load {
     my ( $class, $file, $dir ) = @_;
 
-    $file =~ s{\.pm$}{};    # remove .pm extension
-    $file =~ s{\\}{/}g;     # to make win32 happy
-    $dir  =~ s{\\}{/}g;     # to make win32 happy
-    $file =~ s/^$dir//;
+    $file =~ s{\.pm$}{};      # remove .pm extension
+    $file =~ s{\\}{/}g;       # to make win32 happy
+    $dir  =~ s{\\}{/}g;       # to make win32 happy
+    $file =~ s/^\Q$dir\E//;
     my $_package = join '::' => grep $_ => File::Spec->splitdir($file);
 
     # untaint that puppy!
@@ -82,7 +82,7 @@ __END__
 =head1 SYNOPSIS
 
  use Test::Class::Moose::Load qw(t/tests t/lib);
- Test::Class::Moose->runtests;
+ Test::Class::Moose::Runner->new->runtests;
 
 =head1 EXPORT
 
@@ -110,7 +110,7 @@ file. This would look something like this:
  use MyTest::Foo::Bar;
  use MyTest::Foo::Baz;
 
- Test::Class::Moose::Runner->runtests;
+ Test::Class::Moose::Runner->new->runtests;
 
 This causes a problem, though.  When you're writing a test class, it's easy to
 forget to add it to the helper script.  Then you run your huge test suite and

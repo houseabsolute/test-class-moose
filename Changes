@@ -2,6 +2,13 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Escape the directory name when using it in regex while loading files in
+    Test::Class::Moose::Load. Paths with special characters were not loading
+    modules properly. Fixed by jrubinator. GH #101.
+
+
 0.97     2019-04-21
 
   [BUG FIXES]
