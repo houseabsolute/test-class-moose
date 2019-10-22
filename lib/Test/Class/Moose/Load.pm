@@ -30,7 +30,7 @@ sub _load {
     $file =~ s{\.pm$}{};    # remove .pm extension
     $file =~ s{\\}{/}g;     # to make win32 happy
     $dir  =~ s{\\}{/}g;     # to make win32 happy
-    $file =~ s/^$dir//;
+    $file =~ s/^\Q$dir\E//;
     my $_package = join '::' => grep $_ => File::Spec->splitdir($file);
 
     # untaint that puppy!
