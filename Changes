@@ -2,6 +2,11 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [BUG FIXES]
+
+  * Add regex escapes when loading files in Test::Class::Moose::Load.
+    Paths with special characters were not loading modules properly.
+
 0.97     2019-04-21
 
   [BUG FIXES]
