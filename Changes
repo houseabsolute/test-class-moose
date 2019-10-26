@@ -2,6 +2,8 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+0.98     2019-10-26
+
   [BUG FIXES]
 
   * Escape the directory name when using it in regex while loading files in
