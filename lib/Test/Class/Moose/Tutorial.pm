@@ -4,7 +4,7 @@ package Test::Class::Moose::Tutorial;
 
 use 5.010000;
 
-our $VERSION = '0.98';
+our $VERSION = '0.99';
 
 # there is no code here, but we're moving this from .pod to .pm to try to work
 # around a strange bug where this is showing up instead of main docs on
