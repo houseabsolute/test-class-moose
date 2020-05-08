@@ -36,7 +36,7 @@ sub context_do (&;@) {
 
     die $err unless $ok;
 
-    return @out if $want;
+    return @out    if $want;
     return $out[0] if defined $want;
     return;
 }
