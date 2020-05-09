@@ -5,7 +5,8 @@ use Test2::V0;
 use Test::Class::Moose ();    # prevents us from inheriting from it
 sub registry () {'Test::Class::Moose::AttributeRegistry'}
 
-use Test::Class::Moose::Load qw(t/taglib);
+use FindBin qw( $Bin );
+use Test::Class::Moose::Load "$Bin/taglib";
 use Test::Class::Moose::Runner;
 
 subtest 'Multiple included tags' => sub {

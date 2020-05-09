@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use lib 't/lib', 't/badlib';
+use FindBin qw( $Bin );
+use lib "$Bin/lib", "$Bin/badlib";
 
 use Test2::V0;
 

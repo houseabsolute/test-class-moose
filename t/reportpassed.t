@@ -2,9 +2,10 @@ use strict;
 use warnings;
 
 use Test2::V0;
-
 use Test2::API qw( intercept );
-use Test::Class::Moose::Load qw(t/reportpassedlib);
+
+use FindBin qw( $Bin );
+use Test::Class::Moose::Load "$Bin/reportpassedlib";
 use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new( show_timing => 0 );

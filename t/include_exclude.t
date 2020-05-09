@@ -1,13 +1,14 @@
 use strict;
 use warnings;
 
-use lib 't/lib';
+use FindBin qw( $Bin );
+use lib "$Bin/lib";
 
 use Test2::API qw( intercept );
 use Test2::V0;
 use Test::Events;
 
-use Test::Class::Moose::Load qw(t/basiclib);
+use Test::Class::Moose::Load "$Bin/basiclib";
 use Test::Class::Moose::Runner;
 
 my $runner = Test::Class::Moose::Runner->new(

@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use lib 't/lib';
+use FindBin qw( $Bin );
+use lib "$Bin/lib";
 
 use Test::Requires {
     'Parallel::ForkManager' => 0,
@@ -14,8 +15,8 @@ use Test::Reporting qw( test_report );
 
 use List::SomeUtils qw( first_index );
 use Scalar::Util qw( blessed );
-use Test::Class::Moose::Load
-  qw( t/basiclib t/parallellib t/parameterizedlib t/skiplib t/todolib );
+use Test::Class::Moose::Load map {"$Bin/$_"}
+  qw( basiclib parallellib parameterizedlib skiplib todolib );
 use Test::Class::Moose::Runner;
 
 skip_all(

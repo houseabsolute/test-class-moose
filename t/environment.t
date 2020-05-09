@@ -3,7 +3,9 @@ use warnings;
 
 use Test2::V0;
 use Scalar::Util 'looks_like_number';
-use Test::Class::Moose::Load qw(t/basiclib);
+
+use FindBin qw( $Bin );
+use Test::Class::Moose::Load "$Bin/basiclib";
 use Test::Class::Moose::Runner;
 
 {

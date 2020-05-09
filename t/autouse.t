@@ -3,9 +3,10 @@ use warnings;
 
 use Test::Class::Moose::Runner;
 
-use lib 't/lib';
-{
+use FindBin qw( $Bin );
+use lib "$Bin/lib";
 
+{
     package TestsFor::Person;
     use Test::Class::Moose;
     with 'Test::Class::Moose::Role::AutoUse';

@@ -1,15 +1,16 @@
 use strict;
 use warnings;
 
-use lib 't/loadlib/helpers';
+use FindBin qw( $Bin );
+use lib "$Bin/loadlib/helpers";
 
 use Test2::V0;
 require Test::Class::Moose::Load;
 
 like(
-    dies { Test::Class::Moose::Load->import('t/loadlib/tests') },
+    dies { Test::Class::Moose::Load->import("$Bin/loadlib/tests") },
     qr{
-          \QBareword "here" not allowed while "strict subs" in use at t\E.loadlib.helpers.Fail\Q.pm line 6\E
+          \QBareword "here" not allowed while "strict subs" in use at \E.+.loadlib.helpers.Fail\Q.pm line 6\E
           .+
           \Qrequire LoadTests\E.Success.pm
       }sx,

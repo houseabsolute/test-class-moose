@@ -3,6 +3,7 @@ use warnings;
 
 use Test2::V0;
 
+use FindBin qw( $Bin );
 use File::Spec;
 use File::Temp qw( tempdir );
 use JSON::MaybeXS qw( decode_json );
@@ -165,13 +166,13 @@ subtest 'classes from CLI are loaded' => sub {
         'Foo class is found by class name'
     );
 
-    local @ARGV = ( '--classes', 't/clilib/Bar.pm', );
+    local @ARGV = ( '--classes', "$Bin/clilib/Bar.pm", );
     is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
         ['Bar'],
         'Bar class is found by file path'
     );
 
-    local @ARGV = ( '--classes', 't/clilib', );
+    local @ARGV = ( '--classes', "$Bin/clilib", );
     is( [ sort @{ Test::CLI->new_with_options->_class_names } ],
         [ 'Bar', 'Foo' ],
         'Bar and Foo class are found in a directory'
