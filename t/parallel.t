@@ -26,6 +26,9 @@ my $runner = Test::Class::Moose::Runner->new(
     show_timing => 0,
     jobs        => 2,
     statistics  => 0,
+
+    # This output causes breakage in CI.
+    show_parallel_progress => 0,
 );
 
 my $events = intercept { $runner->runtests };
