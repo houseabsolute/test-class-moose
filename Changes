@@ -2,6 +2,11 @@ Revision history for Perl distribution Test-Class-Moose
 
 {{$NEXT}}
 
+  [ENHANCEMENTS]
+
+  * Greatly expanded documentation for the test control methods.
+
+
 0.98     2019-10-26
 
   [BUG FIXES]

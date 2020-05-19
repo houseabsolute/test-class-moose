@@ -468,12 +468,28 @@ module with L<Import::Into>.
 
 =head1 TEST CONTROL METHODS
 
-Do not run tests in test control methods. This will cause the test control
-method to fail (this is a feature, not a bug).  If a test control method
-fails, the class/method will fail and testing for that class should stop.
+The test control methods are there to ensure that your tests are running with
+all of the resources they need. For example, database transactions might be
+started before a test method and rolled back after the test method. Fixtures
+needed for every test might be loaded and cleaned up. However you use them,
+it's important to understand when and how they're run.
 
-B<Every> test control method will be called as a method. The invocant is the
-instance of your test class
+=over 4
+
+=item 1. C<test_startup> — Runs once when the test class starts up
+
+=item 2. C<test_setup> - Runs before each test method
+
+=item 3. C<test_teardown> - Runs after each test method
+
+=item 4. C<test_shutdown> - Runs once when the test class shuts down
+
+=back
+
+B<Important>: Do not run tests in test control methods. This will cause the
+test control method to fail (this is a feature, not a bug).  If a test control
+method fails, the class/method will fail and testing for that class should
+stop.
 
 The available test control methods are:
 
@@ -481,13 +497,21 @@ The available test control methods are:
 
  sub test_startup {
     my $test = shift;
-    $test->next::method;
+    $test->next::method;   # run this before your test_startup code
     # more startup
  }
 
-Runs at the start of each test class. If you need to know the name of the
-class you're running this in (though usually you shouldn't), use
-C<< $test->test_class >>, or you can do this:
+Runs at the start of each test class. Quite often the base class that you
+inherit from will have its own C<test_startup> code running (such as starting
+a database transaction or connecting to an external resource). You almost
+always want to call C<< $test->next::method >> I<before> your own setup code.
+This ensures that the environment is set up to safely run your code. For
+example, if the parent C<test_startup> starts a database transaction with the
+expectation that the C<test_teardown> will end the database transactions, you
+can safely load database fixtures I<after> that is run.
+
+If you need to know the name of the class you're running this in (though
+usually you shouldn't), use C<< $test->test_class >>, or you can do this:
 
     sub test_startup {
         my $test                 = shift;
@@ -504,7 +528,7 @@ object.
 
  sub test_setup {
     my $test = shift;
-    $test->next::method;
+    $test->next::method;    # run this before your test_setup code
     # more setup
  }
 
@@ -523,7 +547,7 @@ you're about to run, you can do this:
  sub test_teardown {
     my $test = shift;
     # more teardown
-    $test->next::method;
+    $test->next::method;    # run this after your test_teardown code
  }
 
 Runs at the end of each test method.
@@ -537,7 +561,7 @@ value in order to force this method to be run when the class is skipped.
  sub test_shutdown {
      my $test = shift;
      # more teardown
-     $test->next::method;
+     $test->next::method;    # run this after your test_shutdown code
  }
 
 Runs at the end of each test class.
@@ -552,7 +576,7 @@ To override a test control method, just remember that this is OO:
 
  sub test_setup {
      my $test = shift;
-     $test->next::method; # optional to call parent test_setup
+     $test->next::method; # call parent test_setup
      # more setup code here
  }
 
@@ -628,6 +652,14 @@ If you wish to skip a class, set the reason in the C<test_startup> method.
 If you are using L<test class instances|/"TEST CLASS INSTANCES">, you
 can also make C<_constructor_parameter_sets> return an empty list,
 which will result in the class being skipped.
+
+Note that if you run C<test_skip>, the C<test_shutdown> method will also be
+skipped. This is due to the assumption that you might not have run any setup
+code and thus you don't need shutdown code. However, if you do need to run
+shutdown, you can override the C<run_control_methods_on_skip> method to return
+true:
+
+    sub run_control_methods_on_skip {1}
 
 If you wish to skip an individual method, do so in the C<test_setup> method.
 
@@ -954,8 +986,8 @@ done anything except issue a warning since version 0.55.
 =item *
 
 The C<test_teardown method> is no longer run when a test is skipped unless
-C<run_control_methods_on_skip> returns a true value. The C<test_teardown
-method> was never intended to be run unconditionally.
+C<run_control_methods_on_skip> returns a true value. The C<test_teardown>
+method was never intended to be run unconditionally.
 
 =item *
 
