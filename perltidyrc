@@ -20,4 +20,6 @@
 # break before all operators
 --want-break-before="% + - * / x != == >= <= =~ < > | & >= < = **= += *= &= <<= &&= -= /= |= >>= ||= .= %= ^= x="
 
+--character-encoding=none
+
 --iterations=2
