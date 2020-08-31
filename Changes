@@ -5,6 +5,9 @@ Revision history for Perl distribution Test-Class-Moose
   [ENHANCEMENTS]
 
   * Greatly expanded documentation for the test control methods.
+  * When using the sequential executor, the subtests used by
+    Test::Class::Moose are now streamed. Implemented by Greg Oschwald. GH
+    #107.
 
 
 0.98     2019-10-26

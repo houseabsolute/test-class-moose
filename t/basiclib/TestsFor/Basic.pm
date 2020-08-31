@@ -61,6 +61,149 @@ sub test_reporting {
 }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'Subtest: TestsFor::Basic';
+    };
+    event Subtest => sub {
+        call name      => 'Subtest: TestsFor::Basic';
+        call pass      => T();
+        call subevents => array {
+            filter_items {
+                grep {
+                         !$_->isa('Test2::AsyncSubtest::Event::Attach')
+                      && !$_->isa('Test2::AsyncSubtest::Event::Detach')
+                } @_;
+            };
+            event Plan => sub {
+                call max   => 4;
+                call trace => object {
+                    call package => 'Test::Class::Moose::Role::Executor';
+                    call subname => 'Test::Class::Moose::Util::context_do';
+                };
+            };
+            event Note => sub {
+                call message => 'Subtest: test_me';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: test_me';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call pass  => T();
+                        call name  => 'test_me() ran (TestsFor::Basic)';
+                        call trace => object {
+                            call package => 'TestsFor::Basic';
+                            call subname => 'Test2::Tools::Basic::ok';
+                        };
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name => 'this is another test (TestsFor::Basic)';
+                        call trace => object {
+                            call package => 'TestsFor::Basic';
+                            call subname => 'Test2::Tools::Basic::ok';
+                        };
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          'test_setup() should know our current class name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name => '... and our current method name';
+                    };
+                    event Plan => sub {
+                        call max => 4;
+                    };
+                    end();
+                };
+            };
+            event Note => sub {
+                call message => 'Subtest: test_my_instance_name';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: test_my_instance_name';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call pass  => T();
+                        call name  => 'test_instance_name matches class name';
+                        call trace => object {
+                            call package => 'TestsFor::Basic';
+                            call subname => 'Test2::Tools::Compare::is';
+                        };
+                    };
+                    event Plan => sub {
+                        call max => 1;
+                    };
+                    end();
+                };
+            };
+            event Note => sub {
+                call message => 'Subtest: test_reporting';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: test_reporting';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          'current_instance() should report the correct class name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          '... and we should also be able to get the current method name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          'test_setup() should know our current class name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name => '... and our current method name';
+                    };
+                    event Plan => sub {
+                        call max => 4;
+                    };
+                    end();
+                };
+            };
+            event Note => sub {
+                call message => 'Subtest: test_this_baby';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: test_this_baby';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call pass => T();
+                        call name => 'whee! (TestsFor::Basic)';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name =>
+                          'test_setup() should know our current class name';
+                    };
+                    event Ok => sub {
+                        call pass => T();
+                        call name => '... and our current method name';
+                    };
+                    event Plan => sub {
+                        call max => 3;
+                    };
+                    end();
+                };
+            };
+            end();
+        };
+    };
+}
+
+sub expected_parallel_test_events {
     event Subtest => sub {
         call name      => 'TestsFor::Basic';
         call pass      => T();

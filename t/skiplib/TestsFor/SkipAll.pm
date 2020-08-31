@@ -29,6 +29,30 @@ sub test_this_baby {
 }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'Subtest: TestsFor::SkipAll';
+    };
+    event Subtest => sub {
+        call name      => 'Subtest: TestsFor::SkipAll';
+        call pass      => T();
+        call subevents => array {
+            filter_items {
+                grep {
+                         !$_->isa('Test2::AsyncSubtest::Event::Attach')
+                      && !$_->isa('Test2::AsyncSubtest::Event::Detach')
+                } @_;
+            };
+            event Plan => sub {
+                call directive => 'SKIP';
+                call reason    => 'all methods should be skipped';
+                call max       => 0;
+            };
+            end();
+        };
+    };
+}
+
+sub expected_parallel_test_events {
     event Subtest => sub {
         call name      => 'TestsFor::SkipAll';
         call pass      => T();

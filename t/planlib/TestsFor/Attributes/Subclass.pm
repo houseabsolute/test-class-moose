@@ -28,15 +28,21 @@ sub this_is_a_test_method_because_of_the_attribute : Tests {
 }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'Subtest: TestsFor::Attributes::Subclass';
+    };
     event Subtest => sub {
-        call name      => 'TestsFor::Attributes::Subclass';
+        call name      => 'Subtest: TestsFor::Attributes::Subclass';
         call pass      => T();
         call subevents => array {
             event Plan => sub {
                 call max => 4;
             };
+            event Note => sub {
+                call message => 'Subtest: test_just_one_test';
+            };
             event Subtest => sub {
-                call name      => 'test_just_one_test';
+                call name      => 'Subtest: test_just_one_test';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -49,8 +55,11 @@ sub expected_test_events {
                     end();
                 };
             };
+            event Note => sub {
+                call message => 'Subtest: test_more_than_one_test';
+            };
             event Subtest => sub {
-                call name      => 'test_more_than_one_test';
+                call name      => 'Subtest: test_more_than_one_test';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -71,8 +80,11 @@ sub expected_test_events {
                     end();
                 };
             };
+            event Note => sub {
+                call message => 'Subtest: test_with_attribute_but_no_plan';
+            };
             event Subtest => sub {
-                call name      => 'test_with_attribute_but_no_plan';
+                call name      => 'Subtest: test_with_attribute_but_no_plan';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -93,9 +105,14 @@ sub expected_test_events {
                     end();
                 };
             };
+            event Note => sub {
+                call message =>
+                  'Subtest: this_is_a_test_method_because_of_the_attribute';
+            };
             event Subtest => sub {
-                call name => 'this_is_a_test_method_because_of_the_attribute';
-                call pass => T();
+                call name =>
+                  'Subtest: this_is_a_test_method_because_of_the_attribute';
+                call pass      => T();
                 call subevents => array {
                     event Ok => sub {
                         call pass => T();

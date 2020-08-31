@@ -33,6 +33,88 @@ sub test_one_set {
 }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'Subtest: TestsFor::Parameterized';
+    };
+    event Subtest => sub {
+        call name      => 'Subtest: TestsFor::Parameterized';
+        call pass      => T();
+        call subevents => array {
+            filter_items {
+                grep {
+                         !$_->isa('Test2::AsyncSubtest::Event::Attach')
+                      && !$_->isa('Test2::AsyncSubtest::Event::Detach')
+                } @_;
+            };
+            event Plan => sub {
+                call max => 2;
+            };
+            event Note => sub {
+                call message => 'Subtest: TestsFor::Parameterized with bar';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: TestsFor::Parameterized with bar';
+                call pass      => T();
+                call subevents => array {
+                    event Plan => sub {
+                        call max => 1;
+                    };
+                    event Note => sub {
+                        call message => 'Subtest: test_one_set';
+                    };
+                    event Subtest => sub {
+                        call name      => 'Subtest: test_one_set';
+                        call pass      => T();
+                        call subevents => array {
+                            event Ok => sub {
+                                call pass => T();
+                                call name => 'ran a test where bar is 42';
+                            };
+                            event Plan => sub {
+                                call max => 1;
+                            };
+                            end();
+                        };
+                    };
+                    end();
+                };
+            };
+            event Note => sub {
+                call message => 'Subtest: TestsFor::Parameterized with foo';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: TestsFor::Parameterized with foo';
+                call pass      => T();
+                call subevents => array {
+                    event Plan => sub {
+                        call max => 1;
+                    };
+                    event Note => sub {
+                        call message => 'Subtest: test_one_set';
+                    };
+                    event Subtest => sub {
+                        call name      => 'Subtest: test_one_set';
+                        call pass      => T();
+                        call subevents => array {
+                            event Ok => sub {
+                                call pass => T();
+                                call name => 'ran a test where foo is 42';
+                            };
+                            event Plan => sub {
+                                call max => 1;
+                            };
+                            end();
+                        };
+                    };
+                    end();
+                };
+            };
+            end();
+        };
+    };
+}
+
+sub expected_parallel_test_events {
     event Subtest => sub {
         call name      => 'TestsFor::Parameterized';
         call pass      => T();

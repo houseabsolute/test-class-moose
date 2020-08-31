@@ -22,8 +22,11 @@ sub test_method {
 sub run_control_methods_on_skip {1}
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'Subtest: TestsFor::Control::SkipClass';
+    };
     event Subtest => sub {
-        call name      => 'TestsFor::Control::SkipClass';
+        call name      => 'Subtest: TestsFor::Control::SkipClass';
         call pass      => T();
         call subevents => array {
             filter_items {
@@ -61,4 +64,3 @@ sub expected_report {
 }
 
 1;
-

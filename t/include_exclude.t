@@ -37,15 +37,21 @@ test_events_is(
         event Plan => sub {
             call max => 2;
         };
+        event Note => sub {
+            call message => 'Subtest: TestsFor::Basic';
+        };
         event Subtest => sub {
-            call name      => 'TestsFor::Basic';
+            call name      => 'Subtest: TestsFor::Basic';
             call pass      => T();
             call subevents => array {
                 event Plan => sub {
                     call max => 1;
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_this_baby';
+                };
                 event Subtest => sub {
-                    call name      => 'test_this_baby';
+                    call name      => 'Subtest: test_this_baby';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {
@@ -71,15 +77,21 @@ test_events_is(
             };
             end();
         };
+        event Note => sub {
+            call message => 'Subtest: TestsFor::Basic::Subclass';
+        };
         event Subtest => sub {
-            call name      => 'TestsFor::Basic::Subclass';
+            call name      => 'Subtest: TestsFor::Basic::Subclass';
             call pass      => T();
             call subevents => array {
                 event Plan => sub {
                     call max => 1;
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_this_baby';
+                };
                 event Subtest => sub {
-                    call name      => 'test_this_baby';
+                    call name      => 'Subtest: test_this_baby';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {
@@ -162,15 +174,21 @@ test_events_is(
         event Plan => sub {
             call max => 2;
         };
+        event Note => sub {
+            call message => 'Subtest: TestsFor::Basic';
+        };
         event Subtest => sub {
-            call name      => 'TestsFor::Basic';
+            call name      => 'Subtest: TestsFor::Basic';
             call pass      => T();
             call subevents => array {
                 event Plan => sub {
                     call max => 3;
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_me';
+                };
                 event Subtest => sub {
-                    call name      => 'test_me';
+                    call name      => 'Subtest: test_me';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {
@@ -197,8 +215,11 @@ test_events_is(
                         end();
                     };
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_my_instance_name';
+                };
                 event Subtest => sub {
-                    call name      => 'test_my_instance_name';
+                    call name      => 'Subtest: test_my_instance_name';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {
@@ -212,8 +233,11 @@ test_events_is(
                         end();
                     };
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_reporting';
+                };
                 event Subtest => sub {
-                    call name      => 'test_reporting';
+                    call name      => 'Subtest: test_reporting';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {
@@ -244,15 +268,21 @@ test_events_is(
                 end();
             };
         };
+        event Note => sub {
+            call message => 'Subtest: TestsFor::Basic::Subclass';
+        };
         event Subtest => sub {
-            call name      => 'TestsFor::Basic::Subclass';
+            call name      => 'Subtest: TestsFor::Basic::Subclass';
             call pass      => T();
             call subevents => array {
                 event Plan => sub {
                     call max => 4;
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_me';
+                };
                 event Subtest => sub {
-                    call name      => 'test_me';
+                    call name      => 'Subtest: test_me';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {
@@ -266,8 +296,11 @@ test_events_is(
                         end();
                     };
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_my_instance_name';
+                };
                 event Subtest => sub {
-                    call name      => 'test_my_instance_name';
+                    call name      => 'Subtest: test_my_instance_name';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {
@@ -281,8 +314,11 @@ test_events_is(
                         end();
                     };
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_reporting';
+                };
                 event Subtest => sub {
-                    call name      => 'test_reporting';
+                    call name      => 'Subtest: test_reporting';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {
@@ -310,8 +346,11 @@ test_events_is(
                         end();
                     };
                 };
+                event Note => sub {
+                    call message => 'Subtest: test_this_should_be_run';
+                };
                 event Subtest => sub {
-                    call name      => 'test_this_should_be_run';
+                    call name      => 'Subtest: test_this_should_be_run';
                     call pass      => T();
                     call subevents => array {
                         event Ok => sub {

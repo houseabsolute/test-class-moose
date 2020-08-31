@@ -47,8 +47,11 @@ subtest_streamed(
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
+                event Note => sub {
+                    call message => 'Subtest: TestsFor::Basic::Subclass';
+                };
                 event Subtest => sub {
-                    call name      => 'TestsFor::Basic::Subclass';
+                    call name      => 'Subtest: TestsFor::Basic::Subclass';
                     call pass      => F();
                     call subevents => array {
                         event Ok => sub {
@@ -72,7 +75,7 @@ subtest_streamed(
                 };
                 event Diag => sub {
                     call message => match
-                      qr/\QFailed test 'TestsFor::Basic::Subclass'\E.+/s;
+                      qr/\QFailed test 'Subtest: TestsFor::Basic::Subclass'\E.+/s;
                 };
                 end();
             }
@@ -95,8 +98,11 @@ subtest_streamed(
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
+                event Note => sub {
+                    call message => 'Subtest: TestsFor::Basic::Subclass';
+                };
                 event Subtest => sub {
-                    call name      => 'TestsFor::Basic::Subclass';
+                    call name      => 'Subtest: TestsFor::Basic::Subclass';
                     call pass      => F();
                     call subevents => array {
                         event Ok => sub {
@@ -124,7 +130,7 @@ subtest_streamed(
                 };
                 event Diag => sub {
                     call message => match
-                      qr/\QFailed test 'TestsFor::Basic::Subclass'\E.+/s;
+                      qr/\QFailed test 'Subtest: TestsFor::Basic::Subclass'\E.+/s;
                 };
                 end();
             }

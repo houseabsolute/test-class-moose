@@ -89,7 +89,7 @@ for my $class (@classes) {
                 @_;
                 return @_[ $i .. $#_ ];
             };
-            $class->expected_test_events;
+            $class->expected_parallel_test_events;
         },
         "parallel tests produce the events for $class"
     );

@@ -28,8 +28,11 @@ sub test_will_skip {
 sub run_control_methods_on_skip {1}
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'Subtest: TestsFor::Control::SkipMethod';
+    };
     event Subtest => sub {
-        call name      => 'TestsFor::Control::SkipMethod';
+        call name      => 'Subtest: TestsFor::Control::SkipMethod';
         call pass      => T();
         call subevents => array {
             filter_items {
@@ -41,8 +44,11 @@ sub expected_test_events {
             event Plan => sub {
                 call max => 2;
             };
+            event Note => sub {
+                call message => 'Subtest: test_method';
+            };
             event Subtest => sub {
-                call name      => 'test_method';
+                call name      => 'Subtest: test_method';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -58,8 +64,11 @@ sub expected_test_events {
             event Diag => sub {
                 call message => 'in teardown';
             };
+            event Note => sub {
+                call message => 'Subtest: test_will_skip';
+            };
             event Subtest => sub {
-                call name      => 'test_will_skip';
+                call name      => 'Subtest: test_will_skip';
                 call pass      => T();
                 call subevents => array {
                     event Plan => sub {

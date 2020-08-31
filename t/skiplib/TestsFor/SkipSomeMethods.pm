@@ -33,6 +33,84 @@ sub test_this_baby {
 sub test_again { ok 1, 'in test_again' }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'Subtest: TestsFor::SkipSomeMethods';
+    };
+    event Subtest => sub {
+        call name      => 'Subtest: TestsFor::SkipSomeMethods';
+        call pass      => T();
+        call subevents => array {
+            filter_items {
+                grep {
+                         !$_->isa('Test2::AsyncSubtest::Event::Attach')
+                      && !$_->isa('Test2::AsyncSubtest::Event::Detach')
+                } @_;
+            };
+            event Plan => sub {
+                call max => 3;
+            };
+            event Note => sub {
+                call message => 'Subtest: test_again';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: test_again';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call name => 'in test_again';
+                        call pass => T();
+                    };
+                    event Plan => sub {
+                        call max => 1;
+                    };
+                    end();
+                };
+            };
+            event Diag => sub {
+                call message => 'in teardown';
+            };
+            event Note => sub {
+                call message => 'Subtest: test_me';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: test_me';
+                call pass      => T();
+                call subevents => array {
+                    event Plan => sub {
+                        call directive => 'SKIP';
+                        call reason =>
+                          'only methods listed as skipped should be skipped';
+                        call max => 0;
+                    };
+                    end();
+                };
+            };
+            event Note => sub {
+                call message => 'Subtest: test_this_baby';
+            };
+            event Subtest => sub {
+                call name      => 'Subtest: test_this_baby';
+                call pass      => T();
+                call subevents => array {
+                    event Ok => sub {
+                        call name => 'whee! (TestsFor::SkipSomeMethods)';
+                        call pass => T();
+                    };
+                    event Plan => sub {
+                        call max => 1;
+                    };
+                    end();
+                };
+            };
+            event Diag => sub {
+                call message => 'in teardown';
+            };
+            end();
+        };
+    };
+}
+
+sub expected_parallel_test_events {
     event Subtest => sub {
         call name      => 'TestsFor::SkipSomeMethods';
         call pass      => T();

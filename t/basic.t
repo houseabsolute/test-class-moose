@@ -91,15 +91,21 @@ subtest_streamed(
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
+                event Note => sub {
+                    call message => 'Subtest: TestsFor::Basic::Subclass';
+                };
                 event Subtest => sub {
-                    call name      => 'TestsFor::Basic::Subclass';
+                    call name      => 'Subtest: TestsFor::Basic::Subclass';
                     call pass      => F();
                     call subevents => array {
                         event Plan => sub {
                             call max => 6;
                         };
+                        event Note => sub {
+                            call message => 'Subtest: test_me';
+                        };
                         event Subtest => sub {
-                            call name      => 'test_me';
+                            call name      => 'Subtest: test_me';
                             call pass      => T();
                             call subevents => array {
                                 event Ok => sub {
@@ -113,9 +119,12 @@ subtest_streamed(
                                 end();
                             };
                         };
+                        event Note => sub {
+                            call message => 'Subtest: test_my_instance_name';
+                        };
                         event Subtest => sub {
-                            call name      => 'test_my_instance_name';
-                            call pass      => T();
+                            call name => 'Subtest: test_my_instance_name';
+                            call pass => T();
                             call subevents => array {
                                 event Ok => sub {
                                     call pass => T();
@@ -128,8 +137,11 @@ subtest_streamed(
                                 end();
                             };
                         };
+                        event Note => sub {
+                            call message => 'Subtest: test_reporting';
+                        };
                         event Subtest => sub {
-                            call name      => 'test_reporting';
+                            call name      => 'Subtest: test_reporting';
                             call pass      => T();
                             call subevents => array {
                                 event Ok => sub {
@@ -158,8 +170,11 @@ subtest_streamed(
                                 end();
                             };
                         };
+                        event Note => sub {
+                            call message => 'Subtest: test_this_baby';
+                        };
                         event Subtest => sub {
-                            call name      => 'test_this_baby';
+                            call name      => 'Subtest: test_this_baby';
                             call pass      => T();
                             call subevents => array {
                                 event Ok => sub {
@@ -188,9 +203,13 @@ subtest_streamed(
                                 end();
                             };
                         };
+                        event Note => sub {
+                            call message =>
+                              'Subtest: test_this_should_be_run';
+                        };
                         event Subtest => sub {
-                            call name      => 'test_this_should_be_run';
-                            call pass      => T();
+                            call name => 'Subtest: test_this_should_be_run';
+                            call pass => T();
                             call subevents => array {
                                 event Ok => sub {
                                     call pass => T();
@@ -223,30 +242,28 @@ subtest_streamed(
                                 end();
                             };
                         };
+                        event Note => sub {
+                            call message => 'Subtest: test_this_will_die';
+                        };
                         event Subtest => sub {
-                            call name      => 'test_this_will_die';
+                            call name      => 'Subtest: test_this_will_die';
                             call pass      => F();
                             call subevents => array {
-                                event Exception => sub {
-                                    call error => match
-                                      qr{\Qforced die at \E.*\Qbasic.t\E.+}s;
-                                };
-                                event Plan => sub {
-                                    call max => 0;
-                                };
                                 end();
                             };
                         };
                         event Diag => sub {
+                            call message => match qr{^\n?Failed test};
+                        };
+                        event Diag => sub {
                             call message => match
-                              qr{\QFailed test 'test_this_will_die'\E.+}s;
+                              qr{\Qforced die at \E.*\Qbasic.t\E.+}s;
                         };
                         end();
                     };
                 };
                 event Diag => sub {
-                    call message => match
-                      qr{\QFailed test 'TestsFor::Basic::Subclass'\E.+}s;
+                    call message => match qr{^\n?Failed test};
                 };
                 end();
             }
