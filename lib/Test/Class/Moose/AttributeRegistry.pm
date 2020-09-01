@@ -21,7 +21,7 @@ sub add_plan {
     my ( undef, $test_class, $method, $plan ) = @_;
     if ( defined $plan ) {
         $plan =~ s/\D//g;
-        undef $plan unless $plan =~ /\d/;    # no_plan
+        undef $plan unless $plan =~ /\d/;      # no_plan
     }
     $BY_METHOD{plans}{$method}{$test_class} = $plan;
 }
@@ -167,7 +167,7 @@ sub _augment_tags {
 
     for my $tag_definition ( @{$tags} ) {
         my $direction = substr( $tag_definition, 0, 1 );
-        my $tag       = substr( $tag_definition, 1 );
+        my $tag = substr( $tag_definition, 1 );
         if ( $direction eq '+' ) {
             $tag_list->{$tag} = 1;
         }
