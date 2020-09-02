@@ -226,8 +226,6 @@ sub run_test_instance {
             return;
         }
 
-        my $report = $self->test_report;
-
         unless (
             $self->run_test_control_method(
                 $test_instance, 'test_startup', $instance_report,
@@ -437,8 +435,7 @@ sub run_test_method {
 
     $method_report->_start_benchmark;
 
-    my $num_tests  = 0;
-    my $test_class = $test_instance->test_class;
+    my $num_tests = 0;
 
     context_do {
         my $ctx = shift;
