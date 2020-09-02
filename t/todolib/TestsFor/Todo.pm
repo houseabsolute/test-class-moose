@@ -48,10 +48,10 @@ sub test_todo_die2 {
 
 sub expected_test_events {
     event Note => sub {
-        call message => 'Subtest: TestsFor::Todo';
+        call message => 'TestsFor::Todo';
     };
     event Subtest => sub {
-        call name           => 'Subtest: TestsFor::Todo';
+        call name           => 'TestsFor::Todo';
         call pass           => F();
         call effective_pass => F();
 
@@ -68,10 +68,10 @@ sub expected_test_events {
             };
 
             event Note => sub {
-                call message => 'Subtest: test_todo';
+                call message => 'test_todo';
             };
             event Subtest => sub {
-                call name           => 'Subtest: test_todo';
+                call name           => 'test_todo';
                 call pass           => T();
                 call effective_pass => T();
 
@@ -106,10 +106,10 @@ sub expected_test_events {
             };
 
             event Note => sub {
-                call message => 'Subtest: test_todo_die1';
+                call message => 'test_todo_die1';
             };
             event Subtest => sub {
-                call name           => 'Subtest: test_todo_die1';
+                call name           => 'test_todo_die1';
                 call pass           => F();
                 call effective_pass => F();
 
@@ -132,10 +132,10 @@ sub expected_test_events {
             };
 
             event Note => sub {
-                call message => 'Subtest: test_todo_die2';
+                call message => 'test_todo_die2';
             };
             event Subtest => sub {
-                call name           => 'Subtest: test_todo_die2';
+                call name           => 'test_todo_die2';
                 call pass           => F();
                 call effective_pass => F();
 

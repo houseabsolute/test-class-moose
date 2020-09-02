@@ -34,10 +34,10 @@ sub test_one_set {
 
 sub expected_test_events {
     event Note => sub {
-        call message => 'Subtest: TestsFor::Parameterized';
+        call message => 'TestsFor::Parameterized';
     };
     event Subtest => sub {
-        call name      => 'Subtest: TestsFor::Parameterized';
+        call name      => 'TestsFor::Parameterized';
         call pass      => T();
         call subevents => array {
             filter_items {
@@ -50,20 +50,20 @@ sub expected_test_events {
                 call max => 2;
             };
             event Note => sub {
-                call message => 'Subtest: TestsFor::Parameterized with bar';
+                call message => 'TestsFor::Parameterized with bar';
             };
             event Subtest => sub {
-                call name      => 'Subtest: TestsFor::Parameterized with bar';
+                call name      => 'TestsFor::Parameterized with bar';
                 call pass      => T();
                 call subevents => array {
                     event Plan => sub {
                         call max => 1;
                     };
                     event Note => sub {
-                        call message => 'Subtest: test_one_set';
+                        call message => 'test_one_set';
                     };
                     event Subtest => sub {
-                        call name      => 'Subtest: test_one_set';
+                        call name      => 'test_one_set';
                         call pass      => T();
                         call subevents => array {
                             event Ok => sub {
@@ -80,20 +80,20 @@ sub expected_test_events {
                 };
             };
             event Note => sub {
-                call message => 'Subtest: TestsFor::Parameterized with foo';
+                call message => 'TestsFor::Parameterized with foo';
             };
             event Subtest => sub {
-                call name      => 'Subtest: TestsFor::Parameterized with foo';
+                call name      => 'TestsFor::Parameterized with foo';
                 call pass      => T();
                 call subevents => array {
                     event Plan => sub {
                         call max => 1;
                     };
                     event Note => sub {
-                        call message => 'Subtest: test_one_set';
+                        call message => 'test_one_set';
                     };
                     event Subtest => sub {
-                        call name      => 'Subtest: test_one_set';
+                        call name      => 'test_one_set';
                         call pass      => T();
                         call subevents => array {
                             event Ok => sub {

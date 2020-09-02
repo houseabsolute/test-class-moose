@@ -34,10 +34,10 @@ sub test_again { ok 1, 'in test_again' }
 
 sub expected_test_events {
     event Note => sub {
-        call message => 'Subtest: TestsFor::SkipSomeMethods';
+        call message => 'TestsFor::SkipSomeMethods';
     };
     event Subtest => sub {
-        call name      => 'Subtest: TestsFor::SkipSomeMethods';
+        call name      => 'TestsFor::SkipSomeMethods';
         call pass      => T();
         call subevents => array {
             filter_items {
@@ -50,10 +50,10 @@ sub expected_test_events {
                 call max => 3;
             };
             event Note => sub {
-                call message => 'Subtest: test_again';
+                call message => 'test_again';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_again';
+                call name      => 'test_again';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -70,10 +70,10 @@ sub expected_test_events {
                 call message => 'in teardown';
             };
             event Note => sub {
-                call message => 'Subtest: test_me';
+                call message => 'test_me';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_me';
+                call name      => 'test_me';
                 call pass      => T();
                 call subevents => array {
                     event Plan => sub {
@@ -86,10 +86,10 @@ sub expected_test_events {
                 };
             };
             event Note => sub {
-                call message => 'Subtest: test_this_baby';
+                call message => 'test_this_baby';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_this_baby';
+                call name      => 'test_this_baby';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {

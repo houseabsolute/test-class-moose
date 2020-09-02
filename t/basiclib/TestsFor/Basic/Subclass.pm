@@ -29,10 +29,10 @@ sub test_this_should_be_run {
 
 sub expected_test_events {
     event Note => sub {
-        call message => 'Subtest: TestsFor::Basic::Subclass';
+        call message => 'TestsFor::Basic::Subclass';
     };
     event Subtest => sub {
-        call name      => 'Subtest: TestsFor::Basic::Subclass';
+        call name      => 'TestsFor::Basic::Subclass';
         call pass      => T();
         call subevents => array {
             filter_items {
@@ -45,10 +45,10 @@ sub expected_test_events {
                 call max => 5;
             };
             event Note => sub {
-                call message => 'Subtest: test_me';
+                call message => 'test_me';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_me';
+                call name      => 'test_me';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -63,10 +63,10 @@ sub expected_test_events {
                 };
             };
             event Note => sub {
-                call message => 'Subtest: test_my_instance_name';
+                call message => 'test_my_instance_name';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_my_instance_name';
+                call name      => 'test_my_instance_name';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -80,10 +80,10 @@ sub expected_test_events {
                 };
             };
             event Note => sub {
-                call message => 'Subtest: test_reporting';
+                call message => 'test_reporting';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_reporting';
+                call name      => 'test_reporting';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -112,10 +112,10 @@ sub expected_test_events {
                 };
             };
             event Note => sub {
-                call message => 'Subtest: test_this_baby';
+                call message => 'test_this_baby';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_this_baby';
+                call name      => 'test_this_baby';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {
@@ -143,10 +143,10 @@ sub expected_test_events {
                 };
             };
             event Note => sub {
-                call message => 'Subtest: test_this_should_be_run';
+                call message => 'test_this_should_be_run';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_this_should_be_run';
+                call name      => 'test_this_should_be_run';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {

@@ -30,10 +30,10 @@ sub test_this_baby {
 
 sub expected_test_events {
     event Note => sub {
-        call message => 'Subtest: TestsFor::SkipAll';
+        call message => 'TestsFor::SkipAll';
     };
     event Subtest => sub {
-        call name      => 'Subtest: TestsFor::SkipAll';
+        call name      => 'TestsFor::SkipAll';
         call pass      => T();
         call subevents => array {
             filter_items {

@@ -30,20 +30,20 @@ sub test_person {
 
 sub expected_test_events {
     event Note => sub {
-        call message => 'Subtest: TestsFor::Person';
+        call message => 'TestsFor::Person';
     };
     event Subtest => sub {
-        call name      => 'Subtest: TestsFor::Person';
+        call name      => 'TestsFor::Person';
         call pass      => T();
         call subevents => array {
             event Plan => sub {
                 call max => 1;
             };
             event Note => sub {
-                call message => 'Subtest: test_person';
+                call message => 'test_person';
             };
             event Subtest => sub {
-                call name      => 'Subtest: test_person';
+                call name      => 'test_person';
                 call pass      => T();
                 call subevents => array {
                     event Ok => sub {

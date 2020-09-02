@@ -21,10 +21,10 @@ sub test_one_set {
 
 sub expected_test_events {
     event Note => sub {
-        call message => 'Subtest: TestsFor::Empty';
+        call message => 'TestsFor::Empty';
     };
     event Subtest => sub {
-        call name      => 'Subtest: TestsFor::Empty';
+        call name      => 'TestsFor::Empty';
         call pass      => T();
         call subevents => array {
             filter_items {
