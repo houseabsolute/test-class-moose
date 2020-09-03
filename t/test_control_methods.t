@@ -47,6 +47,9 @@ subtest_streamed(
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
+                event Note => sub {
+                    call message => 'TestsFor::Basic::Subclass';
+                };
                 event Subtest => sub {
                     call name      => 'TestsFor::Basic::Subclass';
                     call pass      => F();
@@ -95,6 +98,9 @@ subtest_streamed(
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
+                event Note => sub {
+                    call message => 'TestsFor::Basic::Subclass';
+                };
                 event Subtest => sub {
                     call name      => 'TestsFor::Basic::Subclass';
                     call pass      => F();

@@ -28,12 +28,18 @@ sub this_is_a_test_method_because_of_the_attribute : Tests {
 }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'TestsFor::Attributes::Subclass';
+    };
     event Subtest => sub {
         call name      => 'TestsFor::Attributes::Subclass';
         call pass      => T();
         call subevents => array {
             event Plan => sub {
                 call max => 4;
+            };
+            event Note => sub {
+                call message => 'test_just_one_test';
             };
             event Subtest => sub {
                 call name      => 'test_just_one_test';
@@ -48,6 +54,9 @@ sub expected_test_events {
                     };
                     end();
                 };
+            };
+            event Note => sub {
+                call message => 'test_more_than_one_test';
             };
             event Subtest => sub {
                 call name      => 'test_more_than_one_test';
@@ -71,6 +80,9 @@ sub expected_test_events {
                     end();
                 };
             };
+            event Note => sub {
+                call message => 'test_with_attribute_but_no_plan';
+            };
             event Subtest => sub {
                 call name      => 'test_with_attribute_but_no_plan';
                 call pass      => T();
@@ -92,6 +104,10 @@ sub expected_test_events {
                     };
                     end();
                 };
+            };
+            event Note => sub {
+                call message =>
+                  'this_is_a_test_method_because_of_the_attribute';
             };
             event Subtest => sub {
                 call name => 'this_is_a_test_method_because_of_the_attribute';

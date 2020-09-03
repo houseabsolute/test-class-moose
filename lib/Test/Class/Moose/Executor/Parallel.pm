@@ -20,6 +20,7 @@ use Scalar::Util qw(reftype);
 use TAP::Formatter::Color 3.29;
 use Test2::API qw( test2_stack );
 use Test2::AsyncSubtest 0.000018 ();
+use Test2::Tools::AsyncSubtest qw( async_subtest );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Report::Class;
 use Try::Tiny;
@@ -192,6 +193,12 @@ around run_test_method => sub {
 
 sub _build_color {
     return TAP::Formatter::Color->new;
+}
+
+sub _run_subtest {
+    shift;
+
+    async_subtest(@_)->finish;
 }
 
 1;

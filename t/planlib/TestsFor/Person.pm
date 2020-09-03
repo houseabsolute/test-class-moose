@@ -29,12 +29,18 @@ sub test_person {
 }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'TestsFor::Person';
+    };
     event Subtest => sub {
         call name      => 'TestsFor::Person';
         call pass      => T();
         call subevents => array {
             event Plan => sub {
                 call max => 1;
+            };
+            event Note => sub {
+                call message => 'test_person';
             };
             event Subtest => sub {
                 call name      => 'test_person';

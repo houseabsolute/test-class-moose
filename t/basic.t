@@ -91,12 +91,18 @@ subtest_streamed(
                     call max => 2;
                 };
                 TestsFor::Basic->expected_test_events;
+                event Note => sub {
+                    call message => 'TestsFor::Basic::Subclass';
+                };
                 event Subtest => sub {
                     call name      => 'TestsFor::Basic::Subclass';
                     call pass      => F();
                     call subevents => array {
                         event Plan => sub {
                             call max => 6;
+                        };
+                        event Note => sub {
+                            call message => 'test_me';
                         };
                         event Subtest => sub {
                             call name      => 'test_me';
@@ -113,6 +119,9 @@ subtest_streamed(
                                 end();
                             };
                         };
+                        event Note => sub {
+                            call message => 'test_my_instance_name';
+                        };
                         event Subtest => sub {
                             call name      => 'test_my_instance_name';
                             call pass      => T();
@@ -127,6 +136,9 @@ subtest_streamed(
                                 };
                                 end();
                             };
+                        };
+                        event Note => sub {
+                            call message => 'test_reporting';
                         };
                         event Subtest => sub {
                             call name      => 'test_reporting';
@@ -158,6 +170,9 @@ subtest_streamed(
                                 end();
                             };
                         };
+                        event Note => sub {
+                            call message => 'test_this_baby';
+                        };
                         event Subtest => sub {
                             call name      => 'test_this_baby';
                             call pass      => T();
@@ -187,6 +202,9 @@ subtest_streamed(
                                 };
                                 end();
                             };
+                        };
+                        event Note => sub {
+                            call message => 'test_this_should_be_run';
                         };
                         event Subtest => sub {
                             call name      => 'test_this_should_be_run';
@@ -223,30 +241,28 @@ subtest_streamed(
                                 end();
                             };
                         };
+                        event Note => sub {
+                            call message => 'test_this_will_die';
+                        };
                         event Subtest => sub {
                             call name      => 'test_this_will_die';
                             call pass      => F();
                             call subevents => array {
-                                event Exception => sub {
-                                    call error => match
-                                      qr{\Qforced die at \E.*\Qbasic.t\E.+}s;
-                                };
-                                event Plan => sub {
-                                    call max => 0;
-                                };
                                 end();
                             };
                         };
                         event Diag => sub {
+                            call message => match qr{^\n?Failed test};
+                        };
+                        event Diag => sub {
                             call message => match
-                              qr{\QFailed test 'test_this_will_die'\E.+}s;
+                              qr{\Qforced die at \E.*\Qbasic.t\E.+}s;
                         };
                         end();
                     };
                 };
                 event Diag => sub {
-                    call message => match
-                      qr{\QFailed test 'TestsFor::Basic::Subclass'\E.+}s;
+                    call message => match qr{^\n?Failed test};
                 };
                 end();
             }

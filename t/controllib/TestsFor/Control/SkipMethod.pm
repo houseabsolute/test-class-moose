@@ -28,6 +28,9 @@ sub test_will_skip {
 sub run_control_methods_on_skip {1}
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'TestsFor::Control::SkipMethod';
+    };
     event Subtest => sub {
         call name      => 'TestsFor::Control::SkipMethod';
         call pass      => T();
@@ -40,6 +43,9 @@ sub expected_test_events {
             };
             event Plan => sub {
                 call max => 2;
+            };
+            event Note => sub {
+                call message => 'test_method';
             };
             event Subtest => sub {
                 call name      => 'test_method';
@@ -57,6 +63,9 @@ sub expected_test_events {
             };
             event Diag => sub {
                 call message => 'in teardown';
+            };
+            event Note => sub {
+                call message => 'test_will_skip';
             };
             event Subtest => sub {
                 call name      => 'test_will_skip';

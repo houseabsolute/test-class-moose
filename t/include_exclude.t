@@ -37,12 +37,18 @@ test_events_is(
         event Plan => sub {
             call max => 2;
         };
+        event Note => sub {
+            call message => 'TestsFor::Basic';
+        };
         event Subtest => sub {
             call name      => 'TestsFor::Basic';
             call pass      => T();
             call subevents => array {
                 event Plan => sub {
                     call max => 1;
+                };
+                event Note => sub {
+                    call message => 'test_this_baby';
                 };
                 event Subtest => sub {
                     call name      => 'test_this_baby';
@@ -71,12 +77,18 @@ test_events_is(
             };
             end();
         };
+        event Note => sub {
+            call message => 'TestsFor::Basic::Subclass';
+        };
         event Subtest => sub {
             call name      => 'TestsFor::Basic::Subclass';
             call pass      => T();
             call subevents => array {
                 event Plan => sub {
                     call max => 1;
+                };
+                event Note => sub {
+                    call message => 'test_this_baby';
                 };
                 event Subtest => sub {
                     call name      => 'test_this_baby';
@@ -162,12 +174,18 @@ test_events_is(
         event Plan => sub {
             call max => 2;
         };
+        event Note => sub {
+            call message => 'TestsFor::Basic';
+        };
         event Subtest => sub {
             call name      => 'TestsFor::Basic';
             call pass      => T();
             call subevents => array {
                 event Plan => sub {
                     call max => 3;
+                };
+                event Note => sub {
+                    call message => 'test_me';
                 };
                 event Subtest => sub {
                     call name      => 'test_me';
@@ -197,6 +215,9 @@ test_events_is(
                         end();
                     };
                 };
+                event Note => sub {
+                    call message => 'test_my_instance_name';
+                };
                 event Subtest => sub {
                     call name      => 'test_my_instance_name';
                     call pass      => T();
@@ -211,6 +232,9 @@ test_events_is(
                         };
                         end();
                     };
+                };
+                event Note => sub {
+                    call message => 'test_reporting';
                 };
                 event Subtest => sub {
                     call name      => 'test_reporting';
@@ -244,12 +268,18 @@ test_events_is(
                 end();
             };
         };
+        event Note => sub {
+            call message => 'TestsFor::Basic::Subclass';
+        };
         event Subtest => sub {
             call name      => 'TestsFor::Basic::Subclass';
             call pass      => T();
             call subevents => array {
                 event Plan => sub {
                     call max => 4;
+                };
+                event Note => sub {
+                    call message => 'test_me';
                 };
                 event Subtest => sub {
                     call name      => 'test_me';
@@ -266,6 +296,9 @@ test_events_is(
                         end();
                     };
                 };
+                event Note => sub {
+                    call message => 'test_my_instance_name';
+                };
                 event Subtest => sub {
                     call name      => 'test_my_instance_name';
                     call pass      => T();
@@ -280,6 +313,9 @@ test_events_is(
                         };
                         end();
                     };
+                };
+                event Note => sub {
+                    call message => 'test_reporting';
                 };
                 event Subtest => sub {
                     call name      => 'test_reporting';
@@ -309,6 +345,9 @@ test_events_is(
                         };
                         end();
                     };
+                };
+                event Note => sub {
+                    call message => 'test_this_should_be_run';
                 };
                 event Subtest => sub {
                     call name      => 'test_this_should_be_run';

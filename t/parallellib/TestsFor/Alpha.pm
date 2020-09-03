@@ -16,7 +16,7 @@ sub test_second {
     ok 1, 'make sure plans work';
 }
 
-sub expected_test_events {
+sub expected_parallel_test_events {
     event Subtest => sub {
         call name      => 'TestsFor::Alpha';
         call pass      => T();

@@ -20,6 +20,31 @@ sub test_one_set {
 }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'TestsFor::Empty';
+    };
+    event Subtest => sub {
+        call name      => 'TestsFor::Empty';
+        call pass      => T();
+        call subevents => array {
+            filter_items {
+                grep {
+                         !$_->isa('Test2::AsyncSubtest::Event::Attach')
+                      && !$_->isa('Test2::AsyncSubtest::Event::Detach')
+                } @_;
+            };
+            event Plan => sub {
+                call directive => 'SKIP';
+                call reason =>
+                  q{Skipping 'TestsFor::Empty': no test instances found};
+                call max => 0;
+            };
+            end();
+        };
+    };
+}
+
+sub expected_parallel_test_events {
     event Subtest => sub {
         call name      => 'TestsFor::Empty';
         call pass      => T();

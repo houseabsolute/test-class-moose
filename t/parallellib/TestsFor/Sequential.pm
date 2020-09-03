@@ -13,7 +13,7 @@ sub test_sequential_second {
     ok 1;
 }
 
-sub expected_test_events {
+sub expected_parallel_test_events {
     event Subtest => sub {
         call name      => 'TestsFor::Sequential';
         call pass      => T();

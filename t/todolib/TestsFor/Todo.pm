@@ -47,6 +47,122 @@ sub test_todo_die2 {
 }
 
 sub expected_test_events {
+    event Note => sub {
+        call message => 'TestsFor::Todo';
+    };
+    event Subtest => sub {
+        call name           => 'TestsFor::Todo';
+        call pass           => F();
+        call effective_pass => F();
+
+        call subevents => array {
+            filter_items {
+                grep {
+                         !$_->isa('Test2::AsyncSubtest::Event::Attach')
+                      && !$_->isa('Test2::AsyncSubtest::Event::Detach')
+                } @_;
+            };
+
+            event Plan => sub {
+                call max => 3;
+            };
+
+            event Note => sub {
+                call message => 'test_todo';
+            };
+            event Subtest => sub {
+                call name           => 'test_todo';
+                call pass           => T();
+                call effective_pass => T();
+
+                call subevents => array {
+                    event Ok => sub {
+                        call name           => 'pre-todo';
+                        call pass           => T();
+                        call effective_pass => T();
+                    };
+
+                    event Ok => sub {
+                        call name           => 'in todo';
+                        call pass           => F();
+                        call effective_pass => T();
+                    };
+
+                    event Note => sub {
+                        call message => match qr{^\n?Failed test};
+                    };
+
+                    event Ok => sub {
+                        call name           => 'post-todo';
+                        call pass           => T();
+                        call effective_pass => T();
+                    };
+
+                    event Plan => sub {
+                        call max => 3;
+                    };
+                    end();
+                };
+            };
+
+            event Note => sub {
+                call message => 'test_todo_die1';
+            };
+            event Subtest => sub {
+                call name           => 'test_todo_die1';
+                call pass           => F();
+                call effective_pass => F();
+
+                call subevents => array {
+                    event Ok => sub {
+                        call name           => 'pre-todo';
+                        call pass           => T();
+                        call effective_pass => T();
+                    };
+                    end();
+                };
+            };
+
+            event Diag => sub {
+                call message => match qr{^\n?Failed test};
+            };
+
+            event Diag => sub {
+                call message => match qr/in todo at .+/;
+            };
+
+            event Note => sub {
+                call message => 'test_todo_die2';
+            };
+            event Subtest => sub {
+                call name           => 'test_todo_die2';
+                call pass           => F();
+                call effective_pass => F();
+
+                call subevents => array {
+                    event Ok => sub {
+                        call name           => 'pre-todo';
+                        call pass           => T();
+                        call effective_pass => T();
+                    };
+                    end();
+                };
+            };
+
+            event Diag => sub {
+                call message => match qr{^\n?Failed test};
+            };
+
+            event Diag => sub {
+                call message => match qr/in todo at .+/;
+            };
+
+            end();
+        };
+    };
+}
+
+sub expected_parallel_test_events {
     event Subtest => sub {
         call name           => 'TestsFor::Todo';
         call pass           => F();

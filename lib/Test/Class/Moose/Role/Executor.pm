@@ -13,7 +13,6 @@ use namespace::autoclean;
 use List::SomeUtils qw(uniq);
 use List::Util qw(shuffle);
 use Test2::API qw( test2_stack );
-use Test2::Tools::AsyncSubtest qw( async_subtest );
 use Test::Class::Moose::AttributeRegistry;
 use Test::Class::Moose::Config;
 use Test::Class::Moose::Report::Class;
@@ -22,6 +21,8 @@ use Test::Class::Moose::Report::Method;
 use Test::Class::Moose::Report;
 use Test::Class::Moose::Util qw( context_do );
 use Try::Tiny;
+
+requires '_run_subtest';
 
 has 'test_configuration' => (
     is       => 'ro',
@@ -94,11 +95,11 @@ sub _run_test_classes {
     my @test_classes = @_;
 
     for my $test_class (@test_classes) {
-        async_subtest(
+        $self->_run_subtest(
             $test_class,
             { manual_skip_all => 1 },
             sub { $self->run_test_class($test_class) }
-        )->finish;
+        );
     }
 }
 
@@ -180,7 +181,7 @@ sub _maybe_wrap_test_instance {
     ) unless $in_subtest;
 
     my $instance_report;
-    async_subtest(
+    $self->_run_subtest(
         $test_instance->test_instance_name,
         { manual_skip_all => 1 },
         sub {
@@ -189,7 +190,7 @@ sub _maybe_wrap_test_instance {
                 $class_report,
             );
         },
-    )->finish;
+    );
 
     return $instance_report;
 }
@@ -224,8 +225,6 @@ sub run_test_instance {
             $ctx->plan( 0, SKIP => $message );
             return;
         }
-
-        my $report = $self->test_report;
 
         unless (
             $self->run_test_control_method(
@@ -436,8 +435,7 @@ sub run_test_method {
 
     $method_report->_start_benchmark;
 
-    my $num_tests  = 0;
-    my $test_class = $test_instance->test_class;
+    my $num_tests = 0;
 
     context_do {
         my $ctx = shift;
@@ -446,7 +444,7 @@ sub run_test_method {
 
         # If the call to ->$test_method fails then this subtest will fail and
         # Test2::API will also include a diagnostic message with the error.
-        my $p = async_subtest(
+        my $p = $self->_run_subtest(
             $test_method,
             { manual_skip_all => 1 },
             sub {
@@ -466,7 +464,7 @@ sub run_test_method {
                 $test_instance->$test_method($method_report);
                 $num_tests = $hub->count;
             },
-        )->finish;
+        );
 
         $method_report->_end_benchmark;
         if ( $self->test_configuration->show_timing ) {
