@@ -57,7 +57,7 @@ sub plan {
 sub has_tag {
     my ( $self, $tag ) = @_;
     croak('has_tag(\$tag) requires a tag name') unless defined $tag;
-    my $class  = $self->instance->class->name;
+    my $class  = $self->instance->name;
     my $method = $self->name;
     return Test::Class::Moose::AttributeRegistry->method_has_tag(
         $class,

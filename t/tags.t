@@ -121,6 +121,22 @@ sub _run_tests {
     }
 }
 
+subtest 'Verify report' => sub {
+    my $instance = Test::Class::Moose::Report::Instance->new(
+        { name => 'TestsFor::Basic' } );
+    my $method = Test::Class::Moose::Report::Method->new(
+        { name => 'test_me', instance => $instance } );
+
+    ok lives {
+        ok $method->has_tag('first'),
+          'has_tag() should tell us if we have a given tag'
+    }, 'and not die';
+    ok lives {
+        ok !$method->has_tag('no_such_tag'),
+          'has_tag() should tell us if we do not have a given tag'
+    }, 'and not die';
+};
+
 subtest 'Verify registry' => sub {
     ok registry->method_has_tag(
         'TestsFor::Basic::Subclass', 'test_augment',
