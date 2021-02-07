@@ -122,7 +122,7 @@ subtest 'timing data file' => sub {
     is( $data,
         hash {
             field process_name => $0;
-            field start_time =>
+            field start_time   =>
               validator( sub { defined $_ && $_ >= $time } );
             field timing => { timing => 'data' };
         },
@@ -213,7 +213,7 @@ subtest 'role extension methods' => sub {
           --classes t/testlib/Quux.pm
           --test-lib-dirs t/lib
           --test-lib-dirs t/testlib
-          )
+        )
     );
     my $cli    = My::CLI->new_with_options( runner_class => 'FakeRunner' );
     my $runner = $cli->run;
