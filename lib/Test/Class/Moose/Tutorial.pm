@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 use 5.010000;
 
-our $VERSION = '0.99';
+our $VERSION = '1.00';
 
 # there is no code here, but we're moving this from .pod to .pm to try to work
 # around a strange bug where this is showing up instead of main docs on

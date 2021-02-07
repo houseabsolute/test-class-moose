@@ -8,7 +8,7 @@ use namespace::autoclean;
 
 use 5.01000;
 
-our $VERSION = '0.99';
+our $VERSION = '1.00';
 
 use Moose 2.0000;
 use Carp;
