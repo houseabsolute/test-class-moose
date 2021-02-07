@@ -2,7 +2,6 @@ package Test::Reporting;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Test2::Tools::Basic qw( ok );
 use Test2::Tools::Class qw( can_ok isa_ok );

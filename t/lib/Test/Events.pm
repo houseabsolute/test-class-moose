@@ -2,7 +2,6 @@ package Test::Events;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
 use Exporter qw( import );
 

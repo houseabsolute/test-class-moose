@@ -31,7 +31,7 @@ sub _load {
     $file =~ s{\\}{/}g;       # to make win32 happy
     $dir  =~ s{\\}{/}g;       # to make win32 happy
     $file =~ s/^\Q$dir\E//;
-    my $_package = join '::', grep {$_}, File::Spec->splitdir($file);
+    my $_package = join '::', grep {$_} File::Spec->splitdir($file);
 
     # untaint that puppy!
     my ($package) = $_package =~ /^([[:word:]]+(?:::[[:word:]]+)*)$/;
