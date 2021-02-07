@@ -1,6 +1,6 @@
 severity = 3
 verbose = 11
-theme = core + pbp + bugs + maintenance + cosmetic + complexity + security + tests + moose
+theme = (core && (pbp || bugs || maintenance || cosmetic || complexity || security || tests)) || moose
 program-extensions = pl psgi t
 
 exclude = Subroutines::ProhibitCallsToUndeclaredSubs
@@ -65,3 +65,6 @@ add_packages = Carp Test::Builder
 # prevents very common errors when using a sub in list context to construct a
 # hash and ending up with a missing value or key.
 [-Subroutines::ProhibitExplicitReturnUndef]
+
+# Sometimes I want to write "return unless $x > 4"
+[-ControlStructures::ProhibitNegativeExpressionsInUnlessAndUntilConditions]

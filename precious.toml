@@ -1,0 +1,52 @@
+exclude = [
+    ".build/**/*",
+    "Test-Class-Moose-*/**/*",
+    "blib/**/*",
+    "t/00-*",
+    "t/author-*",
+    "t/release-*",
+    "t/zzz-*",
+    "xt/**/*",
+]
+
+[commands.omegasort-gitignore]
+type = "both"
+include = "**/.gitignore"
+cmd = [ "omegasort", "--sort=path" ]
+lint_flags = "--check"
+tidy_flags = "--in-place"
+ok_exit_codes = 0
+lint_failure_exit_codes = 1
+expect_stderr = true
+
+[commands.perlcritic]
+type = "lint"
+include = [ "**/*.{pl,pm,t,psgi}" ]
+cmd = [ "perlcritic", "--profile=$PRECIOUS_ROOT/perlcriticrc" ]
+ok_exit_codes = 0
+lint_failure_exit_codes = 2
+
+[commands.perltidy]
+type = "both"
+include = [ "**/*.{pl,pm,t,psgi}" ]
+cmd = [ "perltidy", "--profile=$PRECIOUS_ROOT/perltidyrc" ]
+lint_flags = [ "--assert-tidy", "--no-standard-output", "--outfile=/dev/null" ]
+tidy_flags = [ "--backup-and-modify-in-place", "--backup-file-extension=/" ]
+ok_exit_codes = 0
+lint_failure_exit_codes = 2
+expect_stderr = true
+
+[commands.podchecker]
+type = "lint"
+include = [ "**/*.{pl,pm,pod}" ]
+cmd = [ "podchecker", "--warnings", "--warnings" ]
+ok_exit_codes = [ 0, 2 ]
+lint_failure_exit_codes = 1
+expect_stderr = true
+
+[commands.podtidy]
+type = "tidy"
+include = [ "**/*.{pl,pm,pod}" ]
+cmd = [ "podtidy", "--columns", "80", "--inplace", "--nobackup" ]
+ok_exit_codes = 0
+lint_failure_exit_codes = 1
