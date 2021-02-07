@@ -2,6 +2,10 @@ package Test::Class::Moose::Tutorial;
 
 # ABSTRACT: A starting guide for Test::Class::Moose
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.010000;
 
 our $VERSION = '0.99';
@@ -15,6 +19,8 @@ our $VERSION = '0.99';
 __END__
 
 =pod
+
+=encoding UTF-8
 
 =head1 Getting Started
 
@@ -42,17 +48,17 @@ automatically, so the boilerplate is, at minimum:
     package TestsFor::My::Test::Class;
     use Test::Class::Moose;
 
-C<Test::Class::Moose> loads C<strict>, C<warnings>, C<Moose>, and
-C<Test::Most> (which includes C<Test::More>, C<Test::Deep>,
-C<Test::Exception>, and C<Test::Differences>). Note that if you don't want to
-load C<Test::Most> (to use Test2 tools instead, for example), you can disable
-this by writing C<< use Test::Class::Moose bare => 1 >> instead.
+C<Test::Class::Moose> loads C<strict>, C<warnings>, C<Moose>, and C<Test::Most>
+(which includes C<Test::More>, C<Test::Deep>, C<Test::Exception>, and
+C<Test::Differences>). Note that if you don't want to load C<Test::Most> (to
+use Test2 tools instead, for example), you can disable this by writing C<< use
+Test::Class::Moose bare => 1 >> instead.
 
 I put my test classes in the C<t/lib/TestsFor> directory, to keep them
 separated from my other classes that help testing (C<t/lib>) and my other test
 scripts. This is just a convention; the directory can be anything you want it
-to be, but it is a good idea to keep your test classes separate from your
-other test-related modules.
+to be, but it is a good idea to keep your test classes separate from your other
+test-related modules.
 
 Now we need a method that implements our actual tests. With
 C<Test::Class::Moose>, any method that starts with C<test_> will be run as a
@@ -72,8 +78,8 @@ as many C<test_> methods as we want in a class.
 =head2 A Test Runner
 
 Now that we have a test class, we need a way for prove to load and run them.
-L<Test::Class::Moose::Load> can load our test modules from a given
-directory. To run them, we use the L<Test::Class::Moose::Runner> class
+L<Test::Class::Moose::Load> can load our test modules from a given directory.
+To run them, we use the L<Test::Class::Moose::Runner> class
 
     # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
@@ -115,8 +121,8 @@ show you what the TAP output looks like
 
 =head1 Event Hooks
 
-There are various points in the test script where we might want to perform
-some actions: Reset a test database, create a temp file, or otherwise set up
+There are various points in the test script where we might want to perform some
+actions: Reset a test database, create a temp file, or otherwise set up
 prerequisites for a test. C<Test::Class::Moose> provides some hooks, called
 test control methods, that allow us to perform actions at these points.
 
@@ -148,9 +154,9 @@ clean up the things created in C<test_setup>, such as ending the database
 transaction.
 
 Note that some developers actually prefer their cleanup to happen in their
-C<test_setup> method, prior to setting up the test. That sounds odd, but it
-can be an easier way to ensure that the environment is clean for every test
-method, regardless of what happened in a previously run method.
+C<test_setup> method, prior to setting up the test. That sounds odd, but it can
+be an easier way to ensure that the environment is clean for every test method,
+regardless of what happened in a previously run method.
 
 =head1 Test Class Composition
 
@@ -185,8 +191,8 @@ are added in the regular C<Moose> way:
     use Test::Class::Moose;
     with 'My::Test::Role';
 
-You can use L<Test::Class::Moose::Role> instead of C<Moose::Role> in which
-case you get the same imports as when you use C<Test::Class::Moose>.
+You can use L<Test::Class::Moose::Role> instead of C<Moose::Role> in which case
+you get the same imports as when you use C<Test::Class::Moose>.
 
 =head2 Organizing Your Tests
 
@@ -208,8 +214,8 @@ L<Test::Class::Moose> offers a number of more advanced features as well.
 
 =head2 plan
 
-If you need to prepare a plan for your tests, you can do so using the
-C<plan()> method:
+If you need to prepare a plan for your tests, you can do so using the C<plan()>
+method:
 
     sub test_constructor {
         my $test = shift;
@@ -221,9 +227,9 @@ Using the C<plan()> method, we can know exactly how many tests did not run if
 the test method ends prematurely, or how many extra tests were run if we had
 too many tests.
 
-Alternately, you can use the C<Test> (a single test) or C<Tests> attributes
-to set the plan. If you do this, the method is marked as a test method even if
-it does not begin with C<test_>.
+Alternately, you can use the C<Test> (a single test) or C<Tests> attributes to
+set the plan. If you do this, the method is marked as a test method even if it
+does not begin with C<test_>.
 
     # 'Test' asserts a plan of 1 test
     sub test_constructor : Test {
@@ -246,8 +252,9 @@ it does not begin with C<test_>.
 We can use the C<test_startup> and C<test_setup> methods to skip tests that we
 can't or don't want to run for whatever reason.
 
-If we don't want to run a single test method, we can use the C<test_setup> method
-and call the C<test_skip> method with the reason we're skipping the test.
+If we don't want to run a single test method, we can use the C<test_setup>
+method and call the C<test_skip> method with the reason we're skipping the
+test.
 
     sub test_will_fail {
         my ($test) = @_;
@@ -272,11 +279,11 @@ and the same C<test_skip> method with the reason we're skipping the test.
 =head2 Running Specific Test Classes
 
 One of the problems with having only one test script to run all the test
-classes is when we're working directly with one test class we still have to
-run all the other test classes.
+classes is when we're working directly with one test class we still have to run
+all the other test classes.
 
-To fix this problem, L<Test::Class::Moose::Runner> allows us to specify which specific
-classes we want to run in its constructor:
+To fix this problem, L<Test::Class::Moose::Runner> allows us to specify which
+specific classes we want to run in its constructor:
 
     # t/test_class_tests.t
     use File::Spec::Functions qw( catdir );
@@ -313,10 +320,10 @@ Now we can choose which test class we want to run right on the command line.
 =head1 Tags
 
 Tags are a way of organizing your test methods into groups. Later you can
-choose to only execute the test methods from one or more tags. You can add
-tags like "online" for tests that require a network, or "database" for tests
-that require a database, and then include or exclude those tags when you
-execute your tests.
+choose to only execute the test methods from one or more tags. You can add tags
+like "online" for tests that require a network, or "database" for tests that
+require a database, and then include or exclude those tags when you execute
+your tests.
 
 You add tags to your test methods using attributes. A test method may have one
 or more tags:

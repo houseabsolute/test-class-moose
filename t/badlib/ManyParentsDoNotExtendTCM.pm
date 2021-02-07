@@ -1,6 +1,8 @@
 package ManyParentsDoNotExtendTCM;
+
 use strict;
 use warnings;
+use namespace::autoclean;
 
 # Extending a Test class with a lots of non-Test classes must die
 

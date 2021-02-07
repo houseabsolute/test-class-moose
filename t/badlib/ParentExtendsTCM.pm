@@ -1,6 +1,8 @@
 package ParentExtendsTCM;
+
 use strict;
 use warnings;
+use namespace::autoclean;
 
 # Extending a Test class with a TCM class must work
 

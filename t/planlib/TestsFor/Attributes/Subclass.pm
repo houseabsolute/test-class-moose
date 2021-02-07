@@ -1,5 +1,9 @@
 package TestsFor::Attributes::Subclass;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose extends => 'TestsFor::Attributes', bare => 1;
 
 use Test2::Tools::Basic qw( pass );

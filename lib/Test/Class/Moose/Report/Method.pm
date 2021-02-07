@@ -2,13 +2,16 @@ package Test::Class::Moose::Report::Method;
 
 # ABSTRACT: Reporting on test methods
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.010000;
 
 our $VERSION = '0.99';
 
 use Moose;
 use Carp;
-use namespace::autoclean;
 use Test::Class::Moose::AttributeRegistry;
 
 with qw(
@@ -53,7 +56,7 @@ sub plan {
 
 sub has_tag {
     my ( $self, $tag ) = @_;
-    croak("has_tag(\$tag) requires a tag name") unless defined $tag;
+    croak('has_tag(\$tag) requires a tag name') unless defined $tag;
     my $class  = $self->instance->class->name;
     my $method = $self->name;
     return Test::Class::Moose::AttributeRegistry->method_has_tag(
@@ -68,6 +71,10 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
+
+=pod
+
+=encoding UTF-8
 
 =for Pod::Coverage plan
 
@@ -109,3 +116,4 @@ equal to the number of tests run.
     }
 
 Returns true if the current test method has the tag in question.
+

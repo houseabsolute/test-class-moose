@@ -12,6 +12,7 @@ use Test::More;
 use List::SomeUtils qw( any );
 EOF
 
+## no critic (BuiltinFunctions::ProhibitStringyEval, ErrorHandling::RequireCheckingReturnValueOfEval)
 is( [ warnings { eval $package } ],
     array { end(); },
     'no warnings from using Test::Class::Moose with List::SomeUtils'

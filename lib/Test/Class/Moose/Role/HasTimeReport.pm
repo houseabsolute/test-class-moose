@@ -71,6 +71,10 @@ sub _build_time {
 
 __END__
 
+=pod
+
+=encoding UTF-8
+
 =head1 DESCRIPTION
 
 Note that everything in here is experimental and subject to change.
@@ -85,9 +89,9 @@ None.
 
 =head2 C<time>
 
-Returns a L<Test::Class::Moose::Report::Time> object. This object
-represents the duration of this class or method. The duration may be "0" if
-it's an abstract class with no tests run.
+Returns a L<Test::Class::Moose::Report::Time> object. This object represents
+the duration of this class or method. The duration may be "0" if it's an
+abstract class with no tests run.
 
 =head2 C<start_time>
 
@@ -96,3 +100,4 @@ Returns the start time for the report as an epoch value.
 =head2 C<end_time>
 
 Returns the end time for the report as an epoch value.
+

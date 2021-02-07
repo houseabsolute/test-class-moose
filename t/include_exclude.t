@@ -25,6 +25,7 @@ my %methods_for = (
 my @test_classes = sort $runner->test_classes;
 
 foreach my $class (@test_classes) {
+    ## no critic (Subroutines::ProtectPrivateSubs)
     is
       [ $runner->_executor->_test_methods_for( $class->new ) ],
       $methods_for{$class},
@@ -150,6 +151,7 @@ $runner = Test::Class::Moose::Runner->new(
 );
 
 foreach my $class (@test_classes) {
+    ## no critic (Subroutines::ProtectPrivateSubs)
     is
       [ $runner->_executor->_test_methods_for( $class->new ) ],
       $methods_for{$class},

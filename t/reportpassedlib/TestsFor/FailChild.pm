@@ -1,4 +1,9 @@
 package TestsFor::FailChild;
+
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose extends => 'TestsFor::Fail';
 
 sub test_a_good {

@@ -1,4 +1,9 @@
 package TestsFor::Basic;
+
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose;
 
 sub test_me : Tags( first second ) {

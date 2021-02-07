@@ -1,5 +1,9 @@
 package Person;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Moose;
 
 has [ 'first_name', 'last_name' ] => (
@@ -10,7 +14,9 @@ has [ 'first_name', 'last_name' ] => (
 
 sub full_name {
     my $self = shift;
-    return join ' ' => $self->first_name, $self->last_name;
+    return join q{ } => $self->first_name, $self->last_name;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;

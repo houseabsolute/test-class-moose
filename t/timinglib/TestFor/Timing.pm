@@ -2,6 +2,7 @@ package TestFor::Timing;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use Test::Class::Moose;
 

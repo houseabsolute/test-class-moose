@@ -1,5 +1,9 @@
 package TestsFor::Todo;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose bare => 1;
 
 use Test::Builder;
@@ -28,7 +32,6 @@ sub test_todo_die1 {
         'not implemented',
         sub {
             die 'in todo';
-            ok( 0, 'in todo' );
         }
     );
     ok( 1, 'post-todo' );
@@ -41,9 +44,6 @@ sub test_todo_die2 {
     my $builder = Test::Builder->new;
     $builder->todo_start('not implemented');
     die 'in todo';
-    ok( 0, 'in todo' );
-    $builder->todo_end;
-    ok( 1, 'post-todo' );
 }
 
 sub expected_test_events {

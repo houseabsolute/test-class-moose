@@ -2,13 +2,16 @@ package Test::Class::Moose::Role::Executor;
 
 # ABSTRACT: Common code for Runner classes
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.010000;
 
 our $VERSION = '0.99';
 
 use Moose::Role 2.0000;
 use Carp;
-use namespace::autoclean;
 
 use List::SomeUtils qw(uniq);
 use List::Util qw(shuffle);
@@ -515,7 +518,9 @@ sub test_classes {
     if ( $self->test_configuration->randomize_classes ) {
         return shuffle(@classes);
     }
-    return sort @classes;
+
+    @classes = sort @classes;
+    return @classes;
 }
 
 1;
@@ -523,6 +528,8 @@ sub test_classes {
 __END__
 
 =pod
+
+=encoding UTF-8
 
 =head1 DESCRIPTION
 
@@ -536,10 +543,10 @@ C<Test::Class::Moose::Executor::Parallel>.
 
 =head1 API
 
-This role provides the following public methods for extensions. If you wrap
-any of the methods related to test execution you are strongly encouraged to
-make sure that the original method is called, as these methods implement the
-core functionality of TCM.
+This role provides the following public methods for extensions. If you wrap any
+of the methods related to test execution you are strongly encouraged to make
+sure that the original method is called, as these methods implement the core
+functionality of TCM.
 
 =head2 $executor->is_parallel
 
@@ -567,8 +574,8 @@ configuration.
 
 =head2 $executor->run_test_class($test_class)
 
-This method is called once for each test class to be run. It is passed a
-single argument, the I<name> of the test class to be run.
+This method is called once for each test class to be run. It is passed a single
+argument, the I<name> of the test class to be run.
 
 =head2 $executor->run_test_instance($test_instance, $class_report)
 
@@ -595,3 +602,4 @@ This method is called once for each test method in an instance to be run.
 The first argument is the test class object to be run, the second is a control
 method name (like C<'test_startup'>), and the third is an instance of
 L<Test::Class::Moose::Report::Instance> for the instance being run.
+

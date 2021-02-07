@@ -1,5 +1,9 @@
 package TestsFor::Person::Employee;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose extends => 'TestsFor::Person', bare => 1;
 
 use Test2::Tools::Compare qw( array call end event is T );

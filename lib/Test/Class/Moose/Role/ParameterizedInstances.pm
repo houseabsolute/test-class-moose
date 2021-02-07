@@ -14,6 +14,7 @@ use Moose::Role;
 
 requires '_constructor_parameter_sets';
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _tcm_make_test_class_instances {
     my $class     = shift;
     my %base_args = @_;

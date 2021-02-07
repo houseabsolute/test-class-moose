@@ -1,7 +1,7 @@
+/.tidyall.d
 *.swp
 .\#*
 .build
-/.tidyall.d
 MYMETA.json
 MYMETA.yml
 Makefile

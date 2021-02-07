@@ -4,3 +4,5 @@ use strict;
 use warnings;
 
 intentional syntax error goes here;
+
+1;

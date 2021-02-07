@@ -24,6 +24,7 @@ sub _build_class_name {
 
     my $name = $test->get_class_name_to_use or return;
 
+    ## no critic (BuiltinFunctions::ProhibitStringyEval, ErrorHandling::RequireCheckingReturnValueOfEval)
     eval "use $name";
     if ( my $error = $@ ) {
         confess("Could not use $name: $error");
@@ -40,6 +41,10 @@ sub get_class_name_to_use {
 
 1;
 __END__
+
+=pod
+
+=encoding UTF-8
 
 =head1 SYNOPSIS
 
@@ -58,8 +63,8 @@ __END__
 =head1 DESCRIPTION
 
 This role allows you to automatically C<use> the classes your test class is
-testing, providing the name of the class via the C<class_name> attribute.
-Thus, you don't need to hardcode your class names.
+testing, providing the name of the class via the C<class_name> attribute. Thus,
+you don't need to hardcode your class names.
 
 =head1 PROVIDES
 
@@ -70,13 +75,12 @@ it's called it will attempt to C<use> the class being tested.
 
 =head2 C<get_class_name_to_use>
 
-This method strips the leading section of the package name, up to and
-including the first C<::>, and returns the rest of the name as the name of the
-class being tested. For example, if your test class is named
-C<Tests::Some::Person>, the name C<Some::Person> is returned as the name of
-the class to use and test. If your test class is named
-C<IHateTestingThis::Person>, then C<Person> is the name of the class to be
-used and tested.
+This method strips the leading section of the package name, up to and including
+the first C<::>, and returns the rest of the name as the name of the class
+being tested. For example, if your test class is named C<Tests::Some::Person>,
+the name C<Some::Person> is returned as the name of the class to use and test.
+If your test class is named C<IHateTestingThis::Person>, then C<Person> is the
+name of the class to be used and tested.
 
 If you don't like how the name is calculated, you can override this method in
 your code.
@@ -119,9 +123,9 @@ First, if you need to rename your class, you must change this name repeatedly.
 With L<Test::Class::Moose::Role::AutoUse>, you only rename the test class name
 to correspond to the new class name and you're done.
 
-The first problem is not very serious, but the second problem is. Let's say
-you have a C<Person> class and then you create a C<Person::Employee> subclass.
-Your test subclass might look like this:
+The first problem is not very serious, but the second problem is. Let's say you
+have a C<Person> class and then you create a C<Person::Employee> subclass. Your
+test subclass might look like this:
 
  package TestsFor::Person::Employee;
 
@@ -130,13 +134,13 @@ Your test subclass might look like this:
  # insert tests here
 
 Object-oriented tests I<inherit> their parent class tests. Thus,
-C<TestsFor::Person::Employee> will inherit the
-C<< TestsFor::Person->test_constructor() >> method. Except as you can see in our
+C<TestsFor::Person::Employee> will inherit the C<<
+TestsFor::Person->test_constructor() >> method. Except as you can see in our
 example above, we've B<hardcoded> the class name, meaning that we won't be
 testing our code appropriately. The code using the
 L<Test::Class::Moose::Role::AutoUse> role doesn't hardcode the class name (at
-least, it shouldn't), so when we call the inherited
-C<< TestsFor::Person::Employee->test_constructor() >> method, it constructs a
+least, it shouldn't), so when we call the inherited C<<
+TestsFor::Person::Employee->test_constructor() >> method, it constructs a
 C<TestsFor::Person::Employee> object, not a C<TestsFor::Person> object.
 
 Some might argue that this is a strawman and we should have done this:

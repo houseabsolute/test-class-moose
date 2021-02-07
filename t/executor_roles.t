@@ -7,6 +7,7 @@ use Test::Class::Moose::Runner;
 
 {
     package My::Role;
+    use namespace::autoclean;
     use Moose::Role;
 }
 

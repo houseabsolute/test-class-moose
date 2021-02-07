@@ -2,13 +2,16 @@ package Test::Class::Moose::Report::Instance;
 
 # ABSTRACT: Reporting on test classes
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.010000;
 
 our $VERSION = '0.99';
 
 use Moose;
 use Carp;
-use namespace::autoclean;
 
 with qw(
   Test::Class::Moose::Role::Reporting
@@ -49,6 +52,10 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=pod
+
+=encoding UTF-8
+
 =head1 DESCRIPTION
 
 Should be considered experimental and B<read only>.
@@ -71,5 +78,6 @@ Returns an array of L<Test::Class::Moose::Report::Method> objects.
 
 =head2 C<current_method>
 
-Returns the current (really, most recent)
-L<Test::Class::Moose::Report::Method> object that is being run.
+Returns the current (really, most recent) L<Test::Class::Moose::Report::Method>
+object that is being run.
+

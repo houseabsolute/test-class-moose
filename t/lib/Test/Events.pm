@@ -2,9 +2,11 @@ package Test::Events;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use Exporter qw( import );
 
+## no critic (Modules::ProhibitAutomaticExportation)
 our @EXPORT = qw( test_events_is test_events_like );
 
 use Test2::Tools::Basic qw( diag );
@@ -43,12 +45,14 @@ sub _diag_exception_events {
     }
 }
 
+## no critic (Variables::ProhibitPackageVars)
 our $Indent = 0;
 
 sub dump_events {
     my $events = shift;
 
     for my $event ( @{$events} ) {
+        ## no critic (ControlStructures::ProhibitCascadingIfElse)
         if ( $event->isa('Test2::Event::Subtest') ) {
             _d(     'Subtest(name: '
                   . $event->name

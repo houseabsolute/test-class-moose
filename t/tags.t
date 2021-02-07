@@ -113,6 +113,7 @@ sub _run_tests {
     my @test_classes = sort $runner->test_classes;
 
     foreach my $class (@test_classes) {
+        ## no critic (Subroutines::ProtectPrivateSubs)
         is( [ $runner->_executor->_test_methods_for( $class->new ) ],
             $methods_for->{$class},
             "$class should have the correct test methods"
@@ -139,6 +140,7 @@ subtest 'Verify registry' => sub {
       '... or if it does not';
 };
 
+## no critic (BuiltinFunctions::ProhibitStringyEval, ErrorHandling::RequireCheckingReturnValueOfEval)
 eval <<'END';
     package TestsFor::Bad::Example;
     use Test::Class::Moose;

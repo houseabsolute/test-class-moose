@@ -20,14 +20,16 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 DESCRIPTION
 
     use Test::Class::Moose::Deprecated -api_version => $version;
 
 =head1 FUNCTIONS
 
-This module manages deprecation warnings for features that have been
-deprecated in L<Test::Class::Moose>.
+This module manages deprecation warnings for features that have been deprecated
+in L<Test::Class::Moose>.
 
 If you specify C<< -api_version => $version >>, you can use deprecated features
 without warnings. Note that this special treatment is limited to the package

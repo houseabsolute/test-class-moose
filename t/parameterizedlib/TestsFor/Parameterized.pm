@@ -1,5 +1,9 @@
 package TestsFor::Parameterized;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( fail );
@@ -9,6 +13,7 @@ with 'Test::Class::Moose::Role::ParameterizedInstances';
 
 has [ 'foo', 'bar' ] => ( is => 'ro' );
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _constructor_parameter_sets {
     return (
         __PACKAGE__ . ' with foo' => { foo => 42 },

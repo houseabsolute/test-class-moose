@@ -13,8 +13,7 @@ use Test2::V0;
 # with TCM::Load - which would die, because these modules *are*
 # invalid.
 
-my $error;
-
+## no critic (BuiltinFunctions::ProhibitStringyEval, ErrorHandling::RequireCheckingReturnValueOfEval)
 eval 'use ParentExtendsTCM bare => 1;';
 is( $@, q{}, 'subclassing works with valid parent class' );
 

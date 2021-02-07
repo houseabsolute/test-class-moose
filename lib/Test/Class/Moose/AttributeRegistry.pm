@@ -75,14 +75,15 @@ sub tags {
         }
     }
 
-    return sort( uniq(@tags) );
+    @tags = sort uniq(@tags);
+    return @tags;
 }
 
 sub class_has_tag {
     my ( $class, $test_class, $tag ) = @_;
 
-    croak("no class specified") if not defined $test_class;
-    croak("no tag specified")   if not defined $tag;
+    croak('no class specified') if not defined $test_class;
+    croak('no tag specified')   if not defined $tag;
 
     # XXX a naïve implementation, but it does the job for now.
     my $test_class_meta = Class::MOP::Class->initialize($test_class);
@@ -96,9 +97,9 @@ sub class_has_tag {
 sub method_has_tag {
     my ( $class, $test_class, $method, $tag ) = @_;
 
-    croak("no class specified")  if not defined $test_class;
-    croak("no method specified") if not defined $method;
-    croak("no tag specified")    if not defined $tag;
+    croak('no class specified')  if not defined $test_class;
+    croak('no method specified') if not defined $method;
+    croak('no tag specified')    if not defined $tag;
 
     # avoid auto-vivication
     return if not exists $BY_METHOD{tags}{$method};
@@ -117,8 +118,8 @@ sub method_has_tag {
 sub _superclass_tags {
     my ( $class, $test_class, $method ) = @_;
 
-    croak("no class specified")  if not defined $test_class;
-    croak("no method specified") if not defined $method;
+    croak('no class specified')  if not defined $test_class;
+    croak('no method specified') if not defined $method;
 
     return {} if not exists $BY_METHOD{tags}{$method};
 
@@ -159,8 +160,8 @@ sub _superclass_tags {
 sub _augment_tags {
     my ( $class, $test_class, $method, $tags ) = @_;
 
-    croak("no class specified")  if not defined $test_class;
-    croak("no method specified") if not defined $method;
+    croak('no class specified')  if not defined $test_class;
+    croak('no method specified') if not defined $method;
 
     # Get the base list from the superclass
     my $tag_list = $class->_superclass_tags( $test_class, $method );
@@ -188,6 +189,10 @@ sub _augment_tags {
 1;
 
 __END__
+
+=pod
+
+=encoding UTF-8
 
 =head1 SYNOPSIS
 
@@ -229,8 +234,8 @@ C<test_>.
 
 Adds the given list of tags (as an array-ref) for the specified class/method
 combination.  An exception will be raised if either the tags are
-non-alphanumeric or the method is one that has already had tags registered
-for it.
+non-alphanumeric or the method is one that has already had tags registered for
+it.
 
 =item tags
 
@@ -255,7 +260,7 @@ has the specified tag.
 =item L<Attribute::Method::Tags>
 
 Attribute-based interface for adding tags to methods. Your author "liberated"
-this code from L<Attribute::Method::Tags::Registry> (with a tip 'o the
-keyboard to Mark Morgan for his work on this).
+this code from L<Attribute::Method::Tags::Registry> (with a tip 'o the keyboard
+to Mark Morgan for his work on this).
 
 =back

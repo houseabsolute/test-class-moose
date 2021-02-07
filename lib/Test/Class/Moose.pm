@@ -2,13 +2,16 @@ package Test::Class::Moose;
 
 # ABSTRACT: Serious testing for serious Perl
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.010000;
 
 our $VERSION = '0.99';
 
 use Moose 2.0000;
 use Carp;
-use namespace::autoclean;
 use Import::Into;
 use Sub::Attribute;
 
@@ -107,6 +110,7 @@ DECLARE_ATTRIBUTES
 }
 
 BEGIN {
+    ## no critic (BuiltinFunctions::ProhibitStringyEval, ErrorHandling::RequireCheckingReturnValueOfEval)
     eval __PACKAGE__->__sub_attr_declaration_code;
     croak($@) if $@;
 }
@@ -187,17 +191,18 @@ sub _bad_parents_error {
         $heritage .= join ' and ', @ancestors;
     }
     else {
-        my $last = pop @ancestors;
+        my $final = pop @ancestors;
         $heritage .= join ', ', @ancestors;
-        $heritage .= ", and $last";
+        $heritage .= ", and $final";
     }
 
     return
         "$me has $heritage as ancestors "
-      . "but none of these classes inherit from "
+      . 'but none of these classes inherit from '
       . __PACKAGE__;
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _tcm_make_test_class_instances {
     my $test_class = shift;
 
@@ -244,6 +249,10 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
+
+=pod
+
+=encoding UTF-8
 
 =for Pod::Coverage Tags Tests runtests run_control_methods_on_skip
 

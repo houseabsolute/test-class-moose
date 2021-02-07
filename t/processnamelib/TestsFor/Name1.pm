@@ -1,5 +1,9 @@
 package TestsFor::Name1;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose;
 
 my %startup;

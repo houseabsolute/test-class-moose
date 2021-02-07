@@ -18,6 +18,8 @@ use Test::Class::Moose::AttributeRegistry;
 
 BEGIN {
     require Test::Class::Moose;
+    ## no critic (BuiltinFunctions::ProhibitStringyEval, ErrorHandling::RequireCheckingReturnValueOfEval)
+    ## no critic (Subroutines::ProtectPrivateSubs)
     eval Test::Class::Moose->__sub_attr_declaration_code;
     croak($@) if $@;
 }
@@ -42,7 +44,8 @@ sub import {
 
     $_->import::into($caller) for @imports;
 
-    no strict "refs";
+    ## no critic (TestingAndDebugging::ProhibitNoStrict)
+    no strict 'refs';
     *{"$caller\::Tags"}  = \&Tags;
     *{"$caller\::Test"}  = \&Test;
     *{"$caller\::Tests"} = \&Tests;
@@ -51,6 +54,10 @@ sub import {
 1;
 
 __END__
+
+=pod
+
+=encoding UTF-8
 
 =for Pod::Coverage Tags Test Tests
 

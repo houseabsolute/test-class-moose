@@ -1,5 +1,9 @@
 package TestsFor::Basic::Subclass;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose extends => 'TestsFor::Basic', bare => 1;
 
 use Test2::Tools::Basic qw( fail ok pass );
@@ -18,7 +22,7 @@ before 'test_this_baby' => sub {
 };
 
 sub this_should_not_run {
-    fail "We should never see this test";
+    fail 'We should never see this test';
 }
 
 sub test_this_should_be_run {

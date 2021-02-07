@@ -10,23 +10,29 @@ use Test::Events;
 
 use Test::Class::Moose::Runner;
 
+## no critic (Variables::RequireLocalizedPunctuationVars)
+## no critic (Modules::ProhibitMultiplePackages)
 {
     BEGIN { $INC{'Person.pm'} = 1 }
 
     package Person;
+    use namespace::autoclean;
     use Moose;
     has [qw/first_name last_name/] => ( is => 'ro' );
 
     sub full_name {
         my $self = shift;
-        return join ' ' => $self->first_name, $self->last_name;
+        return join q{ } => $self->first_name, $self->last_name;
     }
+
+    __PACKAGE__->meta->make_immutable;
 }
+
 {
     BEGIN { $INC{'Person/Employee.pm'} = 1 }
 
     package Person::Employee;
-
+    use namespace::autoclean;
     use Moose;
     extends 'Person';
 
@@ -35,6 +41,8 @@ use Test::Class::Moose::Runner;
         isa      => 'Str',
         required => 1,
     );
+
+    __PACKAGE__->meta->make_immutable;
 }
 
 use Test::Class::Moose::Load "$Bin/planlib";

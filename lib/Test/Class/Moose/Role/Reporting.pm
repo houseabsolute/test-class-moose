@@ -41,6 +41,10 @@ has 'passed' => (
 
 __END__
 
+=pod
+
+=encoding UTF-8
+
 =head1 DESCRIPTION
 
 Note that everything in here is experimental and subject to change.
@@ -82,5 +86,6 @@ Returns true if the class or method passed.
 
 (From L<Test::Class::Moose::Role::HasTimeReport>)
 
-Returns a L<Test::Class::Moose::Report::Time> object. This object
-represents the duration of this class or method.
+Returns a L<Test::Class::Moose::Report::Time> object. This object represents
+the duration of this class or method.
+

@@ -2,13 +2,16 @@ package Test::Class::Moose::Executor::Parallel;
 
 # ABSTRACT: Execute tests in parallel (parallelized by instance)
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.010000;
 
 our $VERSION = '0.99';
 
 use Moose 2.0000;
 use Carp;
-use namespace::autoclean;
 with 'Test::Class::Moose::Role::Executor';
 
 # Needs to come before we load other test tools
@@ -178,13 +181,23 @@ around run_test_method => sub {
     # The set_color() method from TAP::Formatter::Color is just ugly.
     if ( $self->color_output ) {
         $self->_color->set_color(
-            sub { print STDERR shift, $text },
+            sub {
+                print STDERR shift, $text
+                  or die $!;
+            },
             $color,
         );
-        $self->_color->set_color( sub { print STDERR shift }, 'reset' );
+        $self->_color->set_color(
+            sub {
+                print STDERR shift
+                  or die $!;
+            },
+            'reset'
+        );
     }
     else {
-        print STDERR $text;
+        print STDERR $text
+          or die $!;
     }
 
     return $method_report;
@@ -193,6 +206,8 @@ around run_test_method => sub {
 sub _build_color {
     return TAP::Formatter::Color->new;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 

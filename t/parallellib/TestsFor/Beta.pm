@@ -1,5 +1,9 @@
 package TestsFor::Beta;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose bare => 1;
 
 use Test2::Tools::Basic qw( ok );
@@ -95,4 +99,4 @@ sub expected_report {
     );
 }
 
-1
+1;

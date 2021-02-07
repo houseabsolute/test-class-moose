@@ -1,5 +1,9 @@
 package TestsFor::Alpha::Subclass;
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose extends => 'TestsFor::Alpha', bare => 1;
 
 use Test2::Tools::Basic qw( ok );

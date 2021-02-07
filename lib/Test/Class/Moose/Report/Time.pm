@@ -2,6 +2,10 @@ package Test::Class::Moose::Report::Time;
 
 # ABSTRACT: Reporting object for timing
 
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use 5.010000;
 
 our $VERSION = '0.99';
@@ -9,7 +13,6 @@ our $VERSION = '0.99';
 use Moose;
 use Benchmark qw(timestr :hireswallclock);
 use List::Util qw( max );
-use namespace::autoclean;
 
 {
     my @fields = qw( real user system );
@@ -46,6 +49,10 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
+
+=pod
+
+=encoding UTF-8
 
 =head1 DESCRIPTION
 
@@ -85,3 +92,4 @@ method took to run. Something like:
 =head2 C<as_hashref>
 
 Returns the C<real>, C<user>, and C<system> time values in a hashref.
+

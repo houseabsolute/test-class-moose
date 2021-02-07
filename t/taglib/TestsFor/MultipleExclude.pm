@@ -1,4 +1,9 @@
 package TestsFor::MultipleExclude;
+
+use strict;
+use warnings;
+use namespace::autoclean;
+
 use Test::Class::Moose;
 
 # A regression test for https://rt.cpan.org/Ticket/Display.html?id=87801,
