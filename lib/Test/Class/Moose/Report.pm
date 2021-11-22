@@ -207,7 +207,7 @@ report information:
     my $duration = $report->time->duration;
     diag "Test suite run time: $duration";
 
-    foreach my $class (@c) {
+    foreach my $class ($report->all_test_classes) {
         my $class_name = $class->name;
         subtest "report for class:$class_name" => sub {
             ok !$class->is_skipped, "class:$class_name was not skipped";
