@@ -37,7 +37,7 @@ sub expected_test_events {
             };
             event Plan => sub {
                 call directive => 'SKIP';
-                call reason    =>
+                call reason =>
                   q{Skipping 'TestsFor::Empty': no test instances found};
                 call max => 0;
             };

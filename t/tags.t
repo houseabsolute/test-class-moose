@@ -134,7 +134,8 @@ subtest 'Verify report' => sub {
     ok lives {
         ok !$method->has_tag('no_such_tag'),
           'has_tag() should tell us if we do not have a given tag'
-    }, 'and not die';
+      },
+      'and not die';
 };
 
 subtest 'Verify registry' => sub {

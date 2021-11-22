@@ -73,7 +73,7 @@ sub expected_test_events {
                 call subevents => array {
                     event Plan => sub {
                         call directive => 'SKIP';
-                        call reason    =>
+                        call reason =>
                           'only methods listed as skipped should be skipped';
                         call max => 0;
                     };

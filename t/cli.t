@@ -129,7 +129,7 @@ subtest 'timing data file' => sub {
     is( $data,
         hash {
             field process_name => $0;
-            field start_time   =>
+            field start_time =>
               validator( sub { defined $_ && $_ >= $time } );
             field timing => { timing => 'data' };
         },
